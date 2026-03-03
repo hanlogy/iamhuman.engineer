@@ -1,6 +1,6 @@
 {
   "name": "iamhuman",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 9150  --experimental-https  --experimental-https-key ./certificates/dev-key.pem  --experimental-https-cert ./certificates/dev-cert.pem",
@@ -9,18 +9,23 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@hanlogy/react-web-ui": "^1.1.4",
+    "@hanlogy/ts-lib": "^1.0.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
