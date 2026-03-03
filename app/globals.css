@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@source '../node_modules/@hanlogy/react-web-ui';
 
 :root {
   --accent-color-primary: #4f46e5;
@@ -66,4 +67,16 @@ body {
   --color-warning: var(--warning-color);
   --color-danger: var(--danger-color);
   --color-info: var(--info-color);
+}
+
+@utility flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@utility inline-flex-center {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
