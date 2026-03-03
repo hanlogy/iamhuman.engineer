@@ -1,3 +1,4 @@
+import { gitHubUrl } from '../definitions/constants';
 import { GitHubIcon } from './icons';
 
 export function Footer() {
@@ -9,11 +10,7 @@ export function Footer() {
       </div>
       <div className="text-foreground-muted flex-center mt-4 flex-col text-center text-sm">
         © 2026 IAmHuman.Engineer
-        <a
-          className="mt-2"
-          href="https://github.com/hanlogy/iamhuman.engineer"
-          target="_blank"
-        >
+        <a className="mt-2" href={gitHubUrl} target="_blank">
           <GitHubIcon className="w-6" />
         </a>
       </div>
