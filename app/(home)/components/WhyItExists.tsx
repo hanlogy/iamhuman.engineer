@@ -1,3 +1,4 @@
+import { clsx } from '@hanlogy/react-web-ui';
 import { SectionTitle } from './SectionTitle';
 
 const items = [
@@ -19,9 +20,17 @@ const items = [
 
 export function WhyItExists() {
   return (
-    <div className="mt-18 px-4">
+    <div className="px-4">
       <SectionTitle>Why It Exists</SectionTitle>
-      <div className="space-y-8">
+      <div
+        className={clsx(
+          'mx-auto max-w-md',
+          'space-y-8',
+          'sm:space-y-12',
+          'md:max-w-2xl',
+          'lg:max-w-3xl lg:space-y-16'
+        )}
+      >
         {items.map(({ title, description }) => {
           return (
             <div key={title} className="flex">
@@ -30,7 +39,7 @@ export function WhyItExists() {
                 <h3 className="text-foreground-secondary mb-4 text-2xl leading-none font-semibold">
                   {title}
                 </h3>
-                <p className="leading-relaxed">{description}</p>
+                <p className="leading-relaxed lg:text-lg">{description}</p>
               </div>
             </div>
           );

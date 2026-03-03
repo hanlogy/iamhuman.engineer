@@ -1,5 +1,6 @@
 import { SectionTitle } from './SectionTitle';
 import { SimpleCard } from './SimpleCard';
+import { ThreeColsGrid } from './ThreeColsGrid';
 
 const items = [
   {
@@ -24,9 +25,9 @@ const items = [
 
 export function HowItWorks() {
   return (
-    <div className="mt-18 px-4">
+    <div className="px-4">
       <SectionTitle>How It Works</SectionTitle>
-      <div className="space-y-4">
+      <ThreeColsGrid>
         {items.map(({ step, title, description }) => {
           return (
             <SimpleCard
@@ -37,7 +38,7 @@ export function HowItWorks() {
             />
           );
         })}
-      </div>
+      </ThreeColsGrid>
     </div>
   );
 }

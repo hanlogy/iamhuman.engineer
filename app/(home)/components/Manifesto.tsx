@@ -1,6 +1,7 @@
 import { BalanceIcon, NatureIcon, RouteIcon } from '@/app/components/icons';
 import { SectionTitle } from './SectionTitle';
 import { SimpleCard } from './SimpleCard';
+import { ThreeColsGrid } from './ThreeColsGrid';
 
 const items = [
   {
@@ -25,9 +26,9 @@ const items = [
 
 export function Manifesto() {
   return (
-    <div className="mt-18 px-4">
+    <div className="px-4">
       <SectionTitle>This is how you know we&apos;re Human</SectionTitle>
-      <div className="space-y-4">
+      <ThreeColsGrid>
         {items.map(({ Icon, title, description }) => {
           return (
             <SimpleCard
@@ -38,7 +39,7 @@ export function Manifesto() {
             />
           );
         })}
-      </div>
+      </ThreeColsGrid>
     </div>
   );
 }
