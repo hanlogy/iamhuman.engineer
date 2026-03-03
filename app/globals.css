@@ -23,8 +23,8 @@
 }
 
 html[data-theme='dark'] {
-  --accent-color-primary: #4f46e5;
-  --accent-color-primary-hover: #4338ca;
+  --accent-color-primary: #818cf8;
+  --accent-color-primary-hover: #a5b4fc;
   --accent-color-primary-focus: var(--accent-color-primary);
   --on-accent-color-primary: #fff;
 
