@@ -15,7 +15,7 @@ export default function Home() {
       <p className="mt-2 text-lg">
         It&apos;s absurd we have to prove we exist.
       </p>
-      <p className="italic mt-6 text-gray-500">Coming soon...</p>
+      <p className="italic mt-6">Coming soon...</p>
       <a href="https://github.com/hanlogy/iamhuman.engineer" target="_blank">
         <Image
           className="w-6 opacity-80 mt-2"

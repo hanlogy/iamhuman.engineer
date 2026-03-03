@@ -1,12 +1,69 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --accent-color-primary: #4f46e5;
+  --accent-color-primary-hover: #4338ca;
+  --accent-color-primary-focus: var(--accent-color-primary);
+  --on-accent-color-primary: #fff;
+
+  --background-color: #fafafa;
+  --surface-color-primary: #ffffff;
+  --surface-color-secondary: #f3f4f6;
+
+  --foreground-color-primary: #111827;
+  --foreground-color-secondary: #4b5563;
+  --foreground-color-muted: #6b7280;
+  --border-color-primary: #e5e7eb;
+
+  --succes-color: #16a34a;
+  --warning-color: #d97706;
+  --danger-color: #dc2626;
+  --info-color: #0ea5e9;
+}
+
+html[data-theme='dark'] {
+  --accent-color-primary: #4f46e5;
+  --accent-color-primary-hover: #4338ca;
+  --accent-color-primary-focus: var(--accent-color-primary);
+  --on-accent-color-primary: #fff;
+
+  --background-color: #0b0f19;
+  --surface-color-primary: #111827;
+  --surface-color-secondary: #0f172a;
+
+  --foreground-color-primary: #e5e7eb;
+  --foreground-color-secondary: #9ca3af;
+  --foreground-color-muted: #6b7280;
+  --border-color-primary: #1f2937;
+
+  --succes-color: #16a34a;
+  --warning-color: #d97706;
+  --danger-color: #dc2626;
+  --info-color: #0ea5e9;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background-color);
+  color: var(--foreground-color-primary);
+}
+
+@theme inline {
+  --color-accent: var(--accent-color-primary);
+  --color-accent-hover: var(--accent-color-primary-hover);
+  --color-accent-focus: var(--accent-color-primary-focus);
+  --color-on-accent: var(--on-accent-color-primary);
+
+  --color-background: var(--background-color);
+  --color-surface: var(--surface-color-primary);
+  --color-surface-secondary: var(--surface-color-secondary);
+
+  --color-foreground: var(--foreground-color-primary);
+  --color-foreground-secondary: var(--foreground-color-secondary);
+  --color-foreground-muted: var(--foreground-color-muted);
+  --color-border: var(--border-color-primary);
+
+  --color-succes: var(--succes-color);
+  --color-warning: var(--warning-color);
+  --color-danger: var(--danger-color);
+  --color-info: var(--info-color);
 }
