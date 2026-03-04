@@ -1,6 +1,15 @@
+import { clsx } from '@hanlogy/react-web-ui';
+
 export function EngineersCounter() {
   return (
-    <div className="bg-surface-secondary py-10 text-center">
+    <div
+      className={clsx(
+        'bg-surface-secondary py-10 text-center',
+        'mt-14',
+        'sm:mt-20',
+        'md:mt-32'
+      )}
+    >
       <div className="text-foreground-muted text-xl leading-none">
         Total Human Engineers
       </div>

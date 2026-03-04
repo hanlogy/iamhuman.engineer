@@ -17,7 +17,7 @@ const items = [
   },
   {
     step: 'Step 3',
-    title: 'We show judgment',
+    title: 'Exist',
     description:
       "That's it. No feed to feed. No engagement to chase. Just your work, quietly findable.",
   },
