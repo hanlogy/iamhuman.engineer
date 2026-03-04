@@ -1,6 +1,5 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import { BottomCTA } from './components/BottomCTA';
-import { EngineersCounter } from './components/EngineersCounter';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
 import { Manifesto } from './components/Manifesto';
@@ -10,13 +9,13 @@ export default function HomePage() {
   return (
     <div
       className={clsx(
-        'space-y-18 py-14',
-        'sm:space-y-22 sm:py-18',
-        'md:space-y-32 md:py-22'
+        'space-y-24 py-14',
+        'sm:space-y-32 sm:py-18',
+        'md:space-y-46 md:py-22',
+        'xl:space-y-56 xl:py-24'
       )}
     >
       <Hero />
-      <EngineersCounter />
       <Manifesto />
       <HowItWorks />
       <WhyItExists />

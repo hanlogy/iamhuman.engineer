@@ -1,5 +1,6 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import { LinkButton } from '@/app/components/LinkButton';
+import { EngineersCounter } from './EngineersCounter';
 
 export function Hero() {
   return (
@@ -40,6 +41,7 @@ export function Hero() {
           Browse engineers
         </LinkButton>
       </div>
+      <EngineersCounter />
     </div>
   );
 }
