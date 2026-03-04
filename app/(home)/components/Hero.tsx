@@ -8,9 +8,9 @@ export function Hero() {
       <h1
         className={clsx(
           'leading-tight font-semibold',
-          'mb-12 text-4xl',
-          'sm:mb-14 sm:text-[2.5em]',
-          'md:mb-16 md:text-5xl'
+          'mb-6 text-4xl',
+          'sm:mb-8 sm:text-[2.5em]',
+          'md:mb-10 md:text-5xl'
         )}
       >
         We are the engineers who ship
@@ -25,7 +25,7 @@ export function Hero() {
         No feed, no hot takes. Just our real work: PRs, shipped products,
         packages, talks, and case studies.
       </p>
-      <div className="mt-2 text-sm italic text-foreground-muted">
+      <div className="text-foreground-muted mt-2 text-sm italic">
         Not anti-AI. Pro craft, proof, and accountability.
       </div>
       <div
@@ -34,7 +34,7 @@ export function Hero() {
           'items-center justify-center',
           'mt-12 max-w-60 flex-col space-y-4',
           'sm:mt-16',
-          'md:max-w-md md:flex-row md:space-y-0 md:space-x-4'
+          'md:mt-18 md:max-w-md md:flex-row md:space-y-0 md:space-x-4'
         )}
       >
         <LinkButton style="filled" href="/coming-soon">
