@@ -18,19 +18,22 @@ export function Hero() {
       <p
         className={clsx(
           'text-foreground-secondary mx-auto max-w-2xl',
-          'mb-12',
-          'sm:mb-16 sm:text-lg',
+          'sm:text-lg',
           'md:text-xl'
         )}
       >
         No feed, no hot takes. Just our real work: PRs, shipped products,
         packages, talks, and case studies.
       </p>
+      <div className="mt-2 text-sm italic text-foreground-muted">
+        Not anti-AI. Pro craft, proof, and accountability.
+      </div>
       <div
         className={clsx(
           'mx-auto flex',
           'items-center justify-center',
-          'max-w-60 flex-col space-y-4',
+          'mt-12 max-w-60 flex-col space-y-4',
+          'sm:mt-16',
           'md:max-w-md md:flex-row md:space-y-0 md:space-x-4'
         )}
       >
