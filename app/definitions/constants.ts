@@ -1,2 +1,2 @@
 export const gitHubUrl =
-  'https://github.com/IAmHuman-Engineer/iamhuman-engineer.github.io';
+  'https://github.com/iamhuman-engineer/community';
