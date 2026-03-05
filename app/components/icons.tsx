@@ -1,6 +1,14 @@
 import { SVGProps } from 'react';
 import { SvgIcon } from '@hanlogy/react-web-ui';
 
+export function Logo({ className }: { className?: string }) {
+  return (
+    <SvgIcon viewBox="0 0 100 100" className={className}>
+      <path d="M65.343 40.685C78.96 40.685 90 51.725 90 65.343 90 78.96 78.96 90 65.343 90c-13.618 0-24.658-11.04-24.658-24.657 0-13.618 11.04-24.658 24.658-24.658ZM59.315 10C69 10 76.85 17.85 76.85 27.534v8.22h-8.768v-8.22a8.767 8.767 0 0 0-8.767-8.766h-31.78a8.766 8.766 0 0 0-8.767 8.766v31.781a8.767 8.767 0 0 0 8.766 8.767h8.22v8.768h-8.22C17.85 76.85 10 69 10 59.315v-31.78c0-9.533 7.607-17.29 17.082-17.53l.452-.005h31.781Z" />
+    </SvgIcon>
+  );
+}
+
 export function GitHubIcon({ className }: { className?: string }) {
   return (
     <SvgIcon viewBox="0 0 98 96" className={className}>

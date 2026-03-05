@@ -1,6 +1,7 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { NavBar } from './NavBar';
+import { Logo } from './icons';
 
 export function Header() {
   const headerHeight = 'h-14 sm:h-18 md:h-22';
@@ -15,9 +16,10 @@ export function Header() {
             'mx-auto max-w-6xl'
           )}
         >
-          <Link href="/" className="flex items-baseline">
+          <Link href="/" className="flex items-center">
+            <Logo className="mr-0.5 w-5 sm:w-6" />
             <div className="text-lg font-semibold sm:text-xl">IAmHuman</div>
-            <div className="text-sm font-semibold">.Engineer</div>
+            <div className="mt-1 text-sm font-semibold">.Engineer</div>
           </Link>
           <NavBar />
         </div>
