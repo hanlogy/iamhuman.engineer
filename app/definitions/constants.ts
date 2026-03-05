@@ -1,1 +1,2 @@
-export const gitHubUrl = 'https://github.com/hanlogy/iamhuman.engineer';
+export const gitHubUrl =
+  'https://github.com/IAmHuman-Engineer/iamhuman-engineer.github.io';

@@ -1,6 +1,6 @@
 {
   "name": "iamhuman",
-  "version": "0.3.0",
+  "version": "0.2.3",
   "private": true,
   "scripts": {
     "dev": "next dev -p 9150  --experimental-https  --experimental-https-key ./certificates/dev-key.pem  --experimental-https-cert ./certificates/dev-cert.pem",
