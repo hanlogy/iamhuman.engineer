@@ -12,6 +12,7 @@ import {
   TextInput,
   TextInputProps,
 } from '@hanlogy/react-web-ui';
+import { regions } from '@/lib/regions';
 import { LockSvg, MailSvg, VisibilityOffSvg, VisibilitySvg } from '../svgs';
 import { fieldClassNameBuilders } from './common';
 
@@ -70,5 +71,11 @@ export const EmailField = createFormField<Omit<TextInputProps, 'type'>>(
 export const RegionSelectField = createFormField<
   Omit<SelectInputProps, 'options'>
 >((props) => {
-  return <SelectInput {...props} options={[]} />;
+  const options = Object.entries(regions).map(([code, item]) => {
+    return {
+      value: code,
+      label: item.l10n.en,
+    };
+  });
+  return <SelectInput isOptional={true} {...props} options={options} />;
 }, fieldClassNameBuilders);
