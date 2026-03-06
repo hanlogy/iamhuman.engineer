@@ -1,5 +1,5 @@
 import { clsx } from '@hanlogy/react-web-ui';
-import { LinkButton } from '@/app/components/LinkButton';
+import { LinkButton } from '@/components/LinkButton';
 import { EngineersCounter } from './EngineersCounter';
 
 export function Hero() {

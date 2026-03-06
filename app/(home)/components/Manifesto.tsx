@@ -1,4 +1,4 @@
-import { BalanceSvg, NatureSvg, RouteSvg } from '@/app/components/icons';
+import { BalanceSvg, NatureSvg, RouteSvg } from '@/components/svgs';
 import { SectionTitle } from './SectionTitle';
 import { SimpleCard } from './SimpleCard';
 import { ThreeColsGrid } from './ThreeColsGrid';

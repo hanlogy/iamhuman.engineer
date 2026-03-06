@@ -1,5 +1,5 @@
 import { clsx } from '@hanlogy/react-web-ui';
-import { CodeSvg, ConditionsSvg, GlobeSvg } from '@/app/components/icons';
+import { CodeSvg, ConditionsSvg, GlobeSvg } from '@/components/svgs';
 import { SectionTitle } from './SectionTitle';
 
 const items = [
