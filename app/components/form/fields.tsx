@@ -7,6 +7,8 @@ import {
   createTextField,
   IconButton,
   IconWrapper,
+  SelectInput,
+  SelectInputProps,
   TextInput,
   TextInputProps,
 } from '@hanlogy/react-web-ui';
@@ -64,3 +66,9 @@ export const EmailField = createFormField<Omit<TextInputProps, 'type'>>(
   },
   fieldClassNameBuilders
 );
+
+export const RegionSelectField = createFormField<
+  Omit<SelectInputProps, 'options'>
+>((props) => {
+  return <SelectInput {...props} options={[]} />;
+}, fieldClassNameBuilders);

@@ -6,7 +6,7 @@ import { FilledButton } from '@/components/buttons/FilledButton';
 import {
   EmailField,
   PasswordField,
-  SelectField,
+  RegionSelectField,
   TextField,
 } from '@/components/form/fields';
 
@@ -40,11 +40,10 @@ export default function SignupPage() {
           controller={register('confirmPassword')}
         />
         <TextField label="Name" controller={register('name')} />
-        <SelectField
+        <RegionSelectField
           label="Your Country/Region"
-          options={[]}
           controller={register('region')}
-        ></SelectField>
+        />
 
         <FilledButton>Create account</FilledButton>
       </form>
