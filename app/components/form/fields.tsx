@@ -56,6 +56,7 @@ export const EmailField = createFormField<Omit<TextInputProps, 'type'>>(
   (props) => {
     return (
       <TextInput
+        type="email"
         prefix={
           <IconWrapper>
             <MailSvg />
