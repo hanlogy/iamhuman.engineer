@@ -38,10 +38,10 @@ export function Hero() {
             'md:mt-18 md:max-w-md md:flex-row md:space-y-0 md:space-x-4'
           )}
         >
-          <LinkButton style="filled" href="/coming-soon">
+          <LinkButton style="filled" href="/signup">
             Create profile
           </LinkButton>
-          <LinkButton style="outlined" href="/coming-soon">
+          <LinkButton style="outlined" href="/directory">
             Browse engineers
           </LinkButton>
         </div>

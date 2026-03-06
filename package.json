@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@hanlogy/react-web-ui": "^1.1.4",
+    "@hanlogy/react-web-ui": "^1.1.5",
     "@hanlogy/ts-lib": "^1.0.0",
     "next": "16.1.6",
     "react": "19.2.3",
