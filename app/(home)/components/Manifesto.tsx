@@ -1,23 +1,23 @@
-import { BalanceIcon, NatureIcon, RouteIcon } from '@/app/components/icons';
+import { BalanceSvg, NatureSvg, RouteSvg } from '@/app/components/icons';
 import { SectionTitle } from './SectionTitle';
 import { SimpleCard } from './SimpleCard';
 import { ThreeColsGrid } from './ThreeColsGrid';
 
 const items = [
   {
-    Icon: RouteIcon,
+    Icon: RouteSvg,
     title: 'We value artifacts',
     description:
       "Claims are forgotten. The work remains. If you built it, you can link it. If you can't link it, it didn't happen.",
   },
   {
-    Icon: NatureIcon,
+    Icon: NatureSvg,
     title: "We don't make noise",
     description:
       'We ship. We document. We move on. Our signal is in what we leave behind, not how often we talk about it.',
   },
   {
-    Icon: BalanceIcon,
+    Icon: BalanceSvg,
     title: 'We show judgment',
     description:
       'We explain decisions. Constraints, tradeoffs, and what we learned, alongside what we shipped.',

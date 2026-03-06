@@ -1,5 +1,5 @@
 import { gitHubUrl } from '../definitions/constants';
-import { GitHubIcon } from './icons';
+import { GitHubSvg } from './svgs';
 
 export function Footer() {
   return (
@@ -11,7 +11,7 @@ export function Footer() {
       <div className="text-foreground-muted flex-center mt-4 flex-col text-center text-sm">
         © 2026 IAmHuman.Engineer
         <a className="mt-2" href={gitHubUrl} target="_blank">
-          <GitHubIcon className="w-6" />
+          <GitHubSvg className="w-6" />
         </a>
       </div>
     </footer>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { clsx, IconButton } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
-import { CloseIcon, MenuIcon } from './icons';
+import { CloseSvg, MenuSvg } from './svgs';
 
 const navItems = [
   { label: 'Engineers', href: '/coming-soon' },
@@ -48,17 +48,17 @@ export function NavBar() {
           })}
           <li className="mt-4 sm:mt-0">
             <Link
-              href="/coming-soon"
+              href="/signup"
               className="bg-accent text-on-accent flex-center h-10 min-w-30 rounded-full font-semibold"
             >
-              Sign In
+              Sign up
             </Link>
           </li>
         </ul>
       </nav>
       <IconButton onClick={() => setIsShown((p) => !p)} className="sm:hidden">
-        {isShown && <CloseIcon />}
-        {!isShown && <MenuIcon />}
+        {isShown && <CloseSvg />}
+        {!isShown && <MenuSvg />}
       </IconButton>
     </>
   );
