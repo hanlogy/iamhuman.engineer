@@ -5,8 +5,8 @@ interface GenerateEncryptedJwtParams {
   payload: JsonRecord;
   secretBase64: string;
   expiresInSeconds?: number;
-  issuer: string;
-  audience: string;
+  issuer?: string;
+  audience?: string;
 }
 
 interface DecryptJwtParams {
@@ -69,8 +69,8 @@ export async function generateEncryptedJwt(
     payload,
     secretBase64,
     expiresInSeconds = 60 * 60 * 24 * 30,
-    issuer,
-    audience,
+    issuer = 'IAmHuman.Engineer-web',
+    audience = 'IAmHuman.Engineer-session',
   } = params;
 
   assertPayload(payload);
