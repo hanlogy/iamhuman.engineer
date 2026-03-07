@@ -3,7 +3,7 @@ import { EncryptJWT, jwtDecrypt, type JWTPayload } from 'jose';
 
 interface GenerateEncryptedJwtParams {
   payload: JsonRecord;
-  secretBase64: string;
+  secretHex: string;
   expiresInSeconds?: number;
   issuer?: string;
   audience?: string;
@@ -11,17 +11,17 @@ interface GenerateEncryptedJwtParams {
 
 interface DecryptJwtParams {
   token: string;
-  secretBase64: string;
+  secretHex: string;
   issuer: string;
   audience: string;
 }
 
-function getEncryptionKey(secretBase64: string): Uint8Array {
-  if (!secretBase64) {
+function getEncryptionKey(secretHex: string): Uint8Array {
+  if (!secretHex) {
     throw new Error('JWE secret is required');
   }
 
-  const key = new Uint8Array(Buffer.from(secretBase64, 'base64'));
+  const key = new Uint8Array(Buffer.from(secretHex, 'hex'));
 
   if (key.byteLength !== 32) {
     throw new Error('JWE secret must decode to exactly 32 bytes');
@@ -67,7 +67,7 @@ export async function generateEncryptedJwt(
 ): Promise<string> {
   const {
     payload,
-    secretBase64,
+    secretHex,
     expiresInSeconds = 60 * 60 * 24 * 30,
     issuer = 'IAmHuman.Engineer-web',
     audience = 'IAmHuman.Engineer-session',
@@ -75,7 +75,7 @@ export async function generateEncryptedJwt(
 
   assertPayload(payload);
 
-  const key = getEncryptionKey(secretBase64);
+  const key = getEncryptionKey(secretHex);
 
   return new EncryptJWT(payload)
     .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
@@ -89,17 +89,13 @@ export async function generateEncryptedJwt(
 export async function decryptJwt(
   params: DecryptJwtParams
 ): Promise<JsonRecord | null> {
-  const { token, secretBase64, issuer, audience } = params;
+  const { token, secretHex, issuer, audience } = params;
 
   try {
-    const { payload } = await jwtDecrypt(
-      token,
-      getEncryptionKey(secretBase64),
-      {
-        issuer,
-        audience,
-      }
-    );
+    const { payload } = await jwtDecrypt(token, getEncryptionKey(secretHex), {
+      issuer,
+      audience,
+    });
 
     return toSessionPayload(payload);
   } catch {

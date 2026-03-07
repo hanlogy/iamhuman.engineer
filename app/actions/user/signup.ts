@@ -7,9 +7,8 @@ import {
   toActionFailure,
 } from '@hanlogy/react-kit';
 import { redirect } from 'next/navigation';
-import { signUpCredentialKey } from '@/definitions';
-import { createCookieManager } from '@/server/createCookieManager';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
+import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
 export async function signup({
   email,
@@ -31,13 +30,7 @@ export async function signup({
       password,
     });
 
-    const { setCookie } = await createCookieManager();
-
-    await setCookie({
-      name: signUpCredentialKey,
-      value: JSON.stringify({ email, password, from: 'signup' }),
-      expiresInSeconds: 60 * 60 * 24,
-    });
+    await setUserToConfirm({ email, password, from: 'signup' });
   } catch (e) {
     let code: ErrorCode = 'unknown';
 

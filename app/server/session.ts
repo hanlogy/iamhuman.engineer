@@ -23,8 +23,8 @@ export async function setSession({
     throw new Error('expiresIn is missing');
   }
 
-  const secretBase64 = process.env.SESSION_ENCRYPTION_KEY;
-  if (!secretBase64) {
+  const secretHex = process.env.SESSION_ENCRYPTION_KEY;
+  if (!secretHex) {
     throw new Error('SESSION_ENCRYPTION_KEY is missing');
   }
 
@@ -38,7 +38,7 @@ export async function setSession({
 
   const encryptedSession = await generateEncryptedJwt({
     payload,
-    secretBase64,
+    secretHex,
     expiresInSeconds: sessionAge,
   });
 

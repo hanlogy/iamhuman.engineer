@@ -2,18 +2,24 @@
 
 import { useRef, useState, type SubmitEvent } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
+import { redirect, RedirectType } from 'next/navigation';
 import { confirmSignUp } from '@/actions/user/confirmSignUp';
+import { login } from '@/actions/user/login';
 import { resendSignUpConfirmationCode } from '@/actions/user/resendSignUpConfirmationCode';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
 import { VCodeField } from '@/components/form/fields';
-import type { AuthCredential } from '../../types';
+import type { UserToConfirm } from '@/server/confirmSignUpManager';
 
 interface FormData {
   code: string;
 }
 
-export function Form({ credential }: { credential: AuthCredential }) {
+export function ConfirmSignUpForm({
+  userToConfirm,
+}: {
+  userToConfirm: UserToConfirm;
+}) {
   const { register, validate, getValues, setFormErrorListener, setFormError } =
     useForm<FormData>();
 
@@ -21,7 +27,7 @@ export function Form({ credential }: { credential: AuthCredential }) {
   const [resendError, setResendError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const { email } = credential;
+  const { email, password } = userToConfirm;
 
   const handleVerify = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -33,15 +39,15 @@ export function Form({ credential }: { credential: AuthCredential }) {
 
     setIsPending(true);
 
-    const { error } = await confirmSignUp({
-      ...credential,
+    const { error: errorFromConfirm } = await confirmSignUp({
+      ...userToConfirm,
       code: values.code,
     });
 
-    setIsPending(false);
+    if (errorFromConfirm) {
+      setIsPending(false);
 
-    if (error) {
-      switch (error.code) {
+      switch (errorFromConfirm.code) {
         case 'codeMismatch':
           return setFormError('Verification code does not match.');
         case 'limitExceeded':
@@ -51,6 +57,17 @@ export function Form({ credential }: { credential: AuthCredential }) {
         default:
           return setFormError('Failed to verify, please try again.');
       }
+    }
+
+    const { error: errorFromLogin } = await login({
+      email,
+      password,
+    });
+
+    // Redirctly to login if auto login failed
+    // TODO: Add an error log
+    if (errorFromLogin) {
+      redirect('/login', RedirectType.push);
     }
   };
 

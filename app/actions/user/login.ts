@@ -12,8 +12,11 @@ import {
   type ActionResponse,
   type ErrorCode,
 } from '@hanlogy/react-kit';
+import { refresh } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
 import { setSession } from '@/server/session';
+import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
 export async function login({
   email,
@@ -35,11 +38,13 @@ export async function login({
     });
 
     await setSession({ accessToken, refreshToken, expiresIn });
+    refresh();
     return toActionSuccess();
   } catch (error) {
     let code: ErrorCode = 'unknown';
     if (error instanceof UserNotConfirmedException) {
-      code = 'userNotConfirmed';
+      await setUserToConfirm({ email, password, from: 'login' });
+      redirect('/signup/confirm');
     } else if (error instanceof UserNotFoundException) {
       code = 'userNotFound';
     } else if (error instanceof NotAuthorizedException) {

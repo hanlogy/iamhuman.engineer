@@ -1,4 +1,4 @@
 export const gitHubUrl = 'https://github.com/iamhuman-engineer/community';
 
-export const signUpCredentialKey = 'signUpCredential';
+export const userToConfirmKey = 'userToConfirm';
 export const sessionKey = 'session';

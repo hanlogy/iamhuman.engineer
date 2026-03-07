@@ -1,12 +1,8 @@
 import Link from 'next/link';
-import { signUpCredentialKey } from '@/definitions';
-import { createCookieManager } from '@/server/createCookieManager';
-import type { AuthCredential } from '../../types';
-import { Form } from './Form';
+import { getUserToConfirm } from '@/server/confirmSignUpManager';
+import { ConfirmSignUpForm } from './ConfirmSignUpForm';
 
 export default async function SignupConfirmPage() {
-  const { getCookie } = await createCookieManager();
-  const cachedUser = getCookie(signUpCredentialKey);
   const shouldNotHappen = (
     <div className="text-center">
       Something is wrong,
@@ -16,17 +12,8 @@ export default async function SignupConfirmPage() {
     </div>
   );
 
-  if (!cachedUser) {
-    return shouldNotHappen;
-  }
-
-  let credential: AuthCredential;
-  try {
-    credential = JSON.parse(cachedUser);
-    if (!credential.email || !credential.from || !credential.password) {
-      return shouldNotHappen;
-    }
-  } catch {
+  const userToConfirm = await getUserToConfirm();
+  if (!userToConfirm) {
     return shouldNotHappen;
   }
 
@@ -37,10 +24,10 @@ export default async function SignupConfirmPage() {
         Confirm Your Email
       </h1>
       <div className="text-center">
-        Please enter the verification code sent to email: {credential.email}
+        Please enter the verification code sent to email: {userToConfirm.email}
       </div>
 
-      <Form credential={credential} />
+      <ConfirmSignUpForm userToConfirm={userToConfirm} />
     </div>
   );
 }
