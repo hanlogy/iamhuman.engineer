@@ -15,9 +15,7 @@ export function Form({
   user,
 }: {
   user: {
-    name: string;
     email: string;
-    region: string;
   };
 }) {
   const { register, validate, setFormErrorListener } = useForm<FormData>();

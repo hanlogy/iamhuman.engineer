@@ -5,19 +5,12 @@ import { useForm } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
-import {
-  EmailField,
-  PasswordField,
-  RegionSelectField,
-  TextField,
-} from '@/components/form/fields';
+import { EmailField, PasswordField } from '@/components/form/fields';
 import { signup } from './actions';
 
 interface FormData {
   password: string;
   email: string;
-  name: string;
-  region: string;
   confirmPassword: string;
 }
 
@@ -65,7 +58,7 @@ export default function SignupPage() {
           Sign in
         </Link>
       </div>
-      <h1 className="my-6 text-2xl font-semibold">
+      <h1 className="my-6 text-2xl font-semibold sm:my-8">
         Sign up for IAmHuman.Engineer
       </h1>
       <form className="flex flex-col" onSubmit={handleSignup}>
@@ -100,26 +93,6 @@ export default function SignupPage() {
                 }
                 if (password && password !== confirmPassword) {
                   return 'Confirm password does not match';
-                }
-              },
-            })}
-          />
-          <TextField
-            label="Name"
-            controller={register('name', {
-              validator: ({ name }) => {
-                if (!name) {
-                  return 'Please enter your name';
-                }
-              },
-            })}
-          />
-          <RegionSelectField
-            label="Your Country/Region"
-            controller={register('region', {
-              validator: ({ region }) => {
-                if (!region) {
-                  return 'Country/Region is required';
                 }
               },
             })}

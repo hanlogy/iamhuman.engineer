@@ -20,9 +20,7 @@ export default async function SignupConfirmPage() {
   }
 
   let user: {
-    name: string;
     email: string;
-    region: string;
   };
   try {
     user = JSON.parse(cachedUser);

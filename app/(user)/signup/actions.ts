@@ -14,15 +14,12 @@ import { getCognitoHelper } from '@/server/getCognitoHelper';
 export async function signup({
   email,
   password,
-  region,
-  name,
 }: Partial<{
   email: string;
   password: string;
-  region: string;
   name: string;
 }>): Promise<ActionResponse> {
-  if (!email || !password || !region || !name) {
+  if (!email || !password) {
     return toActionFailure();
   }
 
@@ -38,7 +35,7 @@ export async function signup({
 
     await setHttpOnlyCookie({
       name: signUpUserKey,
-      value: JSON.stringify({ email, region, name }),
+      value: JSON.stringify({ email }),
     });
   } catch (e) {
     let code: ErrorCode = 'unknown';
