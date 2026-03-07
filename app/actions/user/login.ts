@@ -8,11 +8,9 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
   toActionFailure,
-  toActionSuccess,
   type ActionResponse,
   type ErrorCode,
 } from '@hanlogy/react-kit';
-import { refresh } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
 import { setSession } from '@/server/session';
@@ -38,8 +36,6 @@ export async function login({
     });
 
     await setSession({ accessToken, refreshToken, expiresIn });
-    refresh();
-    return toActionSuccess();
   } catch (error) {
     let code: ErrorCode = 'unknown';
     if (error instanceof UserNotConfirmedException) {
@@ -55,4 +51,6 @@ export async function login({
 
     return toActionFailure({ code });
   }
+
+  redirect('/');
 }
