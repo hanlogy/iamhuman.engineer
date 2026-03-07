@@ -5,19 +5,14 @@ import { useForm } from '@hanlogy/react-web-ui';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
 import { VCodeField } from '@/components/form/fields';
+import type { AuthCredential } from '../../types';
 import { confirmSignUp, resendSignUpConfirmationCode } from './action';
 
 interface FormData {
   code: string;
 }
 
-export function Form({
-  user: { email },
-}: {
-  user: {
-    email: string;
-  };
-}) {
+export function Form({ credential }: { credential: AuthCredential }) {
   const { register, validate, getValues, setFormErrorListener, setFormError } =
     useForm<FormData>();
 
@@ -25,6 +20,7 @@ export function Form({
   const [resendError, setResendError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { email } = credential;
 
   const handleVerify = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -37,7 +33,7 @@ export function Form({
     setIsPending(true);
 
     const { error } = await confirmSignUp({
-      email,
+      ...credential,
       code: values.code,
     });
 

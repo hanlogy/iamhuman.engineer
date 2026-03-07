@@ -1,15 +1,16 @@
 import Link from 'next/link';
-import { signUpUserKey } from '@/definitions';
+import { signUpCredentialKey } from '@/definitions';
 import { createCookieManager } from '@/server/createCookieManager';
+import type { AuthCredential } from '../../types';
 import { Form } from './Form';
 
 export default async function SignupConfirmPage() {
   const { getCookie } = await createCookieManager();
-  const cachedUser = getCookie(signUpUserKey);
+  const cachedUser = getCookie(signUpCredentialKey);
   const shouldNotHappen = (
     <div className="text-center">
-      Something is wrong,{' '}
-      <Link href="/signup" className="text-accent underline">
+      Something is wrong,
+      <Link href="/signup" className="text-accent ml-2 underline">
         Go back to sign up page
       </Link>
     </div>
@@ -19,11 +20,12 @@ export default async function SignupConfirmPage() {
     return shouldNotHappen;
   }
 
-  let user: {
-    email: string;
-  };
+  let credential: AuthCredential;
   try {
-    user = JSON.parse(cachedUser);
+    credential = JSON.parse(cachedUser);
+    if (!credential.email || !credential.from || !credential.password) {
+      return shouldNotHappen;
+    }
   } catch {
     return shouldNotHappen;
   }
@@ -35,10 +37,10 @@ export default async function SignupConfirmPage() {
         Confirm Your Email
       </h1>
       <div className="text-center">
-        Please enter the verification code sent to email: {user.email}
+        Please enter the verification code sent to email: {credential.email}
       </div>
 
-      <Form user={user} />
+      <Form credential={credential} />
     </div>
   );
 }
