@@ -1,9 +1,15 @@
 'use server';
 
+import { UsernameExistsException } from '@aws-sdk/client-cognito-identity-provider';
 import {
-  CognitoIdentityProviderClient,
-  SignUpCommand,
-} from '@aws-sdk/client-cognito-identity-provider';
+  type ActionResponse,
+  type ErrorCode,
+  toActionFailure,
+  toActionSuccess,
+} from '@hanlogy/react-kit';
+import { signUpUserKey } from '@/definitions';
+import { createCookieManager } from '@/server/createCookieManager';
+import { getCognitoHelper } from '@/server/getCognitoHelper';
 
 export async function signup({
   email,
@@ -15,24 +21,34 @@ export async function signup({
   password: string;
   region: string;
   name: string;
-}>) {
+}>): Promise<ActionResponse> {
   if (!email || !password || !region || !name) {
-    return;
+    return toActionFailure();
   }
 
-  const client = new CognitoIdentityProviderClient({
-    region: process.env.COGNITO_REGION,
-  });
+  const client = getCognitoHelper();
 
-  const result = await client.send(
-    new SignUpCommand({
-      ClientId: process.env.USER_POOL_CLIENT_ID,
-      Username: email,
-      Password: password,
-    })
-  );
+  try {
+    await client.signUp({
+      username: email,
+      password,
+    });
 
-  // TODO: Create a profile for this user
+    const { setHttpOnlyCookie } = await createCookieManager();
 
-  console.log(result);
+    await setHttpOnlyCookie({
+      name: signUpUserKey,
+      value: JSON.stringify({ email, region, name }),
+    });
+
+    return toActionSuccess();
+  } catch (e) {
+    let code: ErrorCode = 'unknown';
+
+    if (e instanceof UsernameExistsException) {
+      code = 'usernameExists';
+    }
+
+    return toActionFailure({ code });
+  }
 }
