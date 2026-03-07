@@ -5,31 +5,55 @@ import { useForm } from '@hanlogy/react-web-ui';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
 import { VCodeField } from '@/components/form/fields';
-import { resendSignUpConfirmationCode } from './action';
+import { confirmSignUp, resendSignUpConfirmationCode } from './action';
 
 interface FormData {
   code: string;
 }
 
 export function Form({
-  user,
+  user: { email },
 }: {
   user: {
     email: string;
   };
 }) {
-  const { register, validate, setFormErrorListener } = useForm<FormData>();
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { register, validate, getValues, setFormErrorListener, setFormError } =
+    useForm<FormData>();
+
+  const [isPending, setIsPending] = useState(false);
   const [resendError, setResendError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleVerify = (e: SubmitEvent) => {
+  const handleVerify = async (e: SubmitEvent) => {
     e.preventDefault();
 
     if (!validate()) {
       return;
+    }
+    const values = getValues();
+
+    setIsPending(true);
+
+    const { error } = await confirmSignUp({
+      email,
+      code: values.code,
+    });
+
+    setIsPending(false);
+
+    if (error) {
+      switch (error.code) {
+        case 'codeMismatch':
+          return setFormError('Verification code does not match.');
+        case 'limitExceeded':
+          return setFormError(
+            'Attempt limit exceeded, please try after some time.'
+          );
+        default:
+          return setFormError('Failed to verify, please try again.');
+      }
     }
   };
 
@@ -59,7 +83,7 @@ export function Form({
     startCountdown();
     setResendError(null);
 
-    const { error } = await resendSignUpConfirmationCode({ email: user.email });
+    const { error } = await resendSignUpConfirmationCode({ email });
     if (error) {
       setResendError(
         'Failed to resend verification code, please try again later.'
@@ -80,14 +104,14 @@ export function Form({
                 }
               },
             })}
-            disabled={isVerifying}
+            disabled={isPending}
             maxLength={6}
             placeholder="Verification Code"
           />
         </div>
         <div className="mx-auto mt-6 mb-2 w-46">
-          <FilledButton type="submit" size="medium" disabled={isVerifying}>
-            {isVerifying ? 'Verifying' : 'Verify'}
+          <FilledButton type="submit" size="medium" disabled={isPending}>
+            {isPending ? 'Verifying' : 'Verify'}
           </FilledButton>
         </div>
         <FormErrorMessage setListener={setFormErrorListener} />
