@@ -5,8 +5,8 @@ import {
   type ActionResponse,
   type ErrorCode,
   toActionFailure,
-  toActionSuccess,
 } from '@hanlogy/react-kit';
+import { redirect } from 'next/navigation';
 import { signUpUserKey } from '@/definitions';
 import { createCookieManager } from '@/server/createCookieManager';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
@@ -40,8 +40,6 @@ export async function signup({
       name: signUpUserKey,
       value: JSON.stringify({ email, region, name }),
     });
-
-    return toActionSuccess();
   } catch (e) {
     let code: ErrorCode = 'unknown';
 
@@ -51,4 +49,6 @@ export async function signup({
 
     return toActionFailure({ code });
   }
+
+  redirect('/signup/confirm');
 }

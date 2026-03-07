@@ -22,5 +22,9 @@ export async function createCookieManager() {
         maxAge: expiresInSeconds,
       });
     },
+
+    getCookie(name: string): string | undefined {
+      return cookieStore.get(name)?.value;
+    },
   };
 }

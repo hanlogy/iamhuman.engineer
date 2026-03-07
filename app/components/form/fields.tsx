@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  clsx,
   createCheckboxField,
   createFormField,
   createSelectField,
@@ -8,13 +9,13 @@ import {
   IconButton,
   IconWrapper,
   SelectInput,
-  SelectInputProps,
   TextInput,
-  TextInputProps,
+  type SelectInputProps,
+  type TextInputProps,
 } from '@hanlogy/react-web-ui';
 import { regions } from '@/lib/regions';
 import { LockSvg, MailSvg, VisibilityOffSvg, VisibilitySvg } from '../svgs';
-import { fieldClassNameBuilders } from './common';
+import { fieldClassNameBuilders, inputClass } from './common';
 
 export const TextField = createTextField(fieldClassNameBuilders);
 
@@ -37,6 +38,7 @@ export const PasswordField = createFormField<Omit<TextInputProps, 'type'>>(
         type={isVisible ? 'text' : 'password'}
         suffix={
           <IconButton
+            tabIndex={-1}
             onClick={(e) => {
               e.stopPropagation();
               setIsVisible((e) => !e);
@@ -80,3 +82,10 @@ export const RegionSelectField = createFormField<
   });
   return <SelectInput isOptional={true} {...props} options={options} />;
 }, fieldClassNameBuilders);
+
+export const VCodeField = createTextField({
+  ...fieldClassNameBuilders,
+  inputClass: (e) => {
+    return clsx(inputClass(e), 'text-center');
+  },
+});

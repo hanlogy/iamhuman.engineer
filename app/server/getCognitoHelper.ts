@@ -1,6 +1,6 @@
 import {
   CognitoHelper,
-  CognitoHelperInterface,
+  type CognitoHelperInterface,
   FakeCognitoHelper,
 } from '@hanlogy/ts-cognito';
 

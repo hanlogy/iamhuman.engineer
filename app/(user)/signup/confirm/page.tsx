@@ -1,60 +1,34 @@
-'use client';
-
-import { useRef, useState, type SubmitEvent } from 'react';
-import { useForm } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
-import { FilledButton } from '@/components/buttons/FilledButton';
-import { FormErrorMessage } from '@/components/form/FormErrorMessage';
-import { TextField } from '@/components/form/fields';
+import { signUpUserKey } from '@/definitions';
+import { createCookieManager } from '@/server/createCookieManager';
+import { Form } from './Form';
 
-interface FormData {
-  code: string;
-}
+export default async function SignupConfirmPage() {
+  const { getCookie } = await createCookieManager();
+  const cachedUser = getCookie(signUpUserKey);
+  const shouldNotHappen = (
+    <div className="text-center">
+      Something is wrong,{' '}
+      <Link href="/signup" className="text-accent underline">
+        Go back to sign up page
+      </Link>
+    </div>
+  );
 
-export default function SignupConfirmPage() {
-  const { register, setFormErrorListener } = useForm<FormData>();
-  const [countdown, setCountdown] = useState(0);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [resendError, setResendError] = useState<string | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  if (!cachedUser) {
+    return shouldNotHappen;
+  }
 
-  const handleVerify = (e: SubmitEvent) => {
-    e.preventDefault();
+  let user: {
+    name: string;
+    email: string;
+    region: string;
   };
-
-  const startCountdown = () => {
-    if (intervalRef.current != null) {
-      return;
-    }
-
-    setCountdown(60);
-    intervalRef.current = setInterval(() => {
-      setCountdown((prev) => prev - 1);
-    }, 1000);
-  };
-
-  const resetCountdown = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-      setCountdown(0);
-    }
-  };
-
-  const handleResend = async () => {
-    if (countdown > 0) {
-      return;
-    }
-    startCountdown();
-    setResendError(null);
-
-    try {
-      //
-    } catch {
-      resetCountdown();
-    }
-  };
+  try {
+    user = JSON.parse(cachedUser);
+  } catch {
+    return shouldNotHappen;
+  }
 
   return (
     <div className="mx-auto my-10 max-w-lg px-4">
@@ -63,47 +37,10 @@ export default function SignupConfirmPage() {
         Confirm Your Email
       </h1>
       <div className="text-center">
-        Please enter the verification code sent to your email: xxx@xx.xx
+        Please enter the verification code sent to email: {user.email}
       </div>
 
-      <form onSubmit={handleVerify} className="mt-6 text-center">
-        <div className="mx-auto w-60">
-          <TextField
-            controller={register('code', {
-              validator: ({ code }) => {
-                if (!code) {
-                  return 'Please enter verification code';
-                }
-              },
-            })}
-            disabled={isVerifying}
-            maxLength={6}
-            placeholder="Verification Code"
-          />
-        </div>
-        <div className="mx-auto mt-6 mb-2 w-46">
-          <FilledButton type="submit" size="medium" disabled={isVerifying}>
-            {isVerifying ? 'Verifying' : 'Verify'}
-          </FilledButton>
-        </div>
-        <FormErrorMessage setListener={setFormErrorListener} />
-      </form>
-
-      <div className="my-10 text-center">
-        {countdown > 0 ? (
-          <span className="text-gray-600">
-            Verification code sent again. You can resend in {countdown} seconds.
-          </span>
-        ) : (
-          <>
-            <span className="text-gray-600">Didn&apos;t receive the code?</span>{' '}
-            <button className="text-brand font-semibold" onClick={handleResend}>
-              Resend
-            </button>
-          </>
-        )}
-        {resendError && <div className="mt-2 text-red-600">{resendError}</div>}
-      </div>
+      <Form user={user} />
     </div>
   );
 }
