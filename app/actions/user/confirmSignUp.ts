@@ -12,32 +12,15 @@ import {
   type ErrorCode,
 } from '@hanlogy/react-kit';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
-import type { AuthCredential } from '../../types';
-
-export async function resendSignUpConfirmationCode({
-  email,
-}: {
-  email: string;
-}): Promise<ActionResponse> {
-  const cognito = getCognitoHelper();
-  try {
-    await cognito.resendConfirmationCode({
-      username: email,
-    });
-    return toActionSuccess();
-  } catch {
-    return toActionFailure();
-  }
-}
 
 export async function confirmSignUp({
   email,
   code,
-  password,
-}: AuthCredential & {
-  code?: string;
-}): Promise<ActionResponse> {
-  if (!code) {
+}: Partial<{
+  email: string;
+  code: string;
+}>): Promise<ActionResponse> {
+  if (!code || !email) {
     return toActionFailure();
   }
 
@@ -48,6 +31,7 @@ export async function confirmSignUp({
       username: email,
       confirmationCode: code,
     });
+    return toActionSuccess();
   } catch (error) {
     let code: ErrorCode = 'unknown';
 
@@ -61,6 +45,4 @@ export async function confirmSignUp({
 
     return toActionFailure({ code });
   }
-
-  // TODO: Login and refresh
 }

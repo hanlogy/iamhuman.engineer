@@ -3,10 +3,10 @@
 import { type SubmitEvent } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
+import { signup } from '@/actions/user/signup';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
 import { EmailField, PasswordField } from '@/components/form/fields';
-import { signup } from './actions';
 
 interface FormData {
   password: string;

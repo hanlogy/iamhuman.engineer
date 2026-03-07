@@ -2,11 +2,12 @@
 
 import { useRef, useState, type SubmitEvent } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
+import { confirmSignUp } from '@/actions/user/confirmSignUp';
+import { resendSignUpConfirmationCode } from '@/actions/user/resendSignUpConfirmationCode';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
 import { VCodeField } from '@/components/form/fields';
 import type { AuthCredential } from '../../types';
-import { confirmSignUp, resendSignUpConfirmationCode } from './action';
 
 interface FormData {
   code: string;
