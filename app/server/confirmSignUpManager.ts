@@ -38,3 +38,9 @@ export async function getUserToConfirm(): Promise<UserToConfirm | undefined> {
     return undefined;
   }
 }
+
+export async function deleteUserToConfirm() {
+  const { deleteCookie } = await createCookieManager();
+
+  deleteCookie(userToConfirmKey);
+}

@@ -26,5 +26,9 @@ export async function createCookieManager() {
     getCookie(name: string): string | undefined {
       return cookieStore.get(name)?.value;
     },
+
+    deleteCookie(name: string): void {
+      cookieStore.delete(name);
+    },
   };
 }
