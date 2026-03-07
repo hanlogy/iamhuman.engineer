@@ -26,10 +26,10 @@ export async function signup({
     return toActionFailure();
   }
 
-  const client = getCognitoHelper();
+  const cognito = getCognitoHelper();
 
   try {
-    await client.signUp({
+    await cognito.signUp({
       username: email,
       password,
     });

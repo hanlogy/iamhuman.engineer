@@ -4,7 +4,8 @@ import { useRef, useState, type SubmitEvent } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
-import { TextField, VCodeField } from '@/components/form/fields';
+import { VCodeField } from '@/components/form/fields';
+import { resendSignUpConfirmationCode } from './action';
 
 interface FormData {
   code: string;
@@ -60,9 +61,11 @@ export function Form({
     startCountdown();
     setResendError(null);
 
-    try {
-      //
-    } catch {
+    const { error } = await resendSignUpConfirmationCode({ email: user.email });
+    if (error) {
+      setResendError(
+        'Failed to resend verification code, please try again later.'
+      );
       resetCountdown();
     }
   };
