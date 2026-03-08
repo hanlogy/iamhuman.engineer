@@ -1,8 +1,4 @@
-export function prepareEncryptionKey(secretHex?: unknown): Uint8Array {
-  if (!secretHex || typeof secretHex !== 'string') {
-    throw new Error('A valied JWE secret is required');
-  }
-
+export function prepareEncryptionKey(secretHex: string): Uint8Array {
   const key = new Uint8Array(Buffer.from(secretHex, 'hex'));
 
   if (key.byteLength !== 32) {
