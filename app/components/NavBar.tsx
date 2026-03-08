@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Engineers', href: '/coming-soon' },
   { label: 'Teams', href: '/coming-soon' },
   { label: 'About', href: '/coming-soon' },
+  { label: 'login', href: '/login' },
 ];
 
 export function NavBar() {
