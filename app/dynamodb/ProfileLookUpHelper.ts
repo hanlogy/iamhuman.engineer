@@ -26,14 +26,26 @@ export class ProfileLookUpHelper extends HelperBase {
       return item.handle;
     }
 
+    // Create default profile
     const handle = randomUUID();
 
-    this.db.transactWrite({
+    await this.db.transactWrite({
       put: [
-        this.profileHelper.buildPutConfig({ handle, userId }),
         {
           keyNames: ['pk', 'sk'],
-          item: { ...this.buildKeys({ userId }), handle, userId },
+          item: {
+            ...this.profileHelper.buildKeys({ handle }),
+            handle,
+            userId,
+          },
+        },
+        {
+          keyNames: ['pk', 'sk'],
+          item: {
+            ...this.buildKeys({ userId }),
+            handle,
+            userId,
+          },
         },
       ],
     });
