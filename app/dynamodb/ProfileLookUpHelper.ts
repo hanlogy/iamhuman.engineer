@@ -1,4 +1,5 @@
-import { randomUUID } from 'crypto';
+import type { AttributeValueRecord } from '@hanlogy/ts-dynamodb';
+import { randomBytes } from 'node:crypto';
 import { HelperBase } from './HelperBase';
 import { ProfileHelper } from './ProfileHelper';
 
@@ -19,15 +20,20 @@ export class ProfileLookUpHelper extends HelperBase {
     return this.createHelper(ProfileHelper);
   }
 
-  async getHandleByUserId(userId: string): Promise<string> {
+  async get(userId: string): Promise<AttributeValueRecord | undefined> {
     const { item } = await this.db.get({ keys: this.buildKeys({ userId }) });
+
+    return item;
+  }
+
+  async getHandleByUserId(userId: string): Promise<string> {
+    const item = await this.get(userId);
 
     if (item) {
       return item.handle;
     }
 
-    // Create default profile
-    const handle = randomUUID();
+    const handle = randomBytes(8).toString('hex');
 
     await this.db.transactWrite({
       put: [
@@ -38,6 +44,10 @@ export class ProfileLookUpHelper extends HelperBase {
             handle,
             userId,
           },
+          conditions: [
+            { attribute: 'pk', operator: 'not_exists' },
+            { attribute: 'sk', operator: 'not_exists' },
+          ],
         },
         {
           keyNames: ['pk', 'sk'],
@@ -46,6 +56,10 @@ export class ProfileLookUpHelper extends HelperBase {
             handle,
             userId,
           },
+          conditions: [
+            { attribute: 'pk', operator: 'not_exists' },
+            { attribute: 'sk', operator: 'not_exists' },
+          ],
         },
       ],
     });
