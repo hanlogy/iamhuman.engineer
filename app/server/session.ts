@@ -1,6 +1,6 @@
 import { sessionKey } from '@/definitions';
 import { createCookieManager } from './createCookieManager';
-import { generateEncryptedJwt } from './jwe';
+import { decryptJwt, createEncryptedJwt } from './jwt';
 
 export async function setSession({
   accessToken,
@@ -23,11 +23,6 @@ export async function setSession({
     throw new Error('expiresIn is missing');
   }
 
-  const secretHex = process.env.SESSION_ENCRYPTION_KEY;
-  if (!secretHex) {
-    throw new Error('SESSION_ENCRYPTION_KEY is missing');
-  }
-
   const payload = {
     accessToken,
     refreshToken,
@@ -36,9 +31,9 @@ export async function setSession({
 
   const sessionAge = 30 * 24 * 60 * 60; // 30 days
 
-  const encryptedSession = await generateEncryptedJwt({
+  const encryptedSession = await createEncryptedJwt({
     payload,
-    secretHex,
+    secretHex: getSecretHex(),
     expiresInSeconds: sessionAge,
   });
 
@@ -49,4 +44,27 @@ export async function setSession({
     value: encryptedSession,
     expiresInSeconds: sessionAge,
   });
+}
+
+export async function getSession() {
+  const { getCookie } = await createCookieManager();
+  const session = getCookie(sessionKey);
+
+  if (!session) {
+    return null;
+  }
+  const data = await decryptJwt({
+    token: session,
+    secretHex: getSecretHex(),
+  });
+
+  console.log(data);
+}
+
+function getSecretHex() {
+  const secretHex = process.env.SESSION_ENCRYPTION_KEY;
+  if (!secretHex) {
+    throw new Error('SESSION_ENCRYPTION_KEY is missing');
+  }
+  return secretHex;
 }
