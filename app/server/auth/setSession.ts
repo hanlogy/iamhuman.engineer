@@ -2,7 +2,6 @@ import { sessionKey } from '@/definitions';
 import { createCookieManager } from '../createCookieManager';
 import { createEncryptedJwt } from '../jwt';
 import {
-  accessTokenExpiryBufferInSeconds,
   sessionAgeInSeconds,
   type SessionPayload,
   type SetSessionParams,
@@ -13,28 +12,17 @@ export async function setSession({
   accessToken,
   refreshToken,
   expiresIn,
+  handle,
 }: SetSessionParams): Promise<void> {
-  if (accessToken === undefined) {
-    throw new Error('accessToken is missing');
-  }
-
-  if (refreshToken === undefined) {
-    throw new Error('refreshToken is missing');
-  }
-
-  if (expiresIn === undefined) {
-    throw new Error('expiresIn is missing');
-  }
-
-  if (expiresIn <= accessTokenExpiryBufferInSeconds) {
-    throw new Error('expiresIn must be greater than 300 seconds');
+  if (expiresIn <= 0) {
+    throw new Error('expiresIn must be greater than 0 seconds');
   }
 
   const payload: Readonly<SessionPayload> = {
     accessToken,
     refreshToken,
-    expiresAt:
-      Date.now() + (expiresIn - accessTokenExpiryBufferInSeconds) * 1000,
+    handle,
+    expiresAt: Date.now() + expiresIn * 1000,
   };
 
   const encryptedSession = await createEncryptedJwt({

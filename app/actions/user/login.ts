@@ -12,7 +12,9 @@ import {
   type ErrorCode,
 } from '@hanlogy/react-kit';
 import { redirect } from 'next/navigation';
+import { ProfileLookUpHelper } from '@/dynamodb/ProfileLookUpHelper';
 import { setSession } from '@/server/auth';
+import { getUserIdFromAccessToken } from '@/server/auth/getUserIdFromAccessToken';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
 import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
@@ -35,7 +37,22 @@ export async function login({
       password,
     });
 
-    await setSession({ accessToken, refreshToken, expiresIn });
+    if (!accessToken || !refreshToken || !expiresIn) {
+      return toActionFailure({
+        message: 'Invalid response from login',
+      });
+    }
+
+    const dbHelper = new ProfileLookUpHelper();
+    const userId = getUserIdFromAccessToken(accessToken);
+    if (!userId) {
+      return toActionFailure({
+        message: 'Failed to extract user id from accessToken',
+      });
+    }
+    const handle = await dbHelper.getHandleByUserId(userId);
+
+    await setSession({ accessToken, refreshToken, expiresIn, handle });
   } catch (error) {
     let code: ErrorCode = 'unknown';
     if (error instanceof UserNotConfirmedException) {
