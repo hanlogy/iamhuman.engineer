@@ -12,8 +12,8 @@ import {
   type ErrorCode,
 } from '@hanlogy/react-kit';
 import { redirect } from 'next/navigation';
+import { setSession } from '@/server/auth';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
-import { setSession } from '@/server/session';
 import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
 export async function login({
