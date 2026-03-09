@@ -1,7 +1,7 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
+import { LogoSvg } from '@/components/svgs';
 import { NavBar } from './NavBar';
-import { LogoSvg } from './svgs';
 
 export function Header() {
   const headerHeight = 'h-14 sm:h-18 md:h-22';

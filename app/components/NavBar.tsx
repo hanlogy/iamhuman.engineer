@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { clsx, IconButton } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
-import { CloseSvg, MenuSvg } from './svgs';
+import { CloseSvg, MenuSvg } from '@/components/svgs';
 
 const navItems = [
   { label: 'Engineers', href: '/coming-soon' },

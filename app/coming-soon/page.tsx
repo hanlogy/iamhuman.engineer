@@ -1,4 +1,4 @@
-import { GIT_HUB_URL } from '../definitions/constants';
+import { GIT_HUB_URL } from '@/definitions';
 
 export default function ComingSoonPage() {
   return (

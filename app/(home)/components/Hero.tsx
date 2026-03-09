@@ -41,7 +41,7 @@ export function Hero() {
           <LinkButton style="filled" href="/signup">
             Create profile
           </LinkButton>
-          <LinkButton style="outlined" href="/directory">
+          <LinkButton style="outlined" href="/engineers">
             Browse engineers
           </LinkButton>
         </div>
