@@ -1,5 +1,5 @@
 import { isPlainObject } from '@hanlogy/ts-lib';
-import { sessionKey } from '@/definitions';
+import { SESSION_KEY } from '@/definitions';
 import { createCookieManager } from '../createCookieManager';
 import { decryptJwt } from '../jwt';
 import type { SessionPayload } from './definitions';
@@ -7,7 +7,7 @@ import { getSecretHex } from './getSecretHex';
 
 export async function getSession(): Promise<SessionPayload | null> {
   const { getCookie } = await createCookieManager();
-  const session = getCookie(sessionKey);
+  const session = getCookie(SESSION_KEY);
 
   if (!session) {
     return null;

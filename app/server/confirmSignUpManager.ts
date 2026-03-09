@@ -1,4 +1,4 @@
-import { userToConfirmKey } from '@/definitions';
+import { USER_TO_CONFIRM_KEY } from '@/definitions';
 import { createCookieManager } from '@/server/createCookieManager';
 
 export interface UserToConfirm {
@@ -11,7 +11,7 @@ export async function setUserToConfirm(data: UserToConfirm) {
   const { setCookie } = await createCookieManager();
 
   await setCookie({
-    name: userToConfirmKey,
+    name: USER_TO_CONFIRM_KEY,
     value: JSON.stringify(data),
     expiresInSeconds: 60 * 60 * 24,
   });
@@ -19,7 +19,7 @@ export async function setUserToConfirm(data: UserToConfirm) {
 
 export async function getUserToConfirm(): Promise<UserToConfirm | undefined> {
   const { getCookie } = await createCookieManager();
-  const cachedUser = getCookie(userToConfirmKey);
+  const cachedUser = getCookie(USER_TO_CONFIRM_KEY);
 
   if (!cachedUser) {
     return undefined;
@@ -42,5 +42,5 @@ export async function getUserToConfirm(): Promise<UserToConfirm | undefined> {
 export async function deleteUserToConfirm() {
   const { deleteCookie } = await createCookieManager();
 
-  deleteCookie(userToConfirmKey);
+  deleteCookie(USER_TO_CONFIRM_KEY);
 }

@@ -1,4 +1,4 @@
-import { sessionKey } from '@/definitions';
+import { SESSION_KEY } from '@/definitions';
 import { createCookieManager } from '../createCookieManager';
 import { createEncryptedJwt } from '../jwt';
 import {
@@ -12,7 +12,6 @@ export async function setSession({
   accessToken,
   refreshToken,
   expiresIn,
-  handle,
 }: SetSessionParams): Promise<void> {
   if (expiresIn <= 0) {
     throw new Error('expiresIn must be greater than 0 seconds');
@@ -21,7 +20,6 @@ export async function setSession({
   const payload: Readonly<SessionPayload> = {
     accessToken,
     refreshToken,
-    handle,
     expiresAt: Date.now() + expiresIn * 1000,
   };
 
@@ -34,7 +32,7 @@ export async function setSession({
   const { setCookie } = await createCookieManager();
 
   await setCookie({
-    name: sessionKey,
+    name: SESSION_KEY,
     value: encryptedSession,
     expiresInSeconds: sessionAgeInSeconds,
   });
