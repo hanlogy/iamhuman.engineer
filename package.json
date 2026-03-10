@@ -3,7 +3,7 @@
   "version": "0.2.4",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 9150  --experimental-https  --experimental-https-key ./certificates/dev-key.pem  --experimental-https-cert ./certificates/dev-cert.pem",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev -p 9150  --experimental-https  --experimental-https-key ./certificates/dev-key.pem  --experimental-https-cert ./certificates/dev-cert.pem",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
