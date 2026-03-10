@@ -4,7 +4,7 @@ export async function createCookieManager() {
   const cookieStore = await cookies();
 
   return {
-    setCookie: async ({
+    setCookie: ({
       name,
       value,
       // 30 days

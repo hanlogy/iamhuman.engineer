@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HANDLE_KEY } from '@/definitions';
+import { handleSession } from '@/proxy/handleSession';
 
 export async function proxy(request: NextRequest) {
+  const response = NextResponse.next();
+  const { handle } = (await handleSession(request, response)) ?? {};
   const pathname = request.nextUrl.pathname;
+
   if (pathname === '/') {
-    const handle = request.cookies.get(HANDLE_KEY)?.value;
     if (handle) {
       return NextResponse.redirect(new URL(`/${handle}`, request.url));
     }
   }
+
+  return response;
 }
 
 export const config = {
