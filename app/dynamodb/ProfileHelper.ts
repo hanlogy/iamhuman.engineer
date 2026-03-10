@@ -1,3 +1,4 @@
+import type { Profile } from '@/definitions/types';
 import { HelperBase } from './HelperBase';
 import type { ProfileEntity } from './types';
 
@@ -21,8 +22,22 @@ export class ProfileHelper extends HelperBase {
       return undefined;
     }
 
-    const { pk, sk, userId, handle } = item;
+    const { pk, sk, userId, handle, name, avatar, status } = item;
 
-    return { pk, sk, userId, handle };
+    return { pk, sk, userId, handle, name, avatar, status };
+  }
+
+  async getItem({
+    handle: handleLike,
+  }: {
+    handle: string;
+  }): Promise<Profile | undefined> {
+    const item = await this.get(handleLike);
+    if (!item) {
+      return undefined;
+    }
+    const { pk: _pk, sk: _sk, ...rest } = item;
+
+    return rest;
   }
 }
