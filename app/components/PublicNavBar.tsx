@@ -12,7 +12,7 @@ const navItems = [
   { label: 'login', href: '/login' },
 ];
 
-export function NavBar() {
+export function PublicNavBar() {
   const [isShown, setIsShown] = useState(false);
 
   return (

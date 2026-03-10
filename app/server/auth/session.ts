@@ -10,10 +10,10 @@ import { getSecretHex } from './getSecretHex';
  */
 export async function hasSession(): Promise<boolean> {
   const { getCookie } = await createCookieManager();
-  return getCookie(SESSION_KEY) !== null;
+  return !!getCookie(SESSION_KEY);
 }
 
-export async function destroySession(deleteFn: (name: string) => void) {
+export function destroySession(deleteFn: (name: string) => void) {
   deleteFn(SESSION_KEY);
   deleteFn(USER_ID_KEY);
   deleteFn(HANDLE_KEY);

@@ -1,10 +1,19 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { LogoSvg } from '@/components/svgs';
-import { NavBar } from './NavBar';
+import { HANDLE_KEY } from '@/definitions';
+import { createCookieManager } from '@/server/createCookieManager';
+import { MemberNavBar } from './MemberNavBar';
+import { PublicNavBar } from './PublicNavBar';
 
-export function Header() {
+export async function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
   const headerHeight = 'h-14 sm:h-18 md:h-22';
+
+  let handle: string | undefined;
+  if (isLoggedIn) {
+    const cookie = await createCookieManager();
+    handle = cookie.getCookie(HANDLE_KEY);
+  }
 
   return (
     <>
@@ -16,12 +25,18 @@ export function Header() {
             'mx-auto max-w-6xl'
           )}
         >
-          <Link href="/" className="flex items-center">
-            <LogoSvg className="mr-0.5 w-5 sm:w-6" />
-            <div className="text-lg font-semibold sm:text-xl">IAmHuman</div>
-            <div className="mt-1 text-sm font-semibold">.Engineer</div>
+          <Link href={`/${handle ?? ''}`} className="flex items-center">
+            <LogoSvg className="w-5 sm:w-6" />
+            {!isLoggedIn && (
+              <>
+                <div className="ml-0.5 text-lg font-semibold sm:text-xl">
+                  IAmHuman
+                </div>
+                <div className="mt-1 text-sm font-semibold">.Engineer</div>
+              </>
+            )}
           </Link>
-          <NavBar />
+          {isLoggedIn ? <MemberNavBar /> : <PublicNavBar />}
         </div>
       </header>
       <div className={headerHeight}></div>

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Roboto, Roboto_Mono } from 'next/font/google';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
+import { hasSession } from '@/server/auth';
 import './globals.css';
 
 const robotoSans = Roboto({
@@ -23,11 +24,13 @@ export const metadata: Metadata = {
     'A directory for human engineers. No feed, no hot takes. Just our real work: PRs, shipped products, packages, talks, and case studies.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isLoggedIn = await hasSession();
+
   return (
     <html lang="en">
       <body
@@ -38,7 +41,7 @@ export default function RootLayout({
           'flex min-h-dvh flex-col'
         )}
       >
-        <Header />
+        <Header isLoggedIn={isLoggedIn} />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
