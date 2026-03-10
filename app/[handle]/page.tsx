@@ -1,5 +1,8 @@
+import { clsx } from '@hanlogy/react-web-ui';
 import { notFound } from 'next/navigation';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
+import { ArtefactsList } from './components/ArtefactsList';
+import { ProfileSummary } from './components/ProfileSummary';
 
 export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
   const { handle } = await params;
@@ -9,5 +12,14 @@ export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
     return notFound();
   }
 
-  return;
+  return (
+    <div className={clsx('my-6 px-4', 'md:mx-auto md:flex md:max-w-5xl')}>
+      <div className="md:w-2xs md:pr-4 lg:w-xs lg:pr-6">
+        <ProfileSummary />
+      </div>
+      <div className="md:flex-1">
+        <ArtefactsList />
+      </div>
+    </div>
+  );
 }

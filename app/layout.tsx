@@ -1,8 +1,8 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import type { Metadata } from 'next';
 import { Roboto, Roboto_Mono } from 'next/font/google';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
+import { Footer } from '@/layout/Footer';
+import { Header } from '@/layout/Header';
 import { hasSession } from '@/server/auth';
 import './globals.css';
 
