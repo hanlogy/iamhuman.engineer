@@ -1,3 +1,2 @@
-export { setSession } from './setSession';
-export { getSession } from './getSession';
+export { setSession, getSession, hasSession } from './session';
 export { getUserIdFromAccessToken } from './getUserIdFromAccessToken';
