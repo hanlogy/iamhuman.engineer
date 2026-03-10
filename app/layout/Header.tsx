@@ -17,7 +17,11 @@ export async function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   return (
     <>
-      <header className="bg-background fixed top-0 right-0 left-0 z-50">
+      <header
+        className={clsx('bg-background fixed top-0 right-0 left-0 z-50', {
+          'border-border border-b md:border-0': isLoggedIn,
+        })}
+      >
         <div
           className={clsx(
             headerHeight,
@@ -26,17 +30,21 @@ export async function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
           )}
         >
           <Link href={`/${handle ?? ''}`} className="flex items-center">
-            <LogoSvg className="w-5 sm:w-6" />
+            <LogoSvg className="w-6 sm:w-7" />
             {!isLoggedIn && (
               <>
-                <div className="ml-0.5 text-lg font-semibold sm:text-xl">
+                <div className="ml-1 text-lg font-semibold sm:text-xl">
                   IAmHuman
                 </div>
                 <div className="mt-1 text-sm font-semibold">.Engineer</div>
               </>
             )}
           </Link>
-          {isLoggedIn ? <MemberNavBar /> : <PublicNavBar />}
+          {isLoggedIn && handle ? (
+            <MemberNavBar handle={handle} />
+          ) : (
+            <PublicNavBar />
+          )}
         </div>
       </header>
       <div className={headerHeight}></div>
