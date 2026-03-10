@@ -6,11 +6,11 @@ import Link from 'next/link';
 import { CloseSvg, MenuSvg } from '@/components/svgs';
 
 const navItems = [
-  { label: 'Engineers', href: '/coming-soon' },
-  { label: 'Teams', href: '/coming-soon' },
-  { label: 'About', href: '/coming-soon' },
-  { label: 'login', href: '/login' },
-];
+  { name: 'engineers', label: 'Engineers', href: '/coming-soon' },
+  { name: 'teams', label: 'Teams', href: '/coming-soon' },
+  { name: 'login', label: 'Login', href: '/login' },
+  { name: 'signup', label: 'Sign up', href: '/signup' },
+] as const;
 
 export function PublicNavBar() {
   const [isShown, setIsShown] = useState(false);
@@ -23,14 +23,7 @@ export function PublicNavBar() {
           onClick={() => setIsShown(false)}
         ></button>
       )}
-      <nav
-        className={clsx(
-          {
-            hidden: !isShown,
-          },
-          'sm:block!'
-        )}
-      >
+      <nav className={clsx({ hidden: !isShown }, 'sm:block!')}>
         <ul
           className={clsx(
             'flex',
@@ -38,23 +31,30 @@ export function PublicNavBar() {
             'sm:static sm:flex-row sm:items-center sm:space-x-6 sm:bg-transparent sm:shadow-none'
           )}
         >
-          {navItems.map(({ label, href }) => {
+          {navItems.map(({ name, label, href }) => {
+            const isSignUp = name === 'signup';
+
             return (
-              <li key={label}>
-                <Link href={href} className="flex-center h-10 w-full">
+              <li
+                key={name}
+                className={clsx({
+                  'mt-4 sm:mt-0': isSignUp,
+                })}
+              >
+                <Link
+                  href={href}
+                  onClick={() => setIsShown(false)}
+                  className={clsx({
+                    'flex-center h-10 w-full': !isSignUp,
+                    'bg-accent text-on-accent flex-center h-10 min-w-30 rounded-full font-semibold':
+                      isSignUp,
+                  })}
+                >
                   {label}
                 </Link>
               </li>
             );
           })}
-          <li className="mt-4 sm:mt-0">
-            <Link
-              href="/signup"
-              className="bg-accent text-on-accent flex-center h-10 min-w-30 rounded-full font-semibold"
-            >
-              Sign up
-            </Link>
-          </li>
         </ul>
       </nav>
       <IconButton onClick={() => setIsShown((p) => !p)} className="sm:hidden">
