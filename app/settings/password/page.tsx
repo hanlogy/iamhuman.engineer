@@ -1,3 +1,5 @@
+import { PasswordForm } from './PasswordForm';
+
 export default function PasswordSettingPage() {
-  return 'PasswordSettingPage';
+  return <PasswordForm />;
 }

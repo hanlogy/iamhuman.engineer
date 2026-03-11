@@ -12,7 +12,7 @@ export function Breadcrumb() {
   let currentName: string = '';
 
   if (menuItem) {
-    currentName = menuItem.name;
+    currentName = menuItem.label.toLowerCase();
   }
 
   return (

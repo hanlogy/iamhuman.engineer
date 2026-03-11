@@ -1,3 +1,5 @@
+import { LinksForm } from './LinksForm';
+
 export default function LinksSettingPage() {
-  return 'LinksSettingPage';
+  return <LinksForm />;
 }

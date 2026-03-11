@@ -1,4 +1,5 @@
 import { clsx } from '@hanlogy/react-web-ui';
+import { ProfileForm } from './ProfileForm';
 
 export default function ProfileSettingPage({
   className,
@@ -7,8 +8,7 @@ export default function ProfileSettingPage({
 }) {
   return (
     <div className={clsx(className)}>
-      <div className="bg-surface-secondary h-20 w-20 rounded-full"></div>
-      Profile page
+      <ProfileForm />
     </div>
   );
 }

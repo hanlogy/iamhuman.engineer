@@ -8,13 +8,15 @@ export function SettingsContextProvider({
   children,
   userId,
   handle,
-}: PropsWithChildren<{ userId: string; handle: string }>) {
+  host,
+}: PropsWithChildren<{ userId: string; handle: string; host: string }>) {
   const pathname = usePathname();
 
   const value = {
     pathname,
     userId,
     handle,
+    host,
   };
 
   return <SettingsContext value={value}>{children}</SettingsContext>;

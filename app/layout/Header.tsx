@@ -7,12 +7,13 @@ import { MemberNavBar } from './MemberNavBar';
 import { PublicNavBar } from './PublicNavBar';
 
 export async function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
-  const headerHeight = 'h-14 sm:h-18 md:h-22';
+  let headerHeight = 'h-14 sm:h-18 md:h-22';
 
   let handle: string | undefined;
   if (isLoggedIn) {
     const cookie = await createCookieHelper();
     handle = cookie.getCookie(HANDLE_KEY);
+    headerHeight = 'h-14 sm:h-16';
   }
 
   return (
