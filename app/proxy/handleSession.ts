@@ -45,7 +45,7 @@ export async function handleSession(
       return;
     }
 
-    setSession({ accessToken, expiresIn, refreshToken, handle });
+    await setSession({ accessToken, expiresIn, refreshToken, handle });
 
     const { sub } = cognitoHelper.decodeAccessToken(accessToken) ?? {};
     if (!sub) {
