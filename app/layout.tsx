@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { Roboto, Roboto_Mono } from 'next/font/google';
 import { Footer } from '@/layout/Footer';
 import { Header } from '@/layout/Header';
-import { hasSession } from '@/server/auth';
 import './globals.css';
+import { createSessionManager } from './server/auth';
 
 const robotoSans = Roboto({
   variable: '--font-sans',
@@ -29,7 +29,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isLoggedIn = await hasSession();
+  const { hasSession } = await createSessionManager();
+  const isLoggedIn = hasSession();
 
   return (
     <html lang="en">

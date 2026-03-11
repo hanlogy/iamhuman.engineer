@@ -13,9 +13,8 @@ import {
 } from '@hanlogy/react-kit';
 import { redirect } from 'next/navigation';
 import { ProfileLookUpHelper } from '@/dynamodb/ProfileLookUpHelper';
-import { setSession } from '@/server/auth';
+import { createSessionManager } from '@/server/auth/createSessionManager';
 import { getUserIdFromAccessToken } from '@/server/auth/getUserIdFromAccessToken';
-import { createCookieManager } from '@/server/createCookieManager';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
 import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
@@ -52,17 +51,13 @@ export async function login({
       });
     }
 
-    const { setCookie } = await createCookieManager();
-    await setSession(
-      {
-        accessToken,
-        refreshToken,
-        // expiresAt: shiftDate({ seconds: expiresIn }).getTime(),
-        expiresIn, 
-        handle: await dbHelper.getHandleByUserId(userId),
-      },
-      setCookie
-    );
+    const { setSession } = await createSessionManager();
+    setSession({
+      accessToken,
+      refreshToken,
+      expiresIn,
+      handle: await dbHelper.getHandleByUserId(userId),
+    });
   } catch (error) {
     let code: ErrorCode = 'unknown';
     if (error instanceof UserNotConfirmedException) {

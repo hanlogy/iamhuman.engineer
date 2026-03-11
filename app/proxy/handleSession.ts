@@ -1,19 +1,25 @@
 import type { NextRequest, NextResponse } from 'next/server';
 import { HANDLE_KEY, USER_ID_KEY } from '@/definitions';
-import { destroySession, getSession, setSession } from '@/server/auth';
+import { createSessionManager } from '@/server/auth/createSessionManager';
+import {
+  createCookieHelper,
+  createCookieStoreFromServer,
+} from '@/server/createCookieHelper';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
 
 export async function handleSession(
   request: NextRequest,
   response: NextResponse
 ): Promise<{ handle: string } | undefined> {
-  const clearCookies = (): void => {
-    destroySession(response.cookies.delete);
-  };
+  const cookieStore = createCookieStoreFromServer(request, response);
+  const { setCookie } = await createCookieHelper(cookieStore);
+  const { destroySession, getSession, setSession } = await createSessionManager(
+    { cookieStore }
+  );
 
-  const session = await getSession((name) => request.cookies.get(name)?.value);
+  const session = await getSession();
   if (!session) {
-    clearCookies();
+    destroySession();
     return;
   }
 
@@ -25,7 +31,7 @@ export async function handleSession(
   let userId: string;
   if (error) {
     if (error.code !== 'expired') {
-      clearCookies();
+      destroySession();
       return;
     }
 
@@ -35,18 +41,15 @@ export async function handleSession(
       })) ?? {};
 
     if (!accessToken || !expiresIn) {
-      clearCookies();
+      destroySession();
       return;
     }
 
-    await setSession(
-      { accessToken, expiresIn, refreshToken, handle },
-      response.cookies.set
-    );
+    setSession({ accessToken, expiresIn, refreshToken, handle });
 
     const { sub } = cognitoHelper.decodeAccessToken(accessToken) ?? {};
     if (!sub) {
-      clearCookies();
+      destroySession();
       return;
     }
     userId = sub;
@@ -54,7 +57,7 @@ export async function handleSession(
     userId = payload.sub;
   }
 
-  response.cookies.set(USER_ID_KEY, userId);
-  response.cookies.set(HANDLE_KEY, handle);
+  setCookie(USER_ID_KEY, userId);
+  setCookie(HANDLE_KEY, handle);
   return { handle };
 }

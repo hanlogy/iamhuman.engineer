@@ -2,7 +2,7 @@ import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { LogoSvg } from '@/components/svgs';
 import { HANDLE_KEY } from '@/definitions';
-import { createCookieManager } from '@/server/createCookieManager';
+import { createCookieHelper } from '@/server/createCookieHelper';
 import { MemberNavBar } from './MemberNavBar';
 import { PublicNavBar } from './PublicNavBar';
 
@@ -11,7 +11,7 @@ export async function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   let handle: string | undefined;
   if (isLoggedIn) {
-    const cookie = await createCookieManager();
+    const cookie = await createCookieHelper();
     handle = cookie.getCookie(HANDLE_KEY);
   }
 

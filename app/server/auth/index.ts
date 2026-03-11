@@ -1,2 +1,2 @@
-export { setSession, getSession, hasSession, destroySession } from './session';
+export { createSessionManager } from './createSessionManager';
 export { getUserIdFromAccessToken } from './getUserIdFromAccessToken';

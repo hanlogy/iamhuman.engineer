@@ -1,12 +1,11 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { destroySession } from '@/server/auth';
-import { createCookieManager } from '@/server/createCookieManager';
+import { createSessionManager } from '@/server/auth';
 
 export async function logout() {
-  const cookeStore = await createCookieManager();
-  destroySession(cookeStore.deleteCookie);
+  const { destroySession } = await createSessionManager();
+  destroySession();
 
   redirect('/');
 }

@@ -1,5 +1,5 @@
 import { USER_TO_CONFIRM_KEY } from '@/definitions';
-import { createCookieManager } from '@/server/createCookieManager';
+import { createCookieHelper } from '@/server/createCookieHelper';
 
 export interface UserToConfirm {
   email: string;
@@ -8,7 +8,7 @@ export interface UserToConfirm {
 }
 
 export async function setUserToConfirm(data: UserToConfirm) {
-  const { setCookie } = await createCookieManager();
+  const { setCookie } = await createCookieHelper();
 
   await setCookie({
     name: USER_TO_CONFIRM_KEY,
@@ -18,7 +18,7 @@ export async function setUserToConfirm(data: UserToConfirm) {
 }
 
 export async function getUserToConfirm(): Promise<UserToConfirm | undefined> {
-  const { getCookie } = await createCookieManager();
+  const { getCookie } = await createCookieHelper();
   const cachedUser = getCookie(USER_TO_CONFIRM_KEY);
 
   if (!cachedUser) {
@@ -40,7 +40,7 @@ export async function getUserToConfirm(): Promise<UserToConfirm | undefined> {
 }
 
 export async function deleteUserToConfirm() {
-  const { deleteCookie } = await createCookieManager();
+  const { deleteCookie } = await createCookieHelper();
 
   deleteCookie(USER_TO_CONFIRM_KEY);
 }
