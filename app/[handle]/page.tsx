@@ -13,8 +13,10 @@ export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
   }
 
   return (
-    <div className={clsx('my-6 px-4', 'md:mx-auto md:flex md:max-w-5xl')}>
-      <div className="md:w-2xs md:pr-4 lg:w-xs lg:pr-6">
+    <div
+      className={clsx('my-6 px-4 sm:px-6', 'md:mx-auto md:flex md:max-w-5xl')}
+    >
+      <div className="md:w-2xs md:pr-6 lg:w-xs lg:pr-8">
         <ProfileSummary />
       </div>
       <div className="md:flex-1">

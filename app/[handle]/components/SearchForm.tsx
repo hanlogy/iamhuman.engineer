@@ -1,4 +1,4 @@
-import { IconButton, IconWrapper, TextInput } from '@hanlogy/react-web-ui';
+import { IconButton, IconWrapper } from '@hanlogy/react-web-ui';
 import { FilterListSvg, SearchSvg } from '@/components/svgs';
 
 export function SearchForm() {
@@ -13,15 +13,11 @@ export function SearchForm() {
         </IconButton>
       </div>
 
-      <div className="hidden md:block">
-        <TextInput
-          className="border-border rounded-full border"
-          prefix={
-            <IconWrapper>
-              <SearchSvg className="text-foreground-secondary" />
-            </IconWrapper>
-          }
-        />
+      <div className="relative hidden md:block">
+        <IconWrapper className="absolute h-10 w-10">
+          <SearchSvg className="text-foreground-secondary w-6" />
+        </IconWrapper>
+        <input className="border-border h-10 w-full rounded-full border pl-10" />
       </div>
     </div>
   );
