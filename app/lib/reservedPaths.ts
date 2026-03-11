@@ -56,6 +56,8 @@ export const reservedPaths = [
   'bookmarks',
   'chat',
   'chats',
+  'artifacts',
+  'artifact',
 
   // System & Infrastructure
   'api',

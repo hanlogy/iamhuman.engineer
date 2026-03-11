@@ -1,5 +1,6 @@
 import { clsx, IconButton } from '@hanlogy/react-web-ui';
-import { GitHubSvg } from '@/components/svgs';
+import { FilterListSvg, GitHubSvg } from '@/components/svgs';
+import { AddArtifactbutton } from './AddArtifactButton';
 import { SearchForm } from './SearchForm';
 
 export function ProfileSummary() {
@@ -28,8 +29,16 @@ export function ProfileSummary() {
           </div>
         </div>
       </div>
-      <div className="mt-8 mb-4">
-        <SearchForm />
+      <div className="mt-8 mb-4 flex items-center justify-between md:block">
+        <div className="flex-1 space-x-2">
+          <SearchForm />
+          <IconButton className="border-border border md:hidden">
+            <FilterListSvg />
+          </IconButton>
+        </div>
+        <div className="md:hidden">
+          <AddArtifactbutton />
+        </div>
       </div>
     </>
   );
