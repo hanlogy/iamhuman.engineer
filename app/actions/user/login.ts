@@ -52,7 +52,7 @@ export async function login({
     }
 
     const { setSession } = await createSessionManager();
-    setSession({
+    await setSession({
       accessToken,
       refreshToken,
       expiresIn,
