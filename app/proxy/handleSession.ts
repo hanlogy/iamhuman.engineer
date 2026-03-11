@@ -1,18 +1,15 @@
-import type { NextRequest, NextResponse } from 'next/server';
 import { HANDLE_KEY, USER_ID_KEY } from '@/definitions';
 import { createSessionManager } from '@/server/auth/createSessionManager';
-import {
-  createCookieHelper,
-  createCookieStoreFromServer,
-} from '@/server/createCookieHelper';
+import { createCookieHelper } from '@/server/createCookieHelper';
 import { getCognitoHelper } from '@/server/getCognitoHelper';
 
-export async function handleSession(
-  request: NextRequest,
-  response: NextResponse
-): Promise<{ handle: string } | undefined> {
-  const cookieStore = createCookieStoreFromServer(request, response);
-  const { setCookie } = await createCookieHelper(cookieStore);
+export async function handleSession({
+  setCookie,
+  cookieStore,
+}: Pick<
+  Awaited<ReturnType<typeof createCookieHelper>>,
+  'setCookie' | 'cookieStore'
+>): Promise<{ handle: string } | undefined> {
   const { destroySession, getSession, setSession } = await createSessionManager(
     { cookieStore }
   );

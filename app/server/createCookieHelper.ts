@@ -23,6 +23,7 @@ export async function createCookieHelper(store?: CookieStore | undefined) {
   const cookieStore = store ?? (await cookies());
 
   return {
+    cookieStore,
     setCookie: (
       name: string,
       value: string,

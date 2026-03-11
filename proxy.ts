@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleSession } from '@/proxy/handleSession';
+import {
+  createCookieHelper,
+  createCookieStoreFromServer,
+} from '@/server/createCookieHelper';
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
-  const { handle } = (await handleSession(request, response)) ?? {};
+  const { setCookie, cookieStore } = await createCookieHelper(
+    createCookieStoreFromServer(request, response)
+  );
+
+  const { handle } = (await handleSession({ setCookie, cookieStore })) ?? {};
+
   const pathname = request.nextUrl.pathname;
 
   if (pathname === '/') {
