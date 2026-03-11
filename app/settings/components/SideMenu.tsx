@@ -2,38 +2,11 @@
 
 import { clsx, IconWrapper } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LinksSvg, LockSvg, NavProfileSvg, TagsSvg } from '@/components/svgs';
-
-const menuItems = [
-  {
-    name: 'profile',
-    label: 'Profile',
-    Icon: NavProfileSvg,
-    href: '/settings/profile',
-  },
-  {
-    name: 'links',
-    label: 'Links',
-    Icon: LinksSvg,
-    href: '/settings/links',
-  },
-  {
-    name: 'tags',
-    label: 'Tags',
-    Icon: TagsSvg,
-    href: '/settings/tags',
-  },
-  {
-    name: 'password',
-    label: 'Password',
-    Icon: LockSvg,
-    href: '/settings/password',
-  },
-] as const;
+import { menuItems } from '../constants';
+import { useSettingsContext } from '../state/hooks';
 
 export function SideMenu() {
-  const pathname = usePathname();
+  const { pathname } = useSettingsContext();
   const isRoot = pathname === '/settings';
 
   return (
