@@ -1,16 +1,13 @@
 import { type PropsWithChildren } from 'react';
-import { Button, type ButtonProps } from '@hanlogy/react-web-ui';
+import { Button, clsx, type ButtonProps } from '@hanlogy/react-web-ui';
 
 export function FilledButton({
   children,
+  className,
   ...props
 }: PropsWithChildren<ButtonProps>) {
   return (
-    <Button
-      className="bg-accent text-on-accent w-full"
-      size="medium"
-      {...props}
-    >
+    <Button className={clsx("bg-accent text-on-accent", className)} size="medium" {...props}>
       {children}
     </Button>
   );

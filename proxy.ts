@@ -20,11 +20,7 @@ export async function proxy(request: NextRequest) {
     if (handle) {
       return NextResponse.redirect(new URL(`/${handle}`, request.url));
     }
-  } else if (
-    (pathname.startsWith('/artifact/editor') ||
-      pathname.startsWith('/settings')) &&
-    !isLoggedIn
-  ) {
+  } else if (pathname.startsWith('/settings') && !isLoggedIn) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
