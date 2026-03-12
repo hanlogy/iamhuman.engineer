@@ -5,7 +5,7 @@ export function AddArtifactbutton() {
   return (
     <>
       <div className="md:hidden">
-        <IconButton className="border-border border">
+        <IconButton size="xsmall" className="border-border border">
           <AddSvg />
         </IconButton>
       </div>

@@ -1,5 +1,3 @@
-import { AddArtifactbutton } from './AddArtifactButton';
-
 export function ArtefactsList() {
   const isSelf = true;
 
