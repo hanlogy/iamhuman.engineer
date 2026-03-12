@@ -8,8 +8,9 @@ import {
   useForm,
   type CloseDialogFn,
 } from '@hanlogy/react-web-ui';
+import { ARTIFACT_TYPES } from '@/definitions';
 import { FilledButton } from '../buttons/FilledButton';
-import { TextareaField, TextField } from '../form/fields';
+import { SelectField, TextareaField, TextField } from '../form/fields';
 import { LinksSection } from './LinksSection';
 import { Tabs, type TabName } from './Tabs';
 
@@ -22,6 +23,21 @@ interface FormData {
   judgment: string;
 }
 
+const typeOptions = ARTIFACT_TYPES.map((value) => {
+  return {
+    value,
+    label: {
+      code: 'PR / Code / Significant change',
+      'case-study': 'Case study',
+      design: 'UI/UX design',
+      knowledge: 'Talk / Article',
+      package: 'Package / Library',
+      product: 'Product / Feature',
+      research: 'Research / Analysis',
+    }[value],
+  };
+});
+
 export function ArtifactEditor({
   closeDialog,
   id,
@@ -29,10 +45,15 @@ export function ArtifactEditor({
   closeDialog: CloseDialogFn;
   id?: string;
 }) {
-  const { register } = useForm<FormData>();
+  const { register, validate, getValues } = useForm<FormData>();
   const [tabName, setTabName] = useState<TabName>('summary');
-
   const isAdd = !id;
+
+  const handleSave = () => {
+    if (!validate()) {
+      return false;
+    }
+  };
 
   return (
     <DialogScaffold
@@ -51,7 +72,7 @@ export function ArtifactEditor({
       bottomBar={
         <DialogActionBar>
           <div className="min-w-22">
-            <FilledButton className="w-full" size="small">
+            <FilledButton onClick={handleSave} className="w-full" size="small">
               Save
             </FilledButton>
           </div>
@@ -59,14 +80,44 @@ export function ArtifactEditor({
         </DialogActionBar>
       }
     >
-      <form>
+      <div>
         <div className="space-y-6">
-          <TextField label="Title" controller={register('title')} />
-          <TextField label="Type" controller={register('type')} />
-          <TextField label="Tags" controller={register('tags')} />
+          <TextField
+            label="Title"
+            controller={register('title', {
+              validator: ({ title }) => {
+                if (!title?.trim()) {
+                  return 'Title is required';
+                }
+              },
+            })}
+          />
+          <SelectField
+            label="Type"
+            isOptional
+            controller={register('type', {
+              validator: ({ type }) => {
+                if (!type) {
+                  return 'Type is requird';
+                }
+              },
+            })}
+            options={typeOptions}
+          />
+          <TextField
+            label="Tags"
+            helper="Separate multiple tags tags by commas ( , )"
+            controller={register('tags')}
+          />
           <TextField
             label="Shipped date"
-            controller={register('shipped')}
+            controller={register('shipped', {
+              validator: ({ shipped }) => {
+                if (!shipped) {
+                  return 'Shipped date is required';
+                }
+              },
+            })}
             type="date"
           />
         </div>
@@ -78,7 +129,14 @@ export function ArtifactEditor({
             <TextareaField
               rows={10}
               label="Summary"
-              controller={register('summary')}
+              controller={register('summary', {
+                validator: ({ summary }) => {
+                  if (!summary?.trim()) {
+                    setTabName('summary');
+                    return 'Summary date is required';
+                  }
+                },
+              })}
             />
           </div>
           <div className={clsx({ hidden: tabName !== 'links' })}>
@@ -93,11 +151,18 @@ export function ArtifactEditor({
             <TextareaField
               rows={10}
               label="Judgment"
-              controller={register('judgment')}
+              controller={register('judgment', {
+                validator: ({ judgment }) => {
+                  if (!judgment) {
+                    setTabName('judgment');
+                    return 'Judgment date is required';
+                  }
+                },
+              })}
             />
           </div>
         </div>
-      </form>
+      </div>
     </DialogScaffold>
   );
 }
