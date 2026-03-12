@@ -9,7 +9,7 @@ export async function handleSession({
 }: Pick<
   Awaited<ReturnType<typeof createCookieHelper>>,
   'setCookie' | 'cookieStore'
->): Promise<{ handle: string } | undefined> {
+>): Promise<{ handle: string; isLoggedIn: boolean } | undefined> {
   const { destroySession, getSession, setSession } = await createSessionManager(
     { cookieStore }
   );
@@ -55,5 +55,5 @@ export async function handleSession({
 
   setCookie(USER_ID_KEY, userId);
   setCookie(HANDLE_KEY, handle);
-  return { handle };
+  return { handle, isLoggedIn: true };
 }

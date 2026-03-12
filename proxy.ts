@@ -11,7 +11,8 @@ export async function proxy(request: NextRequest) {
     createCookieStoreFromServer(request, response)
   );
 
-  const { handle } = (await handleSession({ setCookie, cookieStore })) ?? {};
+  const { handle, isLoggedIn } =
+    (await handleSession({ setCookie, cookieStore })) ?? {};
 
   const pathname = request.nextUrl.pathname;
 
@@ -19,6 +20,12 @@ export async function proxy(request: NextRequest) {
     if (handle) {
       return NextResponse.redirect(new URL(`/${handle}`, request.url));
     }
+  } else if (
+    (pathname.startsWith('/artifact/editor') ||
+      pathname.startsWith('/settings')) &&
+    !isLoggedIn
+  ) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return response;
