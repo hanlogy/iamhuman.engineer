@@ -1,22 +1,17 @@
-import { Button, IconButton, IconWrapper } from '@hanlogy/react-web-ui';
+import { IconWrapper } from '@hanlogy/react-web-ui';
+import Link from 'next/link';
 import { AddSvg } from '@/components/svgs';
 
 export function AddArtifactbutton() {
   return (
-    <>
-      <div className="md:hidden">
-        <IconButton size="xsmall" className="border-border border">
-          <AddSvg />
-        </IconButton>
-      </div>
-      <div className="hidden md:block">
-        <Button className="border-border border">
-          <IconWrapper>
-            <AddSvg />
-          </IconWrapper>
-          Add
-        </Button>
-      </div>
-    </>
+    <Link
+      href="/artifact/editor"
+      className="border-border flex-center text-foreground-secondary h-8 w-8 rounded-full border md:w-auto md:px-3"
+    >
+      <IconWrapper size="small">
+        <AddSvg />
+      </IconWrapper>
+      <div className="hidden text-sm font-medium md:block">Add</div>
+    </Link>
   );
 }
