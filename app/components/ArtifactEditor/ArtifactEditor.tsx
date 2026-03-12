@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Button,
   clsx,
@@ -9,7 +10,8 @@ import {
 } from '@hanlogy/react-web-ui';
 import { FilledButton } from '../buttons/FilledButton';
 import { TextareaField, TextField } from '../form/fields';
-import { Tabs } from './Tabs';
+import { LinksSection } from './LinksSection';
+import { Tabs, type TabName } from './Tabs';
 
 interface FormData {
   title: string;
@@ -17,7 +19,6 @@ interface FormData {
   tags: string;
   shipped: string;
   summary: string;
-  links: string;
   judgment: string;
 }
 
@@ -29,6 +30,7 @@ export function ArtifactEditor({
   id?: string;
 }) {
   const { register } = useForm<FormData>();
+  const [tabName, setTabName] = useState<TabName>('summary');
 
   const isAdd = !id;
 
@@ -69,24 +71,31 @@ export function ArtifactEditor({
           />
         </div>
         <div className="mx-auto flex max-w-md justify-center pt-12 pb-6">
-          <Tabs />
+          <Tabs selectedTab={tabName} onChange={setTabName} />
         </div>
-        <div className="space-y-6">
-          <TextareaField
-            rows={10}
-            label="Summary"
-            controller={register('summary')}
-          />
-          <TextareaField
-            rows={10}
-            label="Links"
-            controller={register('links')}
-          />
-          <TextareaField
-            rows={10}
-            label="Judgment"
-            controller={register('judgment')}
-          />
+        <div className="mb-10 space-y-6">
+          <div className={clsx({ hidden: tabName !== 'summary' })}>
+            <TextareaField
+              rows={10}
+              label="Summary"
+              controller={register('summary')}
+            />
+          </div>
+          <div className={clsx({ hidden: tabName !== 'links' })}>
+            <LinksSection
+              links={[]}
+              onChange={(items) => {
+                console.log(items);
+              }}
+            />
+          </div>
+          <div className={clsx({ hidden: tabName !== 'judgment' })}>
+            <TextareaField
+              rows={10}
+              label="Judgment"
+              controller={register('judgment')}
+            />
+          </div>
         </div>
       </form>
     </DialogScaffold>

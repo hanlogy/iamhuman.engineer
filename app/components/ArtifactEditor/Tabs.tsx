@@ -15,7 +15,15 @@ const items = [
   },
 ] as const;
 
-export function Tabs() {
+export type TabName = (typeof items)[number]['value'];
+
+export function Tabs({
+  selectedTab,
+  onChange,
+}: {
+  selectedTab: TabName;
+  onChange: (tabName: TabName) => void;
+}) {
   return (
     <ButtonGroup
       className="w-full"
@@ -27,6 +35,7 @@ export function Tabs() {
       }) => {
         return (
           <button
+            onClick={() => onChange(value)}
             className={clsx(
               'text-foreground-muted h-10 cursor-pointer text-center text-sm sm:text-base',
               'border-border border',
@@ -44,7 +53,7 @@ export function Tabs() {
         );
       }}
       items={items}
-      value="summary"
+      value={selectedTab}
     />
   );
 }
