@@ -28,7 +28,7 @@ export function ProfileSummary() {
           </div>
         </div>
       </div>
-      <div className="mt-8 mb-4 flex items-center space-x-2 md:block md:space-x-0">
+      <div className="mt-2 mb-2 flex items-center justify-end space-x-2 md:mt-8 md:block md:space-x-0">
         <SearchForm />
         <IconButton className="border-border border md:hidden">
           <FilterListSvg />
