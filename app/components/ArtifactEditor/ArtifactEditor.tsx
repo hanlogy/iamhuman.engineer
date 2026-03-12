@@ -1,5 +1,6 @@
 import {
   Button,
+  clsx,
   DialogActionBar,
   DialogScaffold,
   DialogTopbar,
@@ -8,6 +9,7 @@ import {
 } from '@hanlogy/react-web-ui';
 import { FilledButton } from '../buttons/FilledButton';
 import { TextareaField, TextField } from '../form/fields';
+import { Tabs } from './Tabs';
 
 interface FormData {
   title: string;
@@ -32,7 +34,11 @@ export function ArtifactEditor({
 
   return (
     <DialogScaffold
-      className="max-w-3xl rounded-3xl bg-white"
+      className={clsx(
+        'bg-white',
+        'h-full w-full',
+        'sm:h-auto sm:max-w-3xl sm:rounded-3xl'
+      )}
       topbar={
         <DialogTopbar>
           <h2 className="text-foreground-secondary text-lg font-medium">
@@ -61,9 +67,26 @@ export function ArtifactEditor({
             controller={register('shipped')}
             type="date"
           />
-          <TextareaField label="Summary" controller={register('summary')} />
-          <TextareaField label="Links" controller={register('links')} />
-          <TextareaField label="Judgment" controller={register('judgment')} />
+        </div>
+        <div className="mx-auto flex max-w-md justify-center pt-12 pb-6">
+          <Tabs />
+        </div>
+        <div className="space-y-6">
+          <TextareaField
+            rows={10}
+            label="Summary"
+            controller={register('summary')}
+          />
+          <TextareaField
+            rows={10}
+            label="Links"
+            controller={register('links')}
+          />
+          <TextareaField
+            rows={10}
+            label="Judgment"
+            controller={register('judgment')}
+          />
         </div>
       </form>
     </DialogScaffold>
