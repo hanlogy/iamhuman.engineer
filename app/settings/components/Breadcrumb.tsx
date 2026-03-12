@@ -4,7 +4,7 @@ import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { ArrayRightSvg } from '@/components/svgs';
 import { menuItems } from '../constants';
-import { useSettingsContext } from '../state/hooks';
+import { useSettingsContext } from '../../state/hooks';
 
 export function Breadcrumb() {
   const { pathname } = useSettingsContext();

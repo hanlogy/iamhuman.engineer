@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { SettingsContext } from './context';
+import { AppContext } from './context';
 
 export function useSettingsContext() {
-  const value = useContext(SettingsContext);
+  const value = useContext(AppContext);
 
   if (!value) {
     throw new Error('SettingsContext is not provided');

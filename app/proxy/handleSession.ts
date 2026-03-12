@@ -16,7 +16,6 @@ export async function handleSession({
 
   const session = await getSession();
   if (!session) {
-    destroySession();
     return;
   }
 

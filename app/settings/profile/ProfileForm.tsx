@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { TextField } from '@/components/form/fields';
-import { useSettingsContext } from '../state/hooks';
+import { useSettingsContext } from '../../state/hooks';
 
 interface FormData {
   name: string;
@@ -15,7 +15,7 @@ interface FormData {
 export function ProfileForm() {
   const { register } = useForm<FormData>();
   const { handle: defaultHandle, host } = useSettingsContext();
-  const [handle, setHandle] = useState(defaultHandle);
+  const [handle, setHandle] = useState(defaultHandle ?? '');
 
   return (
     <>

@@ -13,9 +13,13 @@ export async function createSessionManager({
   const { getCookie, setCookie, deleteCookie } =
     await createCookieHelper(cookieStore);
 
+  const getRawSession = () => {
+    return getCookie(SESSION_KEY);
+  };
+
   return {
     hasSession(): boolean {
-      return !!getCookie(SESSION_KEY);
+      return !!getRawSession();
     },
 
     destroySession() {
@@ -47,7 +51,7 @@ export async function createSessionManager({
     },
 
     async getSession(): Promise<SessionPayload | null> {
-      const session = getCookie(SESSION_KEY);
+      const session = getRawSession();
 
       if (!session) {
         return null;
