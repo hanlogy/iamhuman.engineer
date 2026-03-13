@@ -42,3 +42,22 @@ Note:
 
 - Changing `handle` requires moving the profile item to a new `pk` and updating
   the reverse lookup item in the same transaction.
+
+## Entity: artifact
+
+### Main table
+
+| Attribute  | Type     | Example            |
+| ---------- | -------- | ------------------ |
+| pk         | string   | ARTIFACT#{handle}  |
+| sk         | string   | 01#artifactId#type |
+| artifactId | string   | a-b-c-d            |
+| userId     | string   | a-b-c-d            |
+| handle     | string   | foo                |
+| title      | string   | My work            |
+| type       | string   | talk               |
+| tags       | string[] |                    |
+| shipped    | string   | 2026-01-01         |
+| summary    | string   |                    |
+| links      | json[]   |                    |
+| judgment   | string   |                    |

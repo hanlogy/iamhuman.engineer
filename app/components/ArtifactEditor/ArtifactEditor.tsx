@@ -9,6 +9,7 @@ import {
   type CloseDialogFn,
 } from '@hanlogy/react-web-ui';
 import { ARTIFACT_TYPES } from '@/definitions';
+import type { Artifact } from '@/definitions/types';
 import { FilledButton } from '../buttons/FilledButton';
 import { SelectField, TextareaField, TextField } from '../form/fields';
 import { LinksSection } from './LinksSection';
@@ -40,14 +41,14 @@ const typeOptions = ARTIFACT_TYPES.map((value) => {
 
 export function ArtifactEditor({
   closeDialog,
-  id,
+  artifact,
 }: {
   closeDialog: CloseDialogFn;
-  id?: string;
+  artifact?: Artifact;
 }) {
   const { register, validate, getValues } = useForm<FormData>();
   const [tabName, setTabName] = useState<TabName>('summary');
-  const isAdd = !id;
+  const isAdd = !artifact;
 
   const handleSave = () => {
     if (!validate()) {
