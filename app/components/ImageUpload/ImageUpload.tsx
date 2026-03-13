@@ -5,12 +5,12 @@ import Image from 'next/image';
 import { ErrorMessage } from '../ErrorMessage';
 import { SelectFileButton } from '../SelectFileButton';
 import { useImageUploadContext } from './hooks';
+import type { ImageUploadStyle } from './types';
 
-export function ImageUpload() {
+export function ImageUpload({ style }: { style: ImageUploadStyle }) {
   const {
     error,
     imageToPreview,
-    style,
     canDelete,
     canReset,
     deleteImage,

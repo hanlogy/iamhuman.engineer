@@ -1,19 +1,21 @@
 'use client';
 
-import { useCallback, useMemo, useState, type PropsWithChildren } from 'react';
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type PropsWithChildren,
+} from 'react';
 import { ImageUploadContext } from './context';
-import type { ImageUploadContextValue } from './types';
 
 export function ImageUploadProvider({
   children,
-  style,
   defaultImage,
-}: PropsWithChildren<
-  Pick<ImageUploadContextValue, 'style'> & {
-    defaultImage?: string;
-  }
->) {
-  const [newImage, setNewImage] = useState<File | undefined>(undefined);
+}: PropsWithChildren<{
+  defaultImage?: string;
+}>) {
+  const selectedFileRef = useRef<File | undefined>(undefined);
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [error, setError] = useState('');
   const [imageToPreview, setImageToPreview] = useState<string | undefined>(
@@ -30,7 +32,7 @@ export function ImageUploadProvider({
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
-        setNewImage(image);
+        selectedFileRef.current = image;
         setImageToPreview(e.target.result as string);
       }
     };
@@ -39,7 +41,7 @@ export function ImageUploadProvider({
 
   const deleteImage = useCallback(() => {
     setIsDelete(true);
-    setNewImage(undefined);
+    selectedFileRef.current = undefined;
     setImageToPreview(undefined);
   }, []);
 
@@ -60,9 +62,7 @@ export function ImageUploadProvider({
     canReset,
     canDelete,
     imageToPreview,
-    style,
     isDelete,
-    newImage,
     deleteImage,
     setImage,
     resetImage,
