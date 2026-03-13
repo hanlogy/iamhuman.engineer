@@ -1,7 +1,7 @@
 import { HANDLE_KEY, USER_ID_KEY } from '@/definitions';
 import { createSessionManager } from '@/server/auth/createSessionManager';
 import { createCookieHelper } from '@/server/createCookieHelper';
-import { getCognitoHelper } from '@/server/getCognitoHelper';
+import { getCognitoHelper } from '@/server/helpersRepo';
 
 export async function handleSession({
   setCookie,

@@ -5,7 +5,7 @@ import {
   toActionSuccess,
   type ActionResponse,
 } from '@hanlogy/react-kit';
-import { getCognitoHelper } from '@/server/getCognitoHelper';
+import { getCognitoHelper } from '@/server/helpersRepo';
 
 export async function resendSignUpConfirmationCode({
   email,

@@ -7,7 +7,7 @@ import {
   toActionFailure,
 } from '@hanlogy/react-kit';
 import { redirect } from 'next/navigation';
-import { getCognitoHelper } from '@/server/getCognitoHelper';
+import { getCognitoHelper } from '@/server/helpersRepo';
 import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
 export async function signup({

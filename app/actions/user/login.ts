@@ -15,7 +15,7 @@ import { redirect } from 'next/navigation';
 import { ProfileLookUpHelper } from '@/dynamodb/ProfileLookUpHelper';
 import { createSessionManager } from '@/server/auth/createSessionManager';
 import { getUserIdFromAccessToken } from '@/server/auth/getUserIdFromAccessToken';
-import { getCognitoHelper } from '@/server/getCognitoHelper';
+import { getCognitoHelper } from '@/server/helpersRepo';
 import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
 export async function login({

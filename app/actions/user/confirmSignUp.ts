@@ -12,7 +12,7 @@ import {
   type ErrorCode,
 } from '@hanlogy/react-kit';
 import { deleteUserToConfirm } from '@/server/confirmSignUpManager';
-import { getCognitoHelper } from '@/server/getCognitoHelper';
+import { getCognitoHelper } from '@/server/helpersRepo';
 
 export async function confirmSignUp({
   email,
