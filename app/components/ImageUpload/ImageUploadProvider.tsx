@@ -7,13 +7,17 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
+import { uploadImage } from '@/actions/uploadImage';
+import type { S3Folder } from '@/definitions/types';
 import { ImageUploadContext } from './context';
 
 export function ImageUploadProvider({
   children,
   defaultImage,
+  folder,
 }: PropsWithChildren<{
   defaultImage?: string;
+  folder: S3Folder;
 }>) {
   const selectedFileRef = useRef<File | undefined>(undefined);
   const [isDelete, setIsDelete] = useState<boolean>(false);
@@ -58,15 +62,49 @@ export function ImageUploadProvider({
     return !!defaultImage && !isDelete;
   }, [defaultImage, isDelete]);
 
+  const resolveImage = useCallback(async () => {
+    setError('');
+    if (isDelete) {
+      return {
+        isDelete: true,
+        newKey: undefined,
+      };
+    }
+
+    const fileToUpload = selectedFileRef.current;
+    if (!fileToUpload) {
+      return {
+        isDelete: false,
+        newKey: undefined,
+      };
+    }
+
+    const { error, data } = await uploadImage({
+      folder,
+      image: fileToUpload,
+    });
+
+    if (error) {
+      // TODO: Improve error handling
+      setError(error.message ?? 'Failed to upload, because of unknown reason');
+      return;
+    }
+
+    return {
+      isDelete: false,
+      newKey: data,
+    };
+  }, [isDelete, folder]);
+
   const value = {
+    error,
     canReset,
     canDelete,
     imageToPreview,
-    isDelete,
     deleteImage,
     setImage,
     resetImage,
-    error,
+    resolveImage,
   };
 
   return <ImageUploadContext value={value}>{children}</ImageUploadContext>;

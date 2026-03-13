@@ -12,7 +12,7 @@ export class ProfileLookUpHelper extends HelperBase {
     return this.db.buildKey('01', 'profile', true);
   }
 
-  private buildKeys({ userId }: { userId: string }) {
+  buildKeys({ userId }: { userId: string }) {
     return { pk: this.buildPk({ userId }), sk: this.buildSk() };
   }
 

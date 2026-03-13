@@ -13,20 +13,9 @@ export class S3Helper implements S3HelperInterface {
   readonly publicBaseUrl: string;
 
   constructor() {
-    const {
-      S3_BUCKET_NAME,
-      S3_REGION,
-      S3_ACCESS_KEY_ID,
-      S3_SECRET_ACCESS_KEY,
-      S3_PUBLIC_BASE_URL,
-    } = process.env;
+    const { S3_BUCKET_NAME, S3_REGION, S3_PUBLIC_BASE_URL } = process.env;
 
-    if (
-      !S3_ACCESS_KEY_ID ||
-      !S3_SECRET_ACCESS_KEY ||
-      !S3_BUCKET_NAME ||
-      !S3_PUBLIC_BASE_URL
-    ) {
+    if (!S3_BUCKET_NAME || !S3_PUBLIC_BASE_URL) {
       throw new Error('Make sure all the required variables are set');
     }
 
@@ -34,10 +23,6 @@ export class S3Helper implements S3HelperInterface {
     this.publicBaseUrl = S3_PUBLIC_BASE_URL;
     this.client = new S3Client({
       region: S3_REGION,
-      credentials: {
-        accessKeyId: S3_ACCESS_KEY_ID,
-        secretAccessKey: S3_SECRET_ACCESS_KEY,
-      },
     });
   }
 

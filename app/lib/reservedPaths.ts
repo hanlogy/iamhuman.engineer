@@ -290,4 +290,4 @@ export const reservedPaths = [
   'yourui',
   'yourui.chen',
   'yourui-chen',
-] as const;
+];

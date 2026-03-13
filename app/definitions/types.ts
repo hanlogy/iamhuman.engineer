@@ -1,12 +1,16 @@
 import { ARTIFACT_TYPES } from './constants';
 
+export type S3Folder = 'profiles' | 'artifacts';
+
 export interface Profile {
   readonly handle: string;
   readonly status?: string;
   readonly avatar?: string;
   readonly name?: string;
+  readonly location?: string;
   readonly region?: string;
   readonly language?: string;
+  readonly links?: string[];
 }
 
 export type ArtifactType = (typeof ARTIFACT_TYPES)[number];

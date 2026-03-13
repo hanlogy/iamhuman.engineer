@@ -17,57 +17,78 @@ export async function createSessionManager({
     return getCookie(SESSION_KEY);
   };
 
+  const hasSession = (): boolean => {
+    return !!getRawSession();
+  };
+
+  const destroySession = () => {
+    deleteCookie(SESSION_KEY);
+    deleteCookie(USER_ID_KEY);
+    deleteCookie(HANDLE_KEY);
+  };
+
+  const getSession = async (): Promise<SessionPayload | null> => {
+    const session = getRawSession();
+
+    if (!session) {
+      return null;
+    }
+
+    const data = await decryptJwt({
+      token: session,
+      secretHex: getSecretHex(),
+    });
+
+    if (!isSessionPayload(data)) {
+      return null;
+    }
+
+    return data;
+  };
+
+  const setSession = async ({
+    expiresIn,
+    ...payload
+  }: Readonly<
+    Omit<SessionPayload, 'expiresAt'> & {
+      readonly expiresIn: number;
+    }
+  >): Promise<void> => {
+    const encryptedSession = await createEncryptedJwt({
+      payload: {
+        ...payload,
+        expiresAt: shiftDate({ seconds: expiresIn }).getTime(),
+      },
+      secretHex: getSecretHex(),
+      expiresInSeconds: sessionAgeInSeconds,
+    });
+
+    setCookie(SESSION_KEY, encryptedSession, {
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  };
+
+  const updateHandle = async (handle: string): Promise<void> => {
+    const currentSession = await getSession();
+    if (!currentSession) {
+      throw new Error('Unknown error');
+    }
+
+    const { expiresAt, ...payload } = currentSession;
+
+    await setSession({
+      ...payload,
+      expiresIn: (expiresAt - Date.now()) / 1000,
+      handle,
+    });
+  };
+
   return {
-    hasSession(): boolean {
-      return !!getRawSession();
-    },
-
-    destroySession() {
-      deleteCookie(SESSION_KEY);
-      deleteCookie(USER_ID_KEY);
-      deleteCookie(HANDLE_KEY);
-    },
-
-    async setSession({
-      expiresIn,
-      ...payload
-    }: Readonly<
-      Omit<SessionPayload, 'expiresAt'> & {
-        readonly expiresIn: number;
-      }
-    >): Promise<void> {
-      const encryptedSession = await createEncryptedJwt({
-        payload: {
-          ...payload,
-          expiresAt: shiftDate({ seconds: expiresIn }).getTime(),
-        },
-        secretHex: getSecretHex(),
-        expiresInSeconds: sessionAgeInSeconds,
-      });
-
-      setCookie(SESSION_KEY, encryptedSession, {
-        maxAge: 60 * 60 * 24 * 30,
-      });
-    },
-
-    async getSession(): Promise<SessionPayload | null> {
-      const session = getRawSession();
-
-      if (!session) {
-        return null;
-      }
-
-      const data = await decryptJwt({
-        token: session,
-        secretHex: getSecretHex(),
-      });
-
-      if (!isSessionPayload(data)) {
-        return null;
-      }
-
-      return data;
-    },
+    hasSession,
+    destroySession,
+    updateHandle,
+    setSession,
+    getSession,
   };
 }
 function isSessionPayload(data: unknown): data is SessionPayload {

@@ -9,19 +9,9 @@ export class FakeS3Helper implements S3HelperInterface {
   readonly publicBaseUrl: string;
 
   constructor() {
-    const {
-      S3_BUCKET_NAME,
-      S3_ACCESS_KEY_ID,
-      S3_SECRET_ACCESS_KEY,
-      S3_PUBLIC_BASE_URL,
-    } = process.env;
+    const { S3_PUBLIC_BASE_URL } = process.env;
 
-    if (
-      !S3_ACCESS_KEY_ID ||
-      !S3_SECRET_ACCESS_KEY ||
-      !S3_BUCKET_NAME ||
-      !S3_PUBLIC_BASE_URL
-    ) {
+    if (!S3_PUBLIC_BASE_URL) {
       throw new Error('Make sure all the required variables are set');
     }
 

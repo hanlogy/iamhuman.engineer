@@ -1,5 +1,8 @@
+import type { UODImage } from '@/components/ImageUpload';
 import type { Profile } from '@/definitions/types';
+import { reservedPaths } from '@/lib/reservedPaths';
 import { HelperBase } from './HelperBase';
+import { ProfileLookUpHelper } from './ProfileLookUpHelper';
 import type { ProfileEntity } from './types';
 
 export class ProfileHelper extends HelperBase {
@@ -22,9 +25,22 @@ export class ProfileHelper extends HelperBase {
       return undefined;
     }
 
-    const { pk, sk, userId, handle, name, avatar, status } = item;
+    const { pk, sk, userId, handle, name, avatar, status, links, location } =
+      item;
 
-    return { pk, sk, userId, handle, name, avatar, status };
+    return {
+      pk,
+      sk,
+      userId,
+      handle,
+      name,
+      avatar: avatar
+        ? `${process.env.S3_PUBLIC_BASE_URL}/${avatar}`
+        : undefined,
+      status,
+      links,
+      location,
+    };
   }
 
   async getItem({
@@ -39,5 +55,76 @@ export class ProfileHelper extends HelperBase {
     const { pk: _pk, sk: _sk, ...rest } = item;
 
     return rest;
+  }
+
+  async saveProfile(
+    userId: string,
+    {
+      name,
+      handle,
+      location,
+      uodImage,
+    }: {
+      name: string;
+      handle: string;
+      location?: string;
+      uodImage: UODImage;
+    }
+    //
+  ) {
+    const lookupHelper = new ProfileLookUpHelper();
+    const lookup = await lookupHelper.get(userId);
+    if (!lookup) {
+      throw new Error('User not found');
+    }
+    handle = handle.trim();
+    let isHandleChanged: boolean = false;
+    if (lookup.handle !== handle) {
+      if (await this.get(handle)) {
+        throw new Error('This handle already exists.');
+      }
+
+      if (reservedPaths.includes(handle)) {
+        throw new Error('This handle is not avaliable.');
+      }
+
+      isHandleChanged = true;
+    }
+
+    const newFields = {
+      ...(name ? { name } : {}),
+      ...(location ? { location } : {}),
+      ...(uodImage.isDelete ? { avatar: '' } : {}),
+      ...(uodImage.newKey ? { avatar: uodImage.newKey } : {}),
+    };
+
+    if (isHandleChanged) {
+      const profile = await this.getItem({ handle });
+      await this.db.transactWrite({
+        update: [
+          {
+            keys: lookupHelper.buildKeys({ userId }),
+            setAttributes: { handle },
+          },
+        ],
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              ...this.buildKeys({ handle }),
+              handle,
+              ...profile,
+              ...newFields,
+            },
+          },
+        ],
+        delete: [{ keys: this.buildKeys({ handle: lookup.handle }) }],
+      });
+    } else {
+      await this.db.update({
+        keys: this.buildKeys({ handle }),
+        setAttributes: newFields,
+      });
+    }
   }
 }
