@@ -3,10 +3,10 @@
 import { clsx, IconWrapper } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { menuItems } from '../constants';
-import { useSettingsContext } from '../../state/hooks';
+import { useAppContext } from '../../state/hooks';
 
 export function SideMenu() {
-  const { pathname } = useSettingsContext();
+  const { pathname } = useAppContext();
   const isRoot = pathname === '/settings';
 
   return (

@@ -10,10 +10,8 @@ export interface UserToConfirm {
 export async function setUserToConfirm(data: UserToConfirm) {
   const { setCookie } = await createCookieHelper();
 
-  await setCookie({
-    name: USER_TO_CONFIRM_KEY,
-    value: JSON.stringify(data),
-    expiresInSeconds: 60 * 60 * 24,
+  setCookie(USER_TO_CONFIRM_KEY, JSON.stringify(data), {
+    maxAge: 60 * 60 * 24,
   });
 }
 

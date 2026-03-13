@@ -4,10 +4,10 @@ import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { ArrayRightSvg } from '@/components/svgs';
 import { menuItems } from '../constants';
-import { useSettingsContext } from '../../state/hooks';
+import { useAppContext } from '../../state/hooks';
 
 export function Breadcrumb() {
-  const { pathname } = useSettingsContext();
+  const { pathname } = useAppContext();
   const menuItem = menuItems.find(({ href }) => href === pathname);
   let currentName: string = '';
 
