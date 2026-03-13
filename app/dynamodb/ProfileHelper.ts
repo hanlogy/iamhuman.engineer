@@ -3,7 +3,7 @@ import type { Profile } from '@/definitions/types';
 import { reservedPaths } from '@/lib/reservedPaths';
 import { HelperBase } from './HelperBase';
 import { ProfileLookUpHelper } from './ProfileLookUpHelper';
-import type { ProfileEntity } from './types';
+import { DBHelperError, type ProfileEntity } from './types';
 
 export class ProfileHelper extends HelperBase {
   private readonly sk = '01#';
@@ -79,13 +79,19 @@ export class ProfileHelper extends HelperBase {
     }
     handle = handle.trim();
     let isHandleChanged: boolean = false;
-    if (lookup.handle !== handle) {
-      if (await this.get(handle)) {
-        throw new Error('This handle already exists.');
+    if (lookup.handle.toLowerCase() !== handle.toLowerCase()) {
+      if (reservedPaths.includes(handle.toLowerCase()) || handle.length < 3) {
+        throw new DBHelperError({
+          code: 'handleUnavailable',
+          message: 'This handle is not avaliable..',
+        });
       }
 
-      if (reservedPaths.includes(handle)) {
-        throw new Error('This handle is not avaliable.');
+      if (await this.get(handle)) {
+        throw new DBHelperError({
+          code: 'handleExists',
+          message: 'This handle already exists.',
+        });
       }
 
       isHandleChanged = true;

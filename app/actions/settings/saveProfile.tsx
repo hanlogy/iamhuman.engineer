@@ -4,10 +4,12 @@ import {
   toActionFailure,
   toActionSuccess,
   type ActionResponse,
+  type ErrorCode,
 } from '@hanlogy/react-kit';
 import type { UODImage } from '@/components/ImageUpload';
 import { HANDLE_KEY } from '@/definitions';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
+import { DBHelperError } from '@/dynamodb/types';
 import { createSessionManager } from '@/server/auth';
 import { createCookieHelper } from '@/server/createCookieHelper';
 import { getCognitoHelper } from '@/server/helpersRepo';
@@ -64,8 +66,20 @@ export async function saveProfile({
 
     return toActionSuccess();
   } catch (e) {
+    let code: ErrorCode = 'unknown';
+    let message: string = '';
+    if (e instanceof DBHelperError) {
+      code = e.code;
+      message = e.message;
+    }
+
+    if (e instanceof Error) {
+      message = e.message;
+    }
+
     return toActionFailure({
-      message: e instanceof Error ? e.message : undefined,
+      code,
+      message,
     });
   }
 }

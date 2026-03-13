@@ -26,7 +26,7 @@ export function ProfileForm({
 }: {
   profile: Profile;
 }) {
-  const { register, validate, getValues } = useForm<FormData>();
+  const { register, validate, getValues, setFieldError } = useForm<FormData>();
   const [isPending, setIsPending] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [handle, setHandle] = useState(defaultHandle);
@@ -54,7 +54,15 @@ export function ProfileForm({
     setIsPending(false);
 
     if (saveResult.error) {
-      setError(saveResult.error.message ?? 'Unknown error');
+      const errorMessage = saveResult.error.message ?? 'Unknown error';
+      if (
+        saveResult.error.code === 'handleExists' ||
+        saveResult.error.code === 'handleUnavailable'
+      ) {
+        setFieldError('handle', errorMessage);
+      } else {
+        setError(errorMessage);
+      }
       return;
     }
 
@@ -83,6 +91,14 @@ export function ProfileForm({
           controller={register('handle', {
             onValueChange: ({ handle }) => {
               setHandle(handle ?? '');
+            },
+            validator: ({ handle }) => {
+              if (!handle || handle.length < 3) {
+                return 'Invalid handle';
+              }
+              if (!/^[a-z0-9_.-]+$/i.test(handle)) {
+                return 'Invalid handle';
+              }
             },
           })}
         />
