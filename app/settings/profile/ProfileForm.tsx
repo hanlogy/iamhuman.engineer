@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
+import { ImageUpload } from '@/components/ImageUpload';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { TextField } from '@/components/form/fields';
 import { useSettingsContext } from '../../state/hooks';
@@ -19,7 +20,15 @@ export function ProfileForm() {
 
   return (
     <>
-      <div className="bg-surface-secondary mx-auto h-26 w-26 rounded-full"></div>
+      <ImageUpload
+        style="rounded"
+        onChange={({ isDelete, newImage }) => {
+          console.log({
+            isDelete,
+            newImage,
+          });
+        }}
+      />
       <form className="space-y-6">
         <TextField label="Name" controller={register('name')} />
         <TextField
