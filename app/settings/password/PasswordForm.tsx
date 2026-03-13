@@ -31,7 +31,9 @@ export function PasswordForm() {
         />
 
         <div className="py-5 text-center">
-          <FilledButton size="small">Save</FilledButton>
+          <FilledButton className="min-w-40" size="small">
+            Save
+          </FilledButton>
         </div>
       </form>
     </>
