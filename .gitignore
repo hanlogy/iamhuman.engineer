@@ -40,3 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .cognito-user-local.json
+
+/public/upload
