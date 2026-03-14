@@ -57,6 +57,13 @@ export class ProfileHelper extends HelperBase {
     return rest;
   }
 
+  async saveLinks({ handle, links }: { handle: string; links: string[] }) {
+    await this.db.update({
+      keys: this.buildKeys({ handle }),
+      setAttributes: { links },
+    });
+  }
+
   async saveProfile(
     userId: string,
     {
