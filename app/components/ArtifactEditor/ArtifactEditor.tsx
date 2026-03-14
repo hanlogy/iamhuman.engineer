@@ -8,8 +8,9 @@ import {
   useForm,
   type CloseDialogFn,
 } from '@hanlogy/react-web-ui';
+import { saveArtifact } from '@/actions/artifacts/saveArtifact';
 import { ARTIFACT_TYPES } from '@/definitions';
-import type { Artifact } from '@/definitions/types';
+import type { Artifact, ArtifactLink, ArtifactType } from '@/definitions/types';
 import { FilledButton } from '../buttons/FilledButton';
 import { SelectField, TextareaField, TextField } from '../form/fields';
 import { LinksSection } from './LinksSection';
@@ -17,9 +18,9 @@ import { Tabs, type TabName } from './Tabs';
 
 interface FormData {
   title: string;
-  type: string;
+  type: ArtifactType;
   tags: string;
-  shipped: string;
+  publishedAt: string;
   summary: string;
   judgment: string;
 }
@@ -48,12 +49,57 @@ export function ArtifactEditor({
 }) {
   const { register, validate, getValues } = useForm<FormData>();
   const [tabName, setTabName] = useState<TabName>('summary');
+  const [links, setLinks] = useState<(ArtifactLink & { id: string })[]>(
+    (() => {
+      const items = (artifact?.links ?? []).map((e) => ({
+        ...e,
+        id: crypto.randomUUID(),
+      }));
+
+      if (!items.length) {
+        items.push({
+          id: crypto.randomUUID(),
+          title: '',
+          url: '',
+        });
+      }
+
+      return items;
+    })()
+  );
   const isAdd = !artifact;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) {
       return false;
     }
+    const {
+      title,
+      type,
+      tags: rawTags = '',
+      publishedAt,
+      summary,
+      judgment,
+    } = getValues();
+
+    if (!title || !type) {
+      return;
+    }
+
+    await saveArtifact(artifact?.artifactId, {
+      title,
+      type,
+      tags: rawTags
+        .split(',')
+        .map((e) => e.trim())
+        .filter((e) => Boolean(e)),
+      links: links
+        .map(({ title, url }) => ({ title: title.trim(), url: url.trim() }))
+        .filter(({ url }) => Boolean(url)),
+      publishedAt,
+      summary,
+      judgment,
+    });
   };
 
   return (
@@ -111,14 +157,9 @@ export function ArtifactEditor({
             controller={register('tags')}
           />
           <TextField
-            label="Shipped date"
-            controller={register('shipped', {
-              validator: ({ shipped }) => {
-                if (!shipped) {
-                  return 'Shipped date is required';
-                }
-              },
-            })}
+            label="Date"
+            controller={register('publishedAt')}
+            helper="The date it shipped or was published"
             type="date"
           />
         </div>
@@ -130,36 +171,17 @@ export function ArtifactEditor({
             <TextareaField
               rows={10}
               label="Summary"
-              controller={register('summary', {
-                validator: ({ summary }) => {
-                  if (!summary?.trim()) {
-                    setTabName('summary');
-                    return 'Summary date is required';
-                  }
-                },
-              })}
+              controller={register('summary')}
             />
           </div>
           <div className={clsx({ hidden: tabName !== 'links' })}>
-            <LinksSection
-              links={[]}
-              onChange={(items) => {
-                console.log(items);
-              }}
-            />
+            <LinksSection links={links} onChange={setLinks} />
           </div>
           <div className={clsx({ hidden: tabName !== 'judgment' })}>
             <TextareaField
               rows={10}
               label="Judgment"
-              controller={register('judgment', {
-                validator: ({ judgment }) => {
-                  if (!judgment) {
-                    setTabName('judgment');
-                    return 'Judgment date is required';
-                  }
-                },
-              })}
+              controller={register('judgment')}
             />
           </div>
         </div>

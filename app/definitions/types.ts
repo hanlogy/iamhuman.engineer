@@ -15,17 +15,18 @@ export interface Profile {
 
 export type ArtifactType = (typeof ARTIFACT_TYPES)[number];
 
+export interface ArtifactLink {
+  readonly title: string;
+  readonly url: string;
+}
+
 export interface Artifact {
   readonly artifactId: string;
   readonly title: string;
   readonly type: ArtifactType;
   readonly tags: string[];
-  readonly shipped: string;
-  readonly summary: string;
-  readonly links: {
-    readonly id: string;
-    readonly title: string;
-    readonly url: string;
-  }[];
-  readonly judgment: string;
+  readonly publishedAt?: string;
+  readonly summary?: string;
+  readonly links: ArtifactLink[];
+  readonly judgment?: string;
 }

@@ -1,14 +1,13 @@
 import { Button, clsx, IconButton } from '@hanlogy/react-web-ui';
+import type { ArtifactLink } from '@/definitions/types';
 import { DeleteSvg } from '../svgs';
 
-export interface Link {
+export interface Link extends ArtifactLink {
   id: string;
-  title: string;
-  url: string;
 }
 
 export function LinksSection({
-  links: defaultLinks,
+  links,
   onChange,
 }: {
   links: Link[];
@@ -19,34 +18,26 @@ export function LinksSection({
     field: 'url' | 'title',
     value: string
   ) => {
-    return links.map((item) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          [field]: value,
-        };
-      }
-      return item;
-    });
+    onChange(
+      links.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            [field]: value,
+          };
+        }
+        return item;
+      })
+    );
   };
 
   const handleAdd = () => {
-    return [...links, { id: crypto.randomUUID(), url: '', title: '' }];
+    onChange([...links, { id: crypto.randomUUID(), url: '', title: '' }]);
   };
 
   const handleDelete = (id: string) => {
     onChange(links.filter((e) => e.id != id));
   };
-
-  const links = defaultLinks.length
-    ? defaultLinks
-    : [
-        {
-          id: crypto.randomUUID(),
-          title: '',
-          url: '',
-        },
-      ];
 
   return (
     <>
