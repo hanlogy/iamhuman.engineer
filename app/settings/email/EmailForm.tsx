@@ -1,43 +1,27 @@
 'use client';
 
-import { Button, useForm } from '@hanlogy/react-web-ui';
-import { FilledButton } from '@/components/buttons/FilledButton';
-import { TextField } from '@/components/form/fields';
-
-interface FormData {
-  email: string;
-  code: string;
-}
+import { useState } from 'react';
+import { GetCodeForm } from './GetCodeForm';
+import { VerifyForm } from './VerifyForm';
 
 export function EmailForm() {
-  const { register } = useForm<FormData>();
+  const [email, setEmail] = useState<string>('');
+  const [isSucccess, setIsSUccess] = useState<boolean>(false);
 
-  return (
-    <form>
-      <div className="space-y-12">
-        <div className="relative">
-          <TextField
-            type="email"
-            label="New email"
-            controller={register('email')}
-          />
-          <div className="absolute top-24 right-2 z-10">
-            <Button
-              size="small"
-              className="bg-surface border-border cursor-pointer border"
-            >
-              Send code
-            </Button>
-          </div>
-        </div>
-        <TextField label="Verification code" controller={register('code')} />
+  if (isSucccess) {
+    return (
+      <div className="py-12 text-center">
+        <div className="mb-4 text-lg font-semibold">Success</div>
+        <div>Your new email is: {email}</div>
       </div>
+    );
+  }
 
-      <div className="py-5 text-center">
-        <FilledButton className="min-w-40" size="small">
-          Save
-        </FilledButton>
-      </div>
-    </form>
-  );
+  if (!email) {
+    return <GetCodeForm onSuccess={setEmail} />;
+  }
+
+  if (email) {
+    return <VerifyForm onSuccess={() => setIsSUccess(true)} email={email} />;
+  }
 }
