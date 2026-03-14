@@ -8,9 +8,12 @@ import {
   useForm,
   type CloseDialogFn,
 } from '@hanlogy/react-web-ui';
+import { useRouter } from 'next/navigation';
 import { saveArtifact } from '@/actions/artifacts/saveArtifact';
 import { ARTIFACT_TYPES } from '@/definitions';
 import type { Artifact, ArtifactLink, ArtifactType } from '@/definitions/types';
+import { useAppContext } from '@/state/hooks';
+import { ErrorMessage } from '../ErrorMessage';
 import { FilledButton } from '../buttons/FilledButton';
 import { SelectField, TextareaField, TextField } from '../form/fields';
 import { LinksSection } from './LinksSection';
@@ -47,8 +50,12 @@ export function ArtifactEditor({
   closeDialog: CloseDialogFn;
   artifact?: Artifact;
 }) {
-  const { register, validate, getValues } = useForm<FormData>();
+  const router = useRouter();
+  const { handle } = useAppContext();
+  const { register, validate, getValues, setFieldError } = useForm<FormData>();
   const [tabName, setTabName] = useState<TabName>('summary');
+  const [error, setError] = useState<string>('');
+  const [isPending, setIsPending] = useState<boolean>(false);
   const [links, setLinks] = useState<(ArtifactLink & { id: string })[]>(
     (() => {
       const items = (artifact?.links ?? []).map((e) => ({
@@ -70,9 +77,11 @@ export function ArtifactEditor({
   const isAdd = !artifact;
 
   const handleSave = async () => {
+    setError('');
     if (!validate()) {
       return false;
     }
+
     const {
       title,
       type,
@@ -82,17 +91,25 @@ export function ArtifactEditor({
       judgment,
     } = getValues();
 
-    if (!title || !type) {
+    if (!title || !type || !publishedAt) {
       return;
     }
 
-    await saveArtifact(artifact?.artifactId, {
+    const tagLabels = rawTags
+      .split(',')
+      .map((e) => e.trim())
+      .filter((e) => Boolean(e));
+
+    if (tagLabels.length > 5) {
+      setFieldError('tags', 'Maximum 5 tags allowed');
+      return;
+    }
+
+    setIsPending(true);
+    const { error } = await saveArtifact(artifact?.artifactId, {
       title,
       type,
-      tags: rawTags
-        .split(',')
-        .map((e) => e.trim())
-        .filter((e) => Boolean(e)),
+      tagLabels,
       links: links
         .map(({ title, url }) => ({ title: title.trim(), url: url.trim() }))
         .filter(({ url }) => Boolean(url)),
@@ -100,6 +117,15 @@ export function ArtifactEditor({
       summary,
       judgment,
     });
+    setIsPending(false);
+
+    if (error) {
+      setError('Unknown error');
+      return;
+    }
+
+    closeDialog();
+    await router.push(`/${handle}`);
   };
 
   return (
@@ -118,8 +144,14 @@ export function ArtifactEditor({
       }
       bottomBar={
         <DialogActionBar>
+          <ErrorMessage message={error} />
           <div className="min-w-22">
-            <FilledButton onClick={handleSave} className="w-full" size="small">
+            <FilledButton
+              disabled={isPending}
+              onClick={handleSave}
+              className="w-full"
+              size="small"
+            >
               Save
             </FilledButton>
           </div>
@@ -158,7 +190,13 @@ export function ArtifactEditor({
           />
           <TextField
             label="Date"
-            controller={register('publishedAt')}
+            controller={register('publishedAt', {
+              validator: ({ publishedAt }) => {
+                if (!publishedAt) {
+                  return 'Date is required';
+                }
+              },
+            })}
             helper="The date it shipped or was published"
             type="date"
           />

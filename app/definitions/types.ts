@@ -25,8 +25,15 @@ export interface Artifact {
   readonly title: string;
   readonly type: ArtifactType;
   readonly tags: string[];
-  readonly publishedAt?: string;
+  readonly publishedAt: string;
   readonly summary?: string;
   readonly links: ArtifactLink[];
   readonly judgment?: string;
+}
+
+export interface ArtifactTag {
+  readonly artifactTagId: string;
+  readonly key: string;
+  readonly label: string;
+  readonly count: number;
 }

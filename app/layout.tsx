@@ -49,13 +49,13 @@ export default async function RootLayout({
           'flex min-h-dvh flex-col'
         )}
       >
-        <DialogProvider>
-          <AppContextProvider host={host} userId={userId} handle={handle}>
+        <AppContextProvider host={host} userId={userId} handle={handle}>
+          <DialogProvider>
             <Header isLoggedIn={isLoggedIn} />
             <main className="flex-1">{children}</main>
             <Footer />
-          </AppContextProvider>
-        </DialogProvider>
+          </DialogProvider>
+        </AppContextProvider>
       </body>
     </html>
   );

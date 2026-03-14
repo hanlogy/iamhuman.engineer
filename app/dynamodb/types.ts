@@ -1,4 +1,4 @@
-import type { Profile } from '@/definitions/types';
+import type { Artifact, ArtifactTag, Profile } from '@/definitions/types';
 
 export interface ProfileEntity extends Profile {
   readonly pk: string;
@@ -24,4 +24,15 @@ export class DBHelperError<T> extends Error {
   readonly code: string;
   readonly data?: T;
   readonly name = 'DBHelperError';
+}
+
+export type CreateArtifactParams = Omit<Artifact, 'artifactId' | 'tags'> & {
+  userId: string;
+  tagLabels: string[];
+};
+
+export interface ArtifactTagEntity extends ArtifactTag {
+  readonly pk: string;
+  readonly sk: string;
+  readonly userId: string;
 }

@@ -45,19 +45,55 @@ Note:
 
 ## Entity: artifact
 
-### Main table
+### base table
 
-| Attribute  | Type     | Example            |
-| ---------- | -------- | ------------------ |
-| pk         | string   | ARTIFACT#{handle}  |
-| sk         | string   | 01#artifactId#type |
-| artifactId | string   | a-b-c-d            |
-| userId     | string   | a-b-c-d            |
-| handle     | string   | foo                |
-| title      | string   | My work            |
-| type       | string   | talk               |
-| tags       | string[] |                    |
-| shipped    | string   | 2026-01-01         |
-| summary    | string   |                    |
-| links      | json[]   |                    |
-| judgment   | string   |                    |
+1. List all artifacts by a userId
+2. Get artifacts by a userId and a artifactId
+
+### GSI 1
+
+1. List all artifacts by a userId and sort by `publishedAt`
+
+### GSI 2
+
+1. List all artifacts by a type and sort by `publishedAt`
+
+| Attribute   | Type     | Example                        |
+| ----------- | -------- | ------------------------------ |
+| pk          | string   | ARTIFACT#{userId}              |
+| sk          | string   | 01#{artifactId}#               |
+| gsi1Pk      | string   | ARTIFACT#{userId}              |
+| gsi1Sk      | string   | 01#{publishedAt}#{artifactId}# |
+| gsi2Pk      | string   | ARTIFACT#{userId}{type}        |
+| gsi2Sk      | string   | 01#{publishedAt}#{artifactId}# |
+| artifactId  | string   | a-b-c-d                        |
+| userId      | string   | a-b-c-d                        |
+| userId      | string   | foo                            |
+| title       | string   | My work                        |
+| type        | string   | talk                           |
+| tags        | string[] |                                |
+| publishedAt | string   | 2026-01-01                     |
+| summary     | string   |                                |
+| links       | json[]   |                                |
+| judgment    | string   |                                |
+
+## Entity: ARTIFACT_BY_TAG
+
+### base table
+
+| Attribute | Type   | Example                                        |
+| --------- | ------ | ---------------------------------------------- |
+| pk        | string | ARTIFACT_BY_TAG#{userId}                       |
+| sk        | string | 01#{artifactTagId}#{publishedAt}#{artifactId}# |
+
+## Entity ARTIFACTTAG
+
+| Attribute     | Type   | Example               |
+| ------------- | ------ | --------------------- |
+| pk            | string | ARTIFACT_TAG#{userId} |
+| sk            | string | 01#{key}#             |
+| artifactTagId | string |                       |
+| key           | string |                       |
+| label         | string |                       |
+| count         | string |                       |
+| userId        | string |                       |

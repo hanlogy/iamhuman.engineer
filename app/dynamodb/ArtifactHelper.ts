@@ -1,0 +1,143 @@
+import { randomUUID } from 'crypto';
+import type { ArtifactType } from '@/definitions/types';
+import { ArtifactByTagHelper } from './ArtifactByTagHelper';
+import { ArtifactTagHelper } from './ArtifactTagHelper';
+import { HelperBase } from './HelperBase';
+import type { CreateArtifactParams } from './types';
+
+export class ArtifactHelper extends HelperBase {
+  private entity = 'ARTIFACT';
+  private version = '01';
+
+  private buildPk({ userId }: { userId: string }) {
+    return this.db.buildKey(this.entity, userId);
+  }
+  private buildSk({ artifactId }: { artifactId: string }) {
+    return this.db.buildKey(this.version, artifactId, true);
+  }
+
+  private buildKeys({
+    userId,
+    artifactId,
+  }: {
+    userId: string;
+    artifactId: string;
+  }) {
+    return {
+      pk: this.buildPk({ userId }),
+      sk: this.buildSk({ artifactId }),
+    };
+  }
+
+  private buildGsi1Pk = this.buildPk;
+
+  private buildGsi1Sk({
+    publishedAt,
+    artifactId,
+  }: {
+    publishedAt: string;
+    artifactId: string;
+  }) {
+    return this.db.buildKey(this.version, publishedAt, artifactId, true);
+  }
+
+  private buildGsi1Keys({
+    userId,
+    publishedAt,
+    artifactId,
+  }: {
+    userId: string;
+    publishedAt: string;
+    artifactId: string;
+  }) {
+    return {
+      gsi1Pk: this.buildGsi1Pk({ userId }),
+      gsi1Sk: this.buildGsi1Sk({ publishedAt, artifactId }),
+    };
+  }
+
+  private buildGsi2Pk({
+    userId,
+    type,
+  }: {
+    userId: string;
+    type: ArtifactType;
+  }) {
+    return this.db.buildKey(this.entity, userId, type);
+  }
+
+  private buildGsi2Sk = this.buildGsi1Sk;
+
+  private buildGsi2Keys({
+    userId,
+    type,
+    publishedAt,
+    artifactId,
+  }: {
+    userId: string;
+    type: ArtifactType;
+    publishedAt: string;
+    artifactId: string;
+  }) {
+    return {
+      gsi1Pk: this.buildGsi2Pk({ userId, type }),
+      gsi1Sk: this.buildGsi2Sk({ publishedAt, artifactId }),
+    };
+  }
+
+  async createItem({
+    title,
+    userId,
+    publishedAt,
+    type,
+    summary,
+    links,
+    judgment,
+    tagLabels,
+  }: CreateArtifactParams) {
+    const artifactId = randomUUID();
+    const tagHelper = new ArtifactTagHelper();
+
+    const resolvedTags = await tagHelper.resolveTags(userId, tagLabels);
+
+    const commonAttributes = {
+      tags: resolvedTags,
+      userId,
+      type,
+      publishedAt,
+      artifactId,
+      title,
+      summary,
+      links,
+      judgment,
+    };
+
+    const byTagHelper = new ArtifactByTagHelper();
+
+    await this.db.transactWrite({
+      put: [
+        {
+          keyNames: ['pk', 'sk'],
+          item: {
+            ...this.buildKeys({ userId, artifactId }),
+            ...this.buildGsi1Keys({ userId, artifactId, publishedAt }),
+            ...this.buildGsi2Keys({ userId, artifactId, type, publishedAt }),
+            ...commonAttributes,
+          },
+        },
+        ...resolvedTags.map((artifactTagId) => ({
+          keyNames: ['pk', 'sk'],
+          item: {
+            ...byTagHelper.buildKeys({
+              userId,
+              artifactId,
+              publishedAt,
+              artifactTagId,
+            }),
+            ...commonAttributes,
+          },
+        })),
+      ],
+    });
+  }
+}
