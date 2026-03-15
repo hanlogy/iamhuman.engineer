@@ -3,7 +3,8 @@ import type { Artifact, ArtifactTag, Profile } from '@/definitions/types';
 export interface ProfileEntity extends Profile {
   readonly pk: string;
   readonly sk: string;
-  readonly userId: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 }
 
 export class DBHelperError<T> extends Error {

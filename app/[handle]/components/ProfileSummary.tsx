@@ -3,20 +3,22 @@ import Link from 'next/link';
 import { Avatar } from '@/components/Avatar';
 import { SocialMediaIcon } from '@/components/SocialMediaIcon';
 import { FilterListSvg } from '@/components/svgs';
-import type { Profile } from '@/definitions/types';
+import type { ArtifactTag, Profile } from '@/definitions/types';
 import { isEmail } from '@/helpers/isEmail';
 import { SearchForm } from './SearchForm';
 
 export function ProfileSummary({
   profile: { name, avatar, location, links },
+  tags,
 }: {
   profile: Profile;
+  tags: ArtifactTag[];
 }) {
   return (
     <>
       <div className="flex items-start md:block">
         <Avatar
-          url={avatar}
+          avatar={avatar}
           className={clsx('mr-4 h-18 w-18', 'md:mb-2 md:h-22 md:w-22')}
         />
         <div
@@ -60,6 +62,18 @@ export function ProfileSummary({
           <FilterListSvg />
         </IconButton>
       </div>
+
+      {tags.length > 0 && (
+        <div>
+          {tags.map(({ artifactTagId, label, count }) => {
+            return (
+              <div key={artifactTagId}>
+                {label} {count}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

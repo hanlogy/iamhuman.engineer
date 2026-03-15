@@ -10,7 +10,6 @@ import type { UODImage } from '@/components/ImageUpload';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
 import { DBHelperError } from '@/dynamodb/types';
 import { createSessionManager } from '@/server/auth';
-import { getUserFromCookie } from '@/server/userInCookie';
 import { getCognitoHelper } from '@/server/helpersRepo';
 
 export async function saveProfile({
@@ -50,17 +49,16 @@ export async function saveProfile({
   const profileHelper = new ProfileHelper();
 
   try {
-    await profileHelper.saveProfile(userId, {
+    const { changed } = await profileHelper.saveProfile(userId, {
       name,
       handle,
       location,
       uodImage,
     });
 
-    const user = await getUserFromCookie();
-    if (user?.handle !== handle) {
-      const { updateHandle } = await createSessionManager();
-      await updateHandle(handle);
+    if (changed.handle || changed.avatar !== undefined) {
+      const { updateUser } = await createSessionManager();
+      await updateUser(changed);
     }
 
     return toActionSuccess();

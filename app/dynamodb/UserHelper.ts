@@ -45,14 +45,18 @@ export class UserHelper extends HelperBase {
 
     const handle = randomBytes(8).toString('hex');
 
+    const itemCommon = {
+      handle,
+      userId,
+    };
+
     await this.db.transactWrite({
       put: [
         {
           keyNames: ['pk', 'sk'],
           item: {
             ...this.profileHelper.buildKeys({ handle }),
-            handle,
-            userId,
+            ...itemCommon,
           },
           conditions: [
             { attribute: 'pk', operator: 'not_exists' },
@@ -63,8 +67,7 @@ export class UserHelper extends HelperBase {
           keyNames: ['pk', 'sk'],
           item: {
             ...this.buildKeys({ userId }),
-            handle,
-            userId,
+            ...itemCommon,
           },
           conditions: [
             { attribute: 'pk', operator: 'not_exists' },
@@ -74,9 +77,6 @@ export class UserHelper extends HelperBase {
       ],
     });
 
-    return {
-      handle,
-      userId,
-    };
+    return itemCommon;
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { Button, IconButton, TextInput } from '@hanlogy/react-web-ui';
 import { saveLinks } from '@/actions/settings/saveLinks';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -48,7 +48,8 @@ export function LinksForm({ links: defaultLinks }: { links: Link[] }) {
     );
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e: SubmitEvent) => {
+    e.preventDefault();
     setError('');
     setIsPending(true);
 
@@ -68,7 +69,7 @@ export function LinksForm({ links: defaultLinks }: { links: Link[] }) {
 
   return (
     <>
-      <form className="space-y-6">
+      <form onSubmit={handleSave} className="space-y-6">
         {links.map(({ id, url }) => {
           return (
             <div key={id} className="flex items-center">
@@ -110,7 +111,7 @@ export function LinksForm({ links: defaultLinks }: { links: Link[] }) {
         <div className="py-5 text-center">
           <FilledButton
             disabled={isPending}
-            onClick={() => handleSave()}
+            type="submit"
             className="min-w-40"
             size="small"
           >

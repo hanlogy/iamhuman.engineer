@@ -4,6 +4,7 @@ import {
   SESSION_KEY,
   USER_KEY,
   type SessionPayload,
+  type UserSummary,
 } from '@/definitions';
 import { createCookieHelper, type CookieStore } from '../createCookieHelper';
 import { createEncryptedJwt, decryptJwt } from '../jwt';
@@ -86,24 +87,28 @@ export async function createSessionManager({
     });
   };
 
-  const updateHandle = async (handle: string): Promise<void> => {
+  const updateUser = async ({
+    avatar,
+    handle,
+  }: Partial<Pick<UserSummary, 'avatar' | 'handle'>>): Promise<void> => {
     const session = await getSession();
     if (!session) {
       throw new Error('You have not logged in');
     }
 
     const {
-      payload: {
-        user: { handle: _, ...userRest },
-        ...payloadRest
-      },
+      payload: { user, ...payloadRest },
       expiresAt,
     } = session;
 
     await setSession(
       {
         ...payloadRest,
-        user: { ...userRest, handle },
+        user: {
+          ...user,
+          ...(avatar !== undefined ? { avatar } : {}),
+          ...(handle ? { handle } : {}),
+        },
       },
       expiresAt
     );
@@ -112,7 +117,7 @@ export async function createSessionManager({
   return {
     hasSession,
     destroySession,
-    updateHandle,
+    updateUser,
     setSession,
     getSession,
   };

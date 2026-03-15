@@ -6,7 +6,6 @@ export interface GetSignedUrlParams {
 export interface GetSignedUrlResult {
   readonly uploadUrl: string;
   readonly key: string;
-  readonly publicUrl: string;
 }
 
 export interface S3HelperInterface {

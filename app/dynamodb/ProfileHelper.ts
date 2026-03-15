@@ -25,8 +25,19 @@ export class ProfileHelper extends HelperBase {
       return undefined;
     }
 
-    const { pk, sk, userId, handle, name, avatar, status, links, location } =
-      item;
+    const {
+      pk,
+      sk,
+      userId,
+      handle,
+      name,
+      avatar,
+      status,
+      links,
+      location,
+      createdAt,
+      updatedAt,
+    } = item;
 
     return {
       pk,
@@ -34,12 +45,12 @@ export class ProfileHelper extends HelperBase {
       userId,
       handle,
       name,
-      avatar: avatar
-        ? `${process.env.S3_PUBLIC_BASE_URL}/${avatar}`
-        : undefined,
+      avatar,
       status,
       links,
       location,
+      createdAt,
+      updatedAt,
     };
   }
 
@@ -52,7 +63,13 @@ export class ProfileHelper extends HelperBase {
     if (!item) {
       return undefined;
     }
-    const { pk: _pk, sk: _sk, ...rest } = item;
+    const {
+      pk: _pk,
+      sk: _sk,
+      updatedAt: _updatedAt,
+      createdAt: _createdAt,
+      ...rest
+    } = item;
 
     return rest;
   }
@@ -78,15 +95,24 @@ export class ProfileHelper extends HelperBase {
       uodImage: UODImage;
     }
     //
-  ) {
+  ): Promise<{
+    changed: {
+      handle?: string;
+      avatar?: string;
+    };
+  }> {
     const userHelper = new UserHelper();
-    const lookup = await userHelper.get(userId);
-    if (!lookup) {
+    const userSummary = await userHelper.get(userId);
+    if (!userSummary) {
       throw new Error('User not found');
     }
     handle = handle.trim();
+    const changed: {
+      handle?: string;
+      avatar?: string;
+    } = {};
     let isHandleChanged: boolean = false;
-    if (lookup.handle.toLowerCase() !== handle.toLowerCase()) {
+    if (userSummary.handle.toLowerCase() !== handle.toLowerCase()) {
       if (reservedPaths.includes(handle.toLowerCase()) || handle.length < 3) {
         throw new DBHelperError({
           code: 'handleUnavailable',
@@ -111,8 +137,18 @@ export class ProfileHelper extends HelperBase {
       ...(uodImage.newKey ? { avatar: uodImage.newKey } : {}),
     };
 
+    if (uodImage && (uodImage.isDelete || uodImage.newKey)) {
+      changed.avatar = newFields.avatar;
+    }
+
     if (isHandleChanged) {
-      const profile = await this.getItem({ handle });
+      changed.handle = handle;
+      const {
+        pk: _pk,
+        sk: _sk,
+        updatedAt: _updatedAt,
+        ...oldEntity
+      } = (await this.get(userSummary.handle)) ?? {};
       await this.db.transactWrite({
         update: [
           {
@@ -125,13 +161,13 @@ export class ProfileHelper extends HelperBase {
             keyNames: ['pk', 'sk'],
             item: {
               ...this.buildKeys({ handle }),
-              handle,
-              ...profile,
+              ...oldEntity,
               ...newFields,
+              handle,
             },
           },
         ],
-        delete: [{ keys: this.buildKeys({ handle: lookup.handle }) }],
+        delete: [{ keys: this.buildKeys({ handle: userSummary.handle }) }],
       });
     } else {
       await this.db.update({
@@ -139,5 +175,7 @@ export class ProfileHelper extends HelperBase {
         setAttributes: newFields,
       });
     }
+
+    return { changed };
   }
 }

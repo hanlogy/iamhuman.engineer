@@ -10,17 +10,15 @@ import type {
 export class S3Helper implements S3HelperInterface {
   readonly client: S3Client;
   readonly bucketName: string;
-  readonly publicBaseUrl: string;
 
   constructor() {
-    const { S3_BUCKET_NAME, S3_REGION, S3_PUBLIC_BASE_URL } = process.env;
+    const { S3_BUCKET_NAME, S3_REGION } = process.env;
 
-    if (!S3_BUCKET_NAME || !S3_PUBLIC_BASE_URL) {
+    if (!S3_BUCKET_NAME) {
       throw new Error('Make sure all the required variables are set');
     }
 
     this.bucketName = S3_BUCKET_NAME;
-    this.publicBaseUrl = S3_PUBLIC_BASE_URL;
     this.client = new S3Client({
       region: S3_REGION,
     });
@@ -45,7 +43,6 @@ export class S3Helper implements S3HelperInterface {
     return {
       uploadUrl,
       key,
-      publicUrl: `${this.publicBaseUrl}/${key}`,
     };
   }
 }

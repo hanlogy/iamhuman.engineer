@@ -1,4 +1,6 @@
+import type { JsonRecord } from '@hanlogy/ts-lib';
 import { randomUUID } from 'crypto';
+import type { ArtifactTag } from '@/definitions';
 import { HelperBase } from './HelperBase';
 import type { ArtifactTagEntity } from './types';
 
@@ -88,5 +90,36 @@ export class ArtifactTagHelper extends HelperBase {
     }
 
     return resolvedId;
+  }
+
+  async getTags({ userId }: { userId: string }): Promise<ArtifactTag[]> {
+    const { items } = await this.db.query({
+      keyConditions: [
+        {
+          attribute: 'pk',
+          value: this.buildPk({ userId }),
+        },
+      ],
+    });
+
+    return items.map(this.buildArtifactTagEntity);
+  }
+
+  private buildArtifactTagEntity(data: JsonRecord): ArtifactTagEntity {
+    const { pk, sk, userId, artifactTagId, key, label, count } = data;
+
+    if (
+      typeof pk !== 'string' ||
+      typeof sk !== 'string' ||
+      typeof artifactTagId !== 'string' ||
+      typeof userId !== 'string' ||
+      typeof label !== 'string' ||
+      typeof key !== 'string' ||
+      typeof count !== 'number'
+    ) {
+      throw new Error('Unknown error');
+    }
+
+    return { pk, sk, userId, artifactTagId, key, label, count };
   }
 }

@@ -27,7 +27,11 @@ const menuItems = [
   },
 ] as const;
 
-export function MemberNavDropdown({ user: { handle } }: { user: UserSummary }) {
+export function MemberNavDropdown({
+  user: { handle, avatar },
+}: {
+  user: UserSummary;
+}) {
   return (
     <DropdownMenu
       className={clsx(
@@ -92,7 +96,7 @@ export function MemberNavDropdown({ user: { handle } }: { user: UserSummary }) {
       buttonBuilder={({ show }) => {
         return (
           <button onClick={show} className="block cursor-pointer">
-            <Avatar className="h-8 w-8" />
+            <Avatar avatar={avatar} className="h-8 w-8" />
           </button>
         );
       }}

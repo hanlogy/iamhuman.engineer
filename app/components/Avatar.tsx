@@ -1,14 +1,17 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import Image from 'next/image';
+import { buildS3Url } from '@/helpers/buildS3Url';
 import { AvatarSvg } from './svgs';
 
 export function Avatar({
-  url,
+  avatar,
   className,
 }: {
-  url?: string;
+  avatar?: string;
   className: string;
 }) {
+  const url = buildS3Url(avatar);
+
   return url ? (
     <Image
       src={url}

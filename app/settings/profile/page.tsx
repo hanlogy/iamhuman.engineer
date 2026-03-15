@@ -2,6 +2,7 @@ import { clsx } from '@hanlogy/react-web-ui';
 import { notFound } from 'next/navigation';
 import { ImageUploadProvider } from '@/components/ImageUpload';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
+import { buildS3Url } from '@/helpers/buildS3Url';
 import { getUserFromCookie } from '@/server/userInCookie';
 import { ProfileForm } from './ProfileForm';
 
@@ -21,9 +22,11 @@ export default async function ProfileSettingPage({
     return;
   }
 
+  const { avatar } = profile;
+
   return (
     <div className={clsx(className)}>
-      <ImageUploadProvider defaultImage={profile.avatar} folder="profiles">
+      <ImageUploadProvider defaultImage={buildS3Url(avatar)} folder="profiles">
         <ProfileForm profile={profile} />
       </ImageUploadProvider>
     </div>

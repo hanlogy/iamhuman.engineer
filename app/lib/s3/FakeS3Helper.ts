@@ -6,17 +6,7 @@ import type {
 } from './type';
 
 export class FakeS3Helper implements S3HelperInterface {
-  readonly publicBaseUrl: string;
-
-  constructor() {
-    const { S3_PUBLIC_BASE_URL } = process.env;
-
-    if (!S3_PUBLIC_BASE_URL) {
-      throw new Error('Make sure all the required variables are set');
-    }
-
-    this.publicBaseUrl = S3_PUBLIC_BASE_URL;
-  }
+  constructor() {}
   async getSignedUrl({
     folder,
     contentType,
@@ -26,7 +16,6 @@ export class FakeS3Helper implements S3HelperInterface {
     return {
       uploadUrl: '',
       key,
-      publicUrl: `${this.publicBaseUrl}/${key}`,
     };
   }
 }

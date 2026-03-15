@@ -18,6 +18,7 @@ export type UserSummary = SessionPayload['user'];
 export type S3Folder = 'profiles' | 'artifacts';
 
 export interface Profile {
+  readonly userId: string;
   readonly handle: string;
   readonly status?: string;
   readonly avatar?: string;
