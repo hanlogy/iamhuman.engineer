@@ -72,7 +72,7 @@ export class ArtifactTagHelper extends HelperBase {
     userId: string,
     tagLabels: string[]
   ): Promise<ResolveTagsResult> {
-    const tags: ResolveTagsResult['tags'] = [];
+    const tagIds: ResolveTagsResult['tagIds'] = [];
     const put: ResolveTagsResult['put'] = [];
     const update: ResolveTagsResult['update'] = [];
     const keys = new Set<string>();
@@ -123,14 +123,10 @@ export class ArtifactTagHelper extends HelperBase {
         });
       }
 
-      tags.push({
-        artifactTagId: tag.artifactTagId,
-        key: tag.key,
-        label: tag.label,
-      });
+      tagIds.push(tag.artifactTagId);
     }
 
-    return { tags, put, update };
+    return { tagIds, put, update };
   }
 
   async getTags({ userId }: { userId: string }): Promise<ArtifactTag[]> {

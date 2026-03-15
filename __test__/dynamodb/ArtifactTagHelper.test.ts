@@ -134,18 +134,7 @@ describe('ArtifactTagHelper', () => {
       ]);
 
       expect(result).toStrictEqual({
-        tags: [
-          {
-            artifactTagId: '0-0-0-0',
-            key: 'react',
-            label: 'React',
-          },
-          {
-            artifactTagId: '2-2-2-2',
-            key: 'node-js',
-            label: 'Node JS',
-          },
-        ],
+        tagIds: ['0-0-0-0', '2-2-2-2'],
         put: [
           {
             keyNames: ['pk', 'sk'],
@@ -216,18 +205,7 @@ describe('ArtifactTagHelper', () => {
       const result = await helper.resolveTags(userId, ['React', 'Node JS']);
 
       expect(result).toStrictEqual({
-        tags: [
-          {
-            artifactTagId: '1-1-1-1',
-            key: 'react',
-            label: 'React',
-          },
-          {
-            artifactTagId: '2-2-2-2',
-            key: 'node-js',
-            label: 'Node JS',
-          },
-        ],
+        tagIds: ['1-1-1-1', '2-2-2-2'],
         put: [],
         update: [
           {
@@ -259,7 +237,7 @@ describe('ArtifactTagHelper', () => {
       const result = await helper.resolveTags(userId, ['', '   ']);
 
       expect(result).toStrictEqual({
-        tags: [],
+        tagIds: [],
         put: [],
         update: [],
       });
@@ -274,13 +252,7 @@ describe('ArtifactTagHelper', () => {
       const result = await helper.resolveTags(userId, ['Vue JS']);
 
       expect(result).toStrictEqual({
-        tags: [
-          {
-            artifactTagId: '3-3-3-3',
-            key: 'vue-js',
-            label: 'Vue JS',
-          },
-        ],
+        tagIds: ['3-3-3-3'],
         put: [
           {
             keyNames: ['pk', 'sk'],

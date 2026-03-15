@@ -52,7 +52,7 @@ export interface ArtifactTagEntity extends ArtifactTag {
 }
 
 export interface ResolveTagsResult {
-  tags: Pick<ArtifactTag, 'artifactTagId' | 'key' | 'label'>[];
+  tagIds: string[];
   put: PutConfig<ArtifactTagEntity, 'pk' | 'sk'>[];
   update: UpdateConfig<
     Pick<ArtifactTagEntity, 'count'>,
