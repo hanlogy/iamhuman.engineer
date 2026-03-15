@@ -1,4 +1,4 @@
-import { HANDLE_KEY, USER_ID_KEY } from '@/definitions';
+import { USER_KEY } from '@/definitions';
 import { createSessionManager } from '@/server/auth/createSessionManager';
 import { createCookieHelper } from '@/server/createCookieHelper';
 import { getCognitoHelper } from '@/server/helpersRepo';
@@ -51,7 +51,6 @@ export async function handleSession({
   } else {
   }
 
-  setCookie(USER_ID_KEY, user.userId);
-  setCookie(HANDLE_KEY, user.handle);
+  setCookie(USER_KEY, JSON.stringify(user));
   return { handle: user.handle, isLoggedIn: true };
 }

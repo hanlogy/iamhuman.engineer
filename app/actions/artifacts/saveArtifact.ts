@@ -5,10 +5,9 @@ import {
   toActionSuccess,
   type ActionResponse,
 } from '@hanlogy/react-kit';
-import { USER_ID_KEY } from '@/definitions';
 import type { Artifact } from '@/definitions/types';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
-import { createCookieHelper } from '@/server/createCookieHelper';
+import { getUserFromCookie } from '@/server/userInCookie';
 
 export async function saveArtifact(
   id: string | undefined,
@@ -17,8 +16,7 @@ export async function saveArtifact(
   }
 ): Promise<ActionResponse> {
   const artifactHelper = new ArtifactHelper();
-  const { getCookie } = await createCookieHelper();
-  const userId = getCookie(USER_ID_KEY);
+  const { userId } = (await getUserFromCookie()) ?? {};
 
   if (!userId) {
     return toActionFailure();

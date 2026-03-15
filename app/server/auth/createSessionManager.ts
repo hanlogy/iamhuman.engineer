@@ -1,9 +1,8 @@
 import { isPlainObject, type JsonRecord } from '@hanlogy/ts-lib';
 import {
-  HANDLE_KEY,
   SESSION_AGE,
   SESSION_KEY,
-  USER_ID_KEY,
+  USER_KEY,
   type SessionPayload,
 } from '@/definitions';
 import { createCookieHelper, type CookieStore } from '../createCookieHelper';
@@ -28,8 +27,7 @@ export async function createSessionManager({
 
   const destroySession = () => {
     deleteCookie(SESSION_KEY);
-    deleteCookie(USER_ID_KEY);
-    deleteCookie(HANDLE_KEY);
+    deleteCookie(USER_KEY);
   };
 
   const getSession = async (): Promise<{

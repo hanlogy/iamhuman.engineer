@@ -7,11 +7,10 @@ import {
   type ErrorCode,
 } from '@hanlogy/react-kit';
 import type { UODImage } from '@/components/ImageUpload';
-import { HANDLE_KEY } from '@/definitions';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
 import { DBHelperError } from '@/dynamodb/types';
 import { createSessionManager } from '@/server/auth';
-import { createCookieHelper } from '@/server/createCookieHelper';
+import { getUserFromCookie } from '@/server/userInCookie';
 import { getCognitoHelper } from '@/server/helpersRepo';
 
 export async function saveProfile({
@@ -58,8 +57,8 @@ export async function saveProfile({
       uodImage,
     });
 
-    const { getCookie } = await createCookieHelper();
-    if (getCookie(HANDLE_KEY) !== handle) {
+    const user = await getUserFromCookie();
+    if (user?.handle !== handle) {
       const { updateHandle } = await createSessionManager();
       await updateHandle(handle);
     }

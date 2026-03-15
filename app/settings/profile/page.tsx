@@ -1,9 +1,8 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import { notFound } from 'next/navigation';
 import { ImageUploadProvider } from '@/components/ImageUpload';
-import { HANDLE_KEY } from '@/definitions';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
-import { createCookieHelper } from '@/server/createCookieHelper';
+import { getUserFromCookie } from '@/server/userInCookie';
 import { ProfileForm } from './ProfileForm';
 
 export default async function ProfileSettingPage({
@@ -12,8 +11,7 @@ export default async function ProfileSettingPage({
   className?: string;
 }) {
   const profileHelper = new ProfileHelper();
-  const { getCookie } = await createCookieHelper();
-  const handle = getCookie(HANDLE_KEY);
+  const { handle } = (await getUserFromCookie()) ?? {};
   if (!handle) {
     return notFound();
   }

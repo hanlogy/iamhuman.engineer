@@ -4,9 +4,8 @@ import { Roboto, Roboto_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
 import { Footer } from '@/layout/Footer';
 import { Header } from '@/layout/Header';
-import { HANDLE_KEY, USER_ID_KEY } from './definitions';
 import './globals.css';
-import { createCookieHelper } from './server/createCookieHelper';
+import { getUserFromCookie } from './server/userInCookie';
 import { AppContextProvider } from './state/provider';
 
 const robotoSans = Roboto({
@@ -33,10 +32,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const header = await headers();
-  const { getCookie } = await createCookieHelper();
-  const userId = getCookie(USER_ID_KEY);
-  const handle = getCookie(HANDLE_KEY);
-  const isLoggedIn = !!(userId && handle);
+  const user = await getUserFromCookie();
+
   const host = header.get('x-forwarded-host') ?? header.get('host') ?? '';
 
   return (
@@ -49,9 +46,9 @@ export default async function RootLayout({
           'flex min-h-dvh flex-col'
         )}
       >
-        <AppContextProvider host={host} userId={userId} handle={handle}>
+        <AppContextProvider host={host} user={user}>
           <DialogProvider>
-            <Header isLoggedIn={isLoggedIn} />
+            <Header />
             <main className="flex-1">{children}</main>
             <Footer />
           </DialogProvider>

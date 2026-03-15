@@ -51,7 +51,6 @@ export function ArtifactEditor({
   artifact?: Artifact;
 }) {
   const router = useRouter();
-  const { handle } = useAppContext();
   const { register, validate, getValues, setFieldError } = useForm<FormData>();
   const [tabName, setTabName] = useState<TabName>('summary');
   const [error, setError] = useState<string>('');
@@ -74,6 +73,12 @@ export function ArtifactEditor({
       return items;
     })()
   );
+
+  const { user } = useAppContext();
+  if (!user) {
+    return null;
+  }
+
   const isAdd = !artifact;
 
   const handleSave = async () => {
@@ -125,7 +130,7 @@ export function ArtifactEditor({
     }
 
     closeDialog();
-    await router.push(`/${handle}`);
+    router.push(`/${user.handle}`);
   };
 
   return (

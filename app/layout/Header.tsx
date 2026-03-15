@@ -1,20 +1,18 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { LogoSvg } from '@/components/svgs';
-import { HANDLE_KEY } from '@/definitions';
-import { createCookieHelper } from '@/server/createCookieHelper';
+import { getUserFromCookie } from '@/server/userInCookie';
 import { MemberNavBar } from './MemberNavBar';
 import { PublicNavBar } from './PublicNavBar';
 
-export async function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
+export async function Header() {
   let headerHeight = 'h-14 sm:h-18 md:h-22';
-
-  let handle: string | undefined;
+  const user = await getUserFromCookie();
+  const isLoggedIn = !!user;
   if (isLoggedIn) {
-    const cookie = await createCookieHelper();
-    handle = cookie.getCookie(HANDLE_KEY);
     headerHeight = 'h-14 sm:h-16';
   }
+  const handle = user?.handle;
 
   return (
     <>

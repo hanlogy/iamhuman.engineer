@@ -1,15 +1,15 @@
+import type { UserSummary } from '@/definitions';
+
 export type AppContextValue = {
   host: string;
   pathname: string;
 } & (
   | {
       isLoggedIn: true;
-      userId: string;
-      handle: string;
+      user: UserSummary;
     }
   | {
       isLoggedIn: false;
-      userId: undefined;
-      handle: undefined;
+      user: undefined;
     }
 );
