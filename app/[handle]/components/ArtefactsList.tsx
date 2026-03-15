@@ -1,6 +1,4 @@
-export function ArtefactsList() {
-  const isSelf = true;
-
+export function ArtefactsList({ isSelf }: { isSelf: boolean }) {
   return (
     <>
       <div className="text-foreground-muted bg-surface-secondary rounded-xl py-16 text-center">

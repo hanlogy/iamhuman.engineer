@@ -2,6 +2,7 @@ import { clsx } from '@hanlogy/react-web-ui';
 import { notFound } from 'next/navigation';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
+import { getUserFromCookie } from '@/server/userInCookie';
 import { ArtefactsList } from './components/ArtefactsList';
 import { ProfileSummary } from './components/ProfileSummary';
 
@@ -16,6 +17,7 @@ export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
   const { userId } = profile;
   const tagHelper = new ArtifactTagHelper();
   const tags = await tagHelper.getTags({ userId }); //.filter((e) => e.count > 0);
+  const me = await getUserFromCookie();
 
   return (
     <div
@@ -25,7 +27,7 @@ export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
         <ProfileSummary tags={tags} profile={profile} />
       </div>
       <div className="md:flex-1">
-        <ArtefactsList />
+        <ArtefactsList isSelf={me?.userId === userId} />
       </div>
     </div>
   );
