@@ -40,7 +40,7 @@ export async function saveProfile({
   }
   const cognitoHelper = getCognitoHelper();
   const decodedAccessToken = cognitoHelper.decodeAccessToken(
-    session.accessToken
+    session.payload.accessToken
   );
   if (!decodedAccessToken) {
     return toActionFailure();

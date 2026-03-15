@@ -10,20 +10,21 @@ export async function handleSession({
   Awaited<ReturnType<typeof createCookieHelper>>,
   'setCookie' | 'cookieStore'
 >): Promise<{ handle: string; isLoggedIn: boolean } | undefined> {
-  const { destroySession, getSession, updateAccessToken } =
-    await createSessionManager({ cookieStore });
+  const { destroySession, getSession, setSession } = await createSessionManager(
+    { cookieStore }
+  );
 
   const session = await getSession();
   if (!session) {
     return;
   }
 
-  const { accessToken: handleSessionLike, refreshToken, user } = session;
-  const cognitoHelper = getCognitoHelper();
-  const { payload, error } =
-    await cognitoHelper.verifyAccessToken(handleSessionLike);
+  const { payload, expiresAt } = session;
+  const { accessToken: handleSessionLike, refreshToken, user } = payload;
 
-  let userId: string;
+  const cognitoHelper = getCognitoHelper();
+  const { error } = await cognitoHelper.verifyAccessToken(handleSessionLike);
+
   if (error) {
     if (error.code !== 'expired') {
       destroySession();
@@ -40,19 +41,17 @@ export async function handleSession({
       return;
     }
 
-    await updateAccessToken(accessToken, session);
+    await setSession({ ...payload, accessToken }, expiresAt);
 
     const { sub } = cognitoHelper.decodeAccessToken(accessToken) ?? {};
     if (!sub) {
       destroySession();
       return;
     }
-    userId = sub;
   } else {
-    userId = payload.sub;
   }
 
-  setCookie(USER_ID_KEY, userId);
+  setCookie(USER_ID_KEY, user.userId);
   setCookie(HANDLE_KEY, user.handle);
   return { handle: user.handle, isLoggedIn: true };
 }

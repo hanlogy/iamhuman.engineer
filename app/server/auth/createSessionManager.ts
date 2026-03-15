@@ -32,7 +32,10 @@ export async function createSessionManager({
     deleteCookie(HANDLE_KEY);
   };
 
-  const getSession = async (): Promise<SessionPayload | null> => {
+  const getSession = async (): Promise<{
+    payload: SessionPayload;
+    expiresAt: number;
+  } | null> => {
     const session = getRawSession();
 
     if (!session) {
@@ -44,50 +47,68 @@ export async function createSessionManager({
       secretHex: getSecretHex(),
     });
 
-    return buildSessionPayload(data);
+    if (!data) {
+      return null;
+    }
+
+    const { payload: payloadLike, expiresAt } = data;
+    const payload = buildSessionPayload(payloadLike);
+    if (!payload || !expiresAt) {
+      return null;
+    }
+
+    return { payload, expiresAt };
   };
 
   const setSession = async (
-    payload: Readonly<SessionPayload>
+    payload: Readonly<SessionPayload>,
+    /**
+     * **CAUTION**: It is in seconds, not ms.
+     */
+    expiresAt?: number | undefined
   ): Promise<void> => {
+    let expiresIn = SESSION_AGE;
+
+    if (expiresAt !== undefined) {
+      expiresIn = Math.floor(expiresAt - Date.now() / 1000);
+
+      if (expiresIn <= 0) {
+        throw new Error('expiresAt must be in the future');
+      }
+    }
+
     const encryptedSession = await createEncryptedJwt({
       payload,
       secretHex: getSecretHex(),
-      expiresIn: SESSION_AGE,
+      expiresIn,
     });
 
     setCookie(SESSION_KEY, encryptedSession, {
-      maxAge: SESSION_AGE,
-    });
-  };
-
-  const updateAccessToken = async (
-    accessToken: string,
-    payload: SessionPayload
-  ): Promise<void> => {
-    // TODO: It is not right, because the new session will set the session
-    // expire time again
-    await setSession({
-      ...payload,
-      accessToken,
+      maxAge: expiresIn,
     });
   };
 
   const updateHandle = async (handle: string): Promise<void> => {
-    const payload = await getSession();
-    if (!payload) {
-      throw new Error('Unknown error');
+    const session = await getSession();
+    if (!session) {
+      throw new Error('You have not logged in');
     }
 
     const {
-      user: { handle: _, ...user },
-      ...rest
-    } = payload;
+      payload: {
+        user: { handle: _, ...userRest },
+        ...payloadRest
+      },
+      expiresAt,
+    } = session;
 
-    await setSession({
-      ...rest,
-      user: { ...user, handle },
-    });
+    await setSession(
+      {
+        ...payloadRest,
+        user: { ...userRest, handle },
+      },
+      expiresAt
+    );
   };
 
   return {
@@ -96,7 +117,6 @@ export async function createSessionManager({
     updateHandle,
     setSession,
     getSession,
-    updateAccessToken,
   };
 }
 

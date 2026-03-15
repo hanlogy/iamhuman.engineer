@@ -8,7 +8,10 @@ export async function decryptJwt({
   secretHex,
   issuer,
   audience,
-}: DecryptJwtParams): Promise<JsonRecord | null> {
+}: DecryptJwtParams): Promise<Readonly<{
+  payload: JsonRecord;
+  expiresAt: number | undefined;
+}> | null> {
   try {
     const { payload: rawPayload } = await jwtDecrypt(
       token,
@@ -20,8 +23,12 @@ export async function decryptJwt({
     );
 
     const payload: Record<string, JsonValue> = {};
+    let expiresAt: number | undefined = undefined;
     for (const [key, value] of Object.entries(rawPayload)) {
       if (isRegisteredJwtClaim(key)) {
+        if (key === 'exp' && typeof value === 'number') {
+          expiresAt = value;
+        }
         continue;
       }
 
@@ -32,7 +39,7 @@ export async function decryptJwt({
       payload[key] = value;
     }
 
-    return payload;
+    return { payload, expiresAt };
   } catch {
     return null;
   }
