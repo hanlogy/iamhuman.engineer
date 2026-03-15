@@ -202,6 +202,16 @@ export class ArtifactHelper extends HelperBase {
       ],
     });
 
-    return items.map(({ pk: _pk, sk: _sk, ...rest }) => rest as Artifact);
+    return items.map(
+      ({
+        pk: _pk,
+        sk: _sk,
+        gsi1Pk: _gsi1Pk,
+        gsi1Sk: _gsi1Sk,
+        gsi2Pk: _gsi2Pk,
+        gsi2Sk: _gsi2Sk,
+        ...rest
+      }) => rest as Artifact
+    );
   }
 }
