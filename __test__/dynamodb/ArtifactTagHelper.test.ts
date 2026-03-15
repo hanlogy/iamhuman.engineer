@@ -1,3 +1,4 @@
+// ArtifactTagHelper.test.ts
 import { randomUUID } from 'crypto';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
 import { FakeDynamoDBHelper } from './FakeDynamoDBHelper';
@@ -133,6 +134,18 @@ describe('ArtifactTagHelper', () => {
       ]);
 
       expect(result).toStrictEqual({
+        tags: [
+          {
+            artifactTagId: '0-0-0-0',
+            key: 'react',
+            label: 'React',
+          },
+          {
+            artifactTagId: '2-2-2-2',
+            key: 'node-js',
+            label: 'Node JS',
+          },
+        ],
         put: [
           {
             keyNames: ['pk', 'sk'],
@@ -203,6 +216,18 @@ describe('ArtifactTagHelper', () => {
       const result = await helper.resolveTags(userId, ['React', 'Node JS']);
 
       expect(result).toStrictEqual({
+        tags: [
+          {
+            artifactTagId: '1-1-1-1',
+            key: 'react',
+            label: 'React',
+          },
+          {
+            artifactTagId: '2-2-2-2',
+            key: 'node-js',
+            label: 'Node JS',
+          },
+        ],
         put: [],
         update: [
           {
@@ -234,6 +259,7 @@ describe('ArtifactTagHelper', () => {
       const result = await helper.resolveTags(userId, ['', '   ']);
 
       expect(result).toStrictEqual({
+        tags: [],
         put: [],
         update: [],
       });
@@ -248,6 +274,13 @@ describe('ArtifactTagHelper', () => {
       const result = await helper.resolveTags(userId, ['Vue JS']);
 
       expect(result).toStrictEqual({
+        tags: [
+          {
+            artifactTagId: '3-3-3-3',
+            key: 'vue-js',
+            label: 'Vue JS',
+          },
+        ],
         put: [
           {
             keyNames: ['pk', 'sk'],

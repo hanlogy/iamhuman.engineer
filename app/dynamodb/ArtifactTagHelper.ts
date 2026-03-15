@@ -72,6 +72,7 @@ export class ArtifactTagHelper extends HelperBase {
     userId: string,
     tagLabels: string[]
   ): Promise<ResolveTagsResult> {
+    const tags: ResolveTagsResult['tags'] = [];
     const put: ResolveTagsResult['put'] = [];
     const update: ResolveTagsResult['update'] = [];
     const keys = new Set<string>();
@@ -94,10 +95,10 @@ export class ArtifactTagHelper extends HelperBase {
 
       keys.add(key);
 
-      const tag = await this.get({ userId, key });
+      let tag = await this.get({ userId, key });
 
       if (!tag) {
-        const item: ArtifactTagEntity = {
+        tag = {
           ...this.buildKeys({ userId, key }),
           artifactTagId: randomUUID(),
           userId,
@@ -108,7 +109,7 @@ export class ArtifactTagHelper extends HelperBase {
 
         put.push({
           keyNames: ['pk', 'sk'],
-          item,
+          item: tag,
         });
       } else {
         update.push({
@@ -121,9 +122,15 @@ export class ArtifactTagHelper extends HelperBase {
           },
         });
       }
+
+      tags.push({
+        artifactTagId: tag.artifactTagId,
+        key: tag.key,
+        label: tag.label,
+      });
     }
 
-    return { put, update };
+    return { tags, put, update };
   }
 
   async getTags({ userId }: { userId: string }): Promise<ArtifactTag[]> {
