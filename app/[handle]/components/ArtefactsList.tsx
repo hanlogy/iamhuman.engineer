@@ -13,7 +13,21 @@ export async function ArtefactsList({
   const { userId: myUserId } = (await getUserFromCookie()) ?? {};
   const isSelf = myUserId === userId;
   const artifactHelper = new ArtifactHelper();
-  const artifacts = await artifactHelper.getItems({ userId });
+  const artifacts = (await artifactHelper.getItems({ userId })).map(
+    ({ tags: tagIds, ...rest }) => {
+      const tagLabels = tagIds
+        .map((tagId) => {
+          const tag = tags.find((e) => e.artifactTagId === tagId);
+          if (!tag) {
+            return undefined;
+          }
+          return tag.label;
+        })
+        .filter((e) => e !== undefined);
+
+      return { ...rest, tags: tagLabels };
+    }
+  );
 
   if (artifacts.length === 0) {
     return (

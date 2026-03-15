@@ -167,6 +167,7 @@ export function ArtifactEditor({
       <div>
         <div className="space-y-6">
           <TextField
+            defaultValue={artifact?.title}
             label="Title"
             controller={register('title', {
               validator: ({ title }) => {
@@ -177,6 +178,7 @@ export function ArtifactEditor({
             })}
           />
           <SelectField
+            defaultValue={artifact?.type}
             label="Type"
             isOptional
             controller={register('type', {
@@ -189,11 +191,13 @@ export function ArtifactEditor({
             options={typeOptions}
           />
           <TextField
+            defaultValue={artifact?.tags.join(', ')}
             label="Tags"
             helper="Separate multiple tags tags by commas ( , )"
             controller={register('tags')}
           />
           <TextField
+            defaultValue={artifact?.publishedAt}
             label="Date"
             controller={register('publishedAt', {
               validator: ({ publishedAt }) => {
@@ -212,6 +216,7 @@ export function ArtifactEditor({
         <div className="mb-10 space-y-6">
           <div className={clsx({ hidden: tabName !== 'summary' })}>
             <TextareaField
+              defaultValue={artifact?.summary}
               rows={10}
               label="Summary"
               controller={register('summary')}
@@ -222,6 +227,7 @@ export function ArtifactEditor({
           </div>
           <div className={clsx({ hidden: tabName !== 'judgment' })}>
             <TextareaField
+              defaultValue={artifact?.judgment}
               rows={10}
               label="Judgment"
               controller={register('judgment')}
