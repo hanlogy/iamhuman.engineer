@@ -70,7 +70,11 @@ export class ArtifactTagHelper extends HelperBase {
         continue;
       }
 
-      const key = tagLabel.toLowerCase().replace(/[\s-]+/g, '');
+      const key = tagLabel
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, '-');
+
       if (keys.has(key)) {
         continue;
       }
