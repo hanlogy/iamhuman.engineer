@@ -17,7 +17,7 @@ export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
       className={clsx('my-6 px-4 sm:px-6', 'md:mx-auto md:flex md:max-w-5xl')}
     >
       <div className="md:w-2xs md:pr-6 lg:w-xs lg:pr-8">
-        <ProfileSummary />
+        <ProfileSummary profile={profile} />
       </div>
       <div className="md:flex-1">
         <ArtefactsList />
