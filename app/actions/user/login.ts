@@ -32,12 +32,12 @@ export async function login({
   const cognito = getCognitoHelper();
 
   try {
-    const { accessToken, refreshToken, expiresIn } = await cognito.login({
+    const { accessToken, refreshToken } = await cognito.login({
       username: email,
       password,
     });
 
-    if (!accessToken || !refreshToken || !expiresIn) {
+    if (!accessToken || !refreshToken) {
       return toActionFailure({
         message: 'Invalid response from login',
       });
@@ -55,7 +55,6 @@ export async function login({
     await setSession({
       accessToken,
       refreshToken,
-      expiresIn,
       handle: await dbHelper.getHandleByUserId(userId),
     });
   } catch (error) {

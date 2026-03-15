@@ -1,7 +1,6 @@
 export interface SessionPayload {
   readonly accessToken: string;
   readonly refreshToken: string;
-  readonly expiresAt: number;
   readonly handle: string;
 }
 

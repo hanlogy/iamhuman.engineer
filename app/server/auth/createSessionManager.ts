@@ -1,4 +1,3 @@
-import { isPlainObject, shiftDate } from '@hanlogy/ts-lib';
 import { HANDLE_KEY, SESSION_KEY, USER_ID_KEY } from '@/definitions';
 import { createCookieHelper, type CookieStore } from '../createCookieHelper';
 import { createEncryptedJwt, decryptJwt } from '../jwt';
@@ -39,26 +38,31 @@ export async function createSessionManager({
       secretHex: getSecretHex(),
     });
 
-    if (!isSessionPayload(data)) {
+    if (!data) {
       return null;
     }
 
-    return data;
+    const { accessToken, refreshToken, handle } = data;
+    if (
+      typeof accessToken !== 'string' ||
+      typeof refreshToken !== 'string' ||
+      typeof handle !== 'string'
+    ) {
+      return null;
+    }
+
+    return {
+      accessToken,
+      refreshToken,
+      handle,
+    };
   };
 
-  const setSession = async ({
-    expiresIn,
-    ...payload
-  }: Readonly<
-    Omit<SessionPayload, 'expiresAt'> & {
-      readonly expiresIn: number;
-    }
-  >): Promise<void> => {
+  const setSession = async (
+    payload: Readonly<SessionPayload>
+  ): Promise<void> => {
     const encryptedSession = await createEncryptedJwt({
-      payload: {
-        ...payload,
-        expiresAt: shiftDate({ seconds: expiresIn }).getTime(),
-      },
+      payload,
       secretHex: getSecretHex(),
       expiresIn: sessionAgeInSeconds,
     });
@@ -69,16 +73,13 @@ export async function createSessionManager({
   };
 
   const updateHandle = async (handle: string): Promise<void> => {
-    const currentSession = await getSession();
-    if (!currentSession) {
+    const payload = await getSession();
+    if (!payload) {
       throw new Error('Unknown error');
     }
 
-    const { expiresAt, ...payload } = currentSession;
-
     await setSession({
       ...payload,
-      expiresIn: (expiresAt - Date.now()) / 1000,
       handle,
     });
   };
@@ -90,15 +91,4 @@ export async function createSessionManager({
     setSession,
     getSession,
   };
-}
-function isSessionPayload(data: unknown): data is SessionPayload {
-  if (!isPlainObject(data)) {
-    return false;
-  }
-
-  return (
-    typeof data.accessToken === 'string' &&
-    typeof data.refreshToken === 'string' &&
-    typeof data.expiresAt === 'number'
-  );
 }

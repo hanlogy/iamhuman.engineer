@@ -31,17 +31,17 @@ export async function handleSession({
       return;
     }
 
-    const { accessToken, expiresIn } =
+    const { accessToken } =
       (await cognitoHelper.refreshToken({
         refreshToken,
       })) ?? {};
 
-    if (!accessToken || !expiresIn) {
+    if (!accessToken) {
       destroySession();
       return;
     }
 
-    await setSession({ accessToken, expiresIn, refreshToken, handle });
+    await setSession({ accessToken, refreshToken, handle });
 
     const { sub } = cognitoHelper.decodeAccessToken(accessToken) ?? {};
     if (!sub) {
