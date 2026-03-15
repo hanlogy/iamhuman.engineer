@@ -101,7 +101,7 @@ export class ProfileHelper extends HelperBase {
       avatar?: string;
     };
   }> {
-    const userHelper = new UserHelper();
+    const userHelper = this.createHelper(UserHelper);
     const userSummary = await userHelper.get(userId);
     if (!userSummary) {
       throw new Error('User not found');

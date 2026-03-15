@@ -119,7 +119,8 @@ export class ArtifactHelper extends HelperBase {
     tagLabels,
   }: CreateArtifactParams) {
     const artifactId = randomUUID();
-    const tagHelper = new ArtifactTagHelper();
+    const tagHelper = this.createHelper(ArtifactTagHelper);
+    const byTagHelper = this.createHelper(ArtifactByTagHelper);
 
     const resolvedTags = await tagHelper.resolveTags(userId, tagLabels);
 
@@ -134,8 +135,6 @@ export class ArtifactHelper extends HelperBase {
       links,
       judgment,
     };
-
-    const byTagHelper = new ArtifactByTagHelper();
 
     await this.db.transactWrite({
       put: [
@@ -187,7 +186,7 @@ export class ArtifactHelper extends HelperBase {
       throw new Error('Unknown error');
     }
 
-    const tagHelper = new ArtifactTagHelper();
+    const tagHelper = this.createHelper(ArtifactTagHelper);
 
     const resolvedTags = await tagHelper.resolveTags(userId, tagLabels);
   }

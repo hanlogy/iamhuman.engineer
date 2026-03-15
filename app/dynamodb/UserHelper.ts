@@ -32,7 +32,7 @@ export class UserHelper extends HelperBase {
 
     if (item) {
       const { handle } = item;
-      const profileHelper = new ProfileHelper();
+      const profileHelper = this.createHelper(ProfileHelper);
       const profile = await profileHelper.get(handle);
       let avatar: string | undefined = undefined;
 
