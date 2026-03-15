@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { EngineersSvg, TeamsSvg } from '@/components/svgs';
 import type { UserSummary } from '@/definitions';
-import { AddArtifactbutton } from './AddArtifactButton';
+import { AddArtifactButton } from './AddArtifactButton';
 import { MemberNavDropdown } from './MemberNavDropdown';
 
 const linkItems = [
@@ -24,7 +24,7 @@ const linkItems = [
 export function MemberNavBar({ user }: { user: UserSummary }) {
   return (
     <div className="flex items-center space-x-6 sm:space-x-8">
-      <AddArtifactbutton />
+      <AddArtifactButton />;
       {linkItems.map(({ name, label, href, Icon }) => {
         return (
           <Link

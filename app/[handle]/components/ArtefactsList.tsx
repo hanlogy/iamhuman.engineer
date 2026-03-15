@@ -1,6 +1,7 @@
 import type { ArtifactTag, Profile } from '@/definitions';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
 import { getUserFromCookie } from '@/server/userInCookie';
+import { ArtefactCard } from './ArtefactCard';
 
 export async function ArtefactsList({
   tags,
@@ -31,12 +32,11 @@ export async function ArtefactsList({
 
   return (
     <div>
-      {artifacts.map(({ artifactId, publishedAt, title }) => {
+      {artifacts.map((artifact) => {
+        const { artifactId } = artifact;
+
         return (
-          <div key={artifactId} className="bg-surface p-4 md:rounded-xl">
-            <div>{publishedAt}</div>
-            <div>{title}</div>
-          </div>
+          <ArtefactCard isSelf={isSelf} artifact={artifact} key={artifactId} />
         );
       })}
     </div>
