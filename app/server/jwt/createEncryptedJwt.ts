@@ -5,14 +5,17 @@ import type { CreateEncryptedJwtParams } from './types';
 export async function createEncryptedJwt({
   payload,
   secretHex,
-  expiresInSeconds = 60 * 60 * 24 * 30,
+  expiresIn,
   issuer,
   audience,
 }: CreateEncryptedJwtParams): Promise<string> {
   const jwt = new EncryptJWT(payload)
     .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
-    .setIssuedAt()
-    .setExpirationTime(Math.floor(Date.now() / 1000) + expiresInSeconds);
+    .setIssuedAt();
+
+  if (expiresIn !== undefined) {
+    jwt.setExpirationTime(`${expiresIn}s`);
+  }
 
   if (issuer) {
     jwt.setIssuer(issuer);

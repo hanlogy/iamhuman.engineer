@@ -8,7 +8,10 @@ interface JweParams {
 
 export interface CreateEncryptedJwtParams extends JweParams {
   payload: JsonRecord;
-  expiresInSeconds?: number;
+  /**
+   * In seconds
+   */
+  expiresIn?: number;
 }
 
 export interface DecryptJwtParams extends JweParams {

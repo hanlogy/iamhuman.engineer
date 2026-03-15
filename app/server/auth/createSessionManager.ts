@@ -60,11 +60,11 @@ export async function createSessionManager({
         expiresAt: shiftDate({ seconds: expiresIn }).getTime(),
       },
       secretHex: getSecretHex(),
-      expiresInSeconds: sessionAgeInSeconds,
+      expiresIn: sessionAgeInSeconds,
     });
 
     setCookie(SESSION_KEY, encryptedSession, {
-      maxAge: 60 * 60 * 24 * 30,
+      maxAge: sessionAgeInSeconds,
     });
   };
 
