@@ -26,7 +26,7 @@ export async function saveArtifact(
     if (!id) {
       await artifactHelper.createItem({ userId, ...attributes });
     } else {
-      //
+      await artifactHelper.updateItem({ userId, artifactId: id }, attributes);
     }
     return toActionSuccess();
   } catch {

@@ -32,6 +32,10 @@ export type CreateArtifactParams = Omit<Artifact, 'artifactId' | 'tags'> & {
   tagLabels: string[];
 };
 
+export type UpdateArtifactParams = Omit<Artifact, 'artifactId' | 'tags'> & {
+  tagLabels: string[];
+};
+
 export interface ArtifactEntity extends Artifact {
   readonly pk: string;
   readonly sk: string;

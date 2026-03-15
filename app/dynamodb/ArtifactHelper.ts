@@ -3,7 +3,11 @@ import type { Artifact, ArtifactType } from '@/definitions/types';
 import { ArtifactByTagHelper } from './ArtifactByTagHelper';
 import { ArtifactTagHelper } from './ArtifactTagHelper';
 import { HelperBase } from './HelperBase';
-import type { CreateArtifactParams } from './types';
+import type {
+  ArtifactEntity,
+  CreateArtifactParams,
+  UpdateArtifactParams,
+} from './types';
 
 export class ArtifactHelper extends HelperBase {
   private entity = 'ARTIFACT';
@@ -85,6 +89,25 @@ export class ArtifactHelper extends HelperBase {
     };
   }
 
+  async get({
+    userId,
+    artifactId,
+  }: {
+    userId: string;
+    artifactId: string;
+  }): Promise<ArtifactEntity | undefined> {
+    const { item } = await this.db.get({
+      keys: this.buildKeys({
+        artifactId,
+        userId,
+      }),
+    });
+    if (!item) {
+      return undefined;
+    }
+    return item as ArtifactEntity;
+  }
+
   async createItem({
     title,
     userId,
@@ -139,6 +162,34 @@ export class ArtifactHelper extends HelperBase {
         })),
       ],
     });
+  }
+
+  async updateItem(
+    {
+      artifactId,
+      userId,
+    }: {
+      userId: string;
+      artifactId: string;
+    },
+    {
+      title,
+      publishedAt,
+      type,
+      summary,
+      links,
+      judgment,
+      tagLabels,
+    }: UpdateArtifactParams
+  ) {
+    const item = await this.get({ userId, artifactId });
+    if (!item) {
+      throw new Error('Unknown error');
+    }
+
+    const tagHelper = new ArtifactTagHelper();
+
+    const resolvedTags = await tagHelper.resolveTags(userId, tagLabels);
   }
 
   async getItems({ userId }: { userId: string }): Promise<Artifact[]> {

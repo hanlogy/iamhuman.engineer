@@ -24,7 +24,7 @@ const linkItems = [
 export function MemberNavBar({ user }: { user: UserSummary }) {
   return (
     <div className="flex items-center space-x-6 sm:space-x-8">
-      <AddArtifactButton />;
+      <AddArtifactButton />
       {linkItems.map(({ name, label, href, Icon }) => {
         return (
           <Link
