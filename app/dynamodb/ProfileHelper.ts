@@ -2,7 +2,7 @@ import type { UODImage } from '@/components/ImageUpload';
 import type { Profile } from '@/definitions/types';
 import { reservedPaths } from '@/lib/reservedPaths';
 import { HelperBase } from './HelperBase';
-import { ProfileLookUpHelper } from './ProfileLookUpHelper';
+import { UserHelper } from './UserHelper';
 import { DBHelperError, type ProfileEntity } from './types';
 
 export class ProfileHelper extends HelperBase {
@@ -79,8 +79,8 @@ export class ProfileHelper extends HelperBase {
     }
     //
   ) {
-    const lookupHelper = new ProfileLookUpHelper();
-    const lookup = await lookupHelper.get(userId);
+    const userHelper = new UserHelper();
+    const lookup = await userHelper.get(userId);
     if (!lookup) {
       throw new Error('User not found');
     }
@@ -116,7 +116,7 @@ export class ProfileHelper extends HelperBase {
       await this.db.transactWrite({
         update: [
           {
-            keys: lookupHelper.buildKeys({ userId }),
+            keys: userHelper.buildKeys({ userId }),
             setAttributes: { handle },
           },
         ],

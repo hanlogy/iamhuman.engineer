@@ -1,7 +1,13 @@
-import { HANDLE_KEY, SESSION_KEY, USER_ID_KEY } from '@/definitions';
+import { isPlainObject, type JsonRecord } from '@hanlogy/ts-lib';
+import {
+  HANDLE_KEY,
+  SESSION_AGE,
+  SESSION_KEY,
+  USER_ID_KEY,
+  type SessionPayload,
+} from '@/definitions';
 import { createCookieHelper, type CookieStore } from '../createCookieHelper';
 import { createEncryptedJwt, decryptJwt } from '../jwt';
-import { sessionAgeInSeconds, type SessionPayload } from './definitions';
 import { getSecretHex } from './getSecretHex';
 
 export async function createSessionManager({
@@ -38,24 +44,7 @@ export async function createSessionManager({
       secretHex: getSecretHex(),
     });
 
-    if (!data) {
-      return null;
-    }
-
-    const { accessToken, refreshToken, handle } = data;
-    if (
-      typeof accessToken !== 'string' ||
-      typeof refreshToken !== 'string' ||
-      typeof handle !== 'string'
-    ) {
-      return null;
-    }
-
-    return {
-      accessToken,
-      refreshToken,
-      handle,
-    };
+    return buildSessionPayload(data);
   };
 
   const setSession = async (
@@ -64,11 +53,23 @@ export async function createSessionManager({
     const encryptedSession = await createEncryptedJwt({
       payload,
       secretHex: getSecretHex(),
-      expiresIn: sessionAgeInSeconds,
+      expiresIn: SESSION_AGE,
     });
 
     setCookie(SESSION_KEY, encryptedSession, {
-      maxAge: sessionAgeInSeconds,
+      maxAge: SESSION_AGE,
+    });
+  };
+
+  const updateAccessToken = async (
+    accessToken: string,
+    payload: SessionPayload
+  ): Promise<void> => {
+    // TODO: It is not right, because the new session will set the session
+    // expire time again
+    await setSession({
+      ...payload,
+      accessToken,
     });
   };
 
@@ -78,9 +79,14 @@ export async function createSessionManager({
       throw new Error('Unknown error');
     }
 
+    const {
+      user: { handle: _, ...user },
+      ...rest
+    } = payload;
+
     await setSession({
-      ...payload,
-      handle,
+      ...rest,
+      user: { ...user, handle },
     });
   };
 
@@ -90,5 +96,37 @@ export async function createSessionManager({
     updateHandle,
     setSession,
     getSession,
+    updateAccessToken,
+  };
+}
+
+function buildSessionPayload(data: JsonRecord | null): SessionPayload | null {
+  if (!data) {
+    return null;
+  }
+
+  const { accessToken, refreshToken, user } = data;
+  if (
+    typeof accessToken !== 'string' ||
+    typeof refreshToken !== 'string' ||
+    !isPlainObject(user)
+  ) {
+    return null;
+  }
+
+  const { userId, handle, avatar } = user;
+
+  if (
+    typeof userId !== 'string' ||
+    typeof handle !== 'string' ||
+    (avatar !== undefined && typeof avatar !== 'string')
+  ) {
+    return null;
+  }
+
+  return {
+    accessToken,
+    refreshToken,
+    user: { userId, handle, avatar },
   };
 }

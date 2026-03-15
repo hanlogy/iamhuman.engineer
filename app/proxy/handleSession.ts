@@ -10,16 +10,15 @@ export async function handleSession({
   Awaited<ReturnType<typeof createCookieHelper>>,
   'setCookie' | 'cookieStore'
 >): Promise<{ handle: string; isLoggedIn: boolean } | undefined> {
-  const { destroySession, getSession, setSession } = await createSessionManager(
-    { cookieStore }
-  );
+  const { destroySession, getSession, updateAccessToken } =
+    await createSessionManager({ cookieStore });
 
   const session = await getSession();
   if (!session) {
     return;
   }
 
-  const { accessToken: handleSessionLike, refreshToken, handle } = session;
+  const { accessToken: handleSessionLike, refreshToken, user } = session;
   const cognitoHelper = getCognitoHelper();
   const { payload, error } =
     await cognitoHelper.verifyAccessToken(handleSessionLike);
@@ -41,7 +40,7 @@ export async function handleSession({
       return;
     }
 
-    await setSession({ accessToken, refreshToken, handle });
+    await updateAccessToken(accessToken, session);
 
     const { sub } = cognitoHelper.decodeAccessToken(accessToken) ?? {};
     if (!sub) {
@@ -54,6 +53,6 @@ export async function handleSession({
   }
 
   setCookie(USER_ID_KEY, userId);
-  setCookie(HANDLE_KEY, handle);
-  return { handle, isLoggedIn: true };
+  setCookie(HANDLE_KEY, user.handle);
+  return { handle: user.handle, isLoggedIn: true };
 }

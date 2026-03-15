@@ -1,9 +1,10 @@
 import type { AttributeValueRecord } from '@hanlogy/ts-dynamodb';
 import { randomBytes } from 'node:crypto';
+import type { UserSummary } from '@/definitions';
 import { HelperBase } from './HelperBase';
 import { ProfileHelper } from './ProfileHelper';
 
-export class ProfileLookUpHelper extends HelperBase {
+export class UserHelper extends HelperBase {
   private buildPk({ userId }: { userId: string }) {
     return this.db.buildKey('user', userId);
   }
@@ -26,11 +27,20 @@ export class ProfileLookUpHelper extends HelperBase {
     return item;
   }
 
-  async getHandleByUserId(userId: string): Promise<string> {
+  async getOrCreateSummary(userId: string): Promise<UserSummary> {
     const item = await this.get(userId);
 
     if (item) {
-      return item.handle;
+      const { handle } = item;
+      const profileHelper = new ProfileHelper();
+      const profile = await profileHelper.get(handle);
+      let avatar: string | undefined = undefined;
+
+      if (profile) {
+        avatar = profile.avatar;
+      }
+
+      return { handle, userId, avatar };
     }
 
     const handle = randomBytes(8).toString('hex');
@@ -64,6 +74,9 @@ export class ProfileLookUpHelper extends HelperBase {
       ],
     });
 
-    return handle;
+    return {
+      handle,
+      userId,
+    };
   }
 }

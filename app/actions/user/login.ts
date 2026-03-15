@@ -12,7 +12,7 @@ import {
   type ErrorCode,
 } from '@hanlogy/react-kit';
 import { redirect } from 'next/navigation';
-import { ProfileLookUpHelper } from '@/dynamodb/ProfileLookUpHelper';
+import { UserHelper } from '@/dynamodb/UserHelper';
 import { createSessionManager } from '@/server/auth/createSessionManager';
 import { getUserIdFromAccessToken } from '@/server/auth/getUserIdFromAccessToken';
 import { getCognitoHelper } from '@/server/helpersRepo';
@@ -43,7 +43,7 @@ export async function login({
       });
     }
 
-    const dbHelper = new ProfileLookUpHelper();
+    const userHelper = new UserHelper();
     const userId = getUserIdFromAccessToken(accessToken);
     if (!userId) {
       return toActionFailure({
@@ -55,7 +55,7 @@ export async function login({
     await setSession({
       accessToken,
       refreshToken,
-      handle: await dbHelper.getHandleByUserId(userId),
+      user: await userHelper.getOrCreateSummary(userId),
     });
   } catch (error) {
     let code: ErrorCode = 'unknown';

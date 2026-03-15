@@ -29,7 +29,7 @@ helper tables to keep the main table clean and predictable.
 | region    | string | SE               |
 | language  | string | SV               |
 
-### reverse lookup table
+### user summary
 
 | Attribute | Type   | Example       |
 | --------- | ------ | ------------- |
