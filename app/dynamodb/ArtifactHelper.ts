@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import type { ArtifactType } from '@/definitions/types';
+import type { Artifact, ArtifactType } from '@/definitions/types';
 import { ArtifactByTagHelper } from './ArtifactByTagHelper';
 import { ArtifactTagHelper } from './ArtifactTagHelper';
 import { HelperBase } from './HelperBase';
@@ -80,8 +80,8 @@ export class ArtifactHelper extends HelperBase {
     artifactId: string;
   }) {
     return {
-      gsi1Pk: this.buildGsi2Pk({ userId, type }),
-      gsi1Sk: this.buildGsi2Sk({ publishedAt, artifactId }),
+      gsi2Pk: this.buildGsi2Pk({ userId, type }),
+      gsi2Sk: this.buildGsi2Sk({ publishedAt, artifactId }),
     };
   }
 
@@ -139,5 +139,19 @@ export class ArtifactHelper extends HelperBase {
         })),
       ],
     });
+  }
+
+  async getItems({ userId }: { userId: string }): Promise<Artifact[]> {
+    const { items } = await this.db.query({
+      indexName: 'GSI1',
+      keyConditions: [
+        {
+          attribute: 'gsi1Pk',
+          value: this.buildGsi1Pk({ userId }),
+        },
+      ],
+    });
+
+    return items.map(({ pk: _pk, sk: _sk, ...rest }) => rest as Artifact);
   }
 }

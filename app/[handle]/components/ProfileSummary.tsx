@@ -7,7 +7,7 @@ import type { ArtifactTag, Profile } from '@/definitions/types';
 import { isEmail } from '@/helpers/isEmail';
 import { SearchForm } from './SearchForm';
 
-export function ProfileSummary({
+export async function ProfileSummary({
   profile: { name, avatar, location, links },
   tags,
 }: {
