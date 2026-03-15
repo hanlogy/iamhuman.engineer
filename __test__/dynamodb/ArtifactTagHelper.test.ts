@@ -33,7 +33,15 @@ describe('ArtifactTagHelper', () => {
       label: 'React',
     });
 
-    expect(result).toStrictEqual({ artifactTagId: '1-1-1-1' });
+    expect(result).toStrictEqual({
+      pk,
+      sk: '01|react|true',
+      artifactTagId: '1-1-1-1',
+      userId,
+      key: 'react',
+      label: 'React',
+      count: 0,
+    });
 
     expect(db.put).toHaveBeenCalledWith({
       keyNames: ['pk', 'sk'],
@@ -115,8 +123,6 @@ describe('ArtifactTagHelper', () => {
         })
         .mockResolvedValueOnce({ item: undefined });
 
-      db.put.mockResolvedValue({ attributes: undefined });
-
       const result = await helper.resolveTags(userId, [
         ' React ',
         'Node JS',
@@ -126,7 +132,33 @@ describe('ArtifactTagHelper', () => {
         'Node-JS',
       ]);
 
-      expect(result).toStrictEqual(['0-0-0-0', '2-2-2-2']);
+      expect(result).toStrictEqual({
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk,
+              sk: '01|node-js|true',
+              artifactTagId: '2-2-2-2',
+              userId,
+              key: 'node-js',
+              label: 'Node JS',
+              count: 1,
+            },
+          },
+        ],
+        update: [
+          {
+            keys: {
+              pk,
+              sk: '01|react|true',
+            },
+            setAttributes: {
+              count: 2,
+            },
+          },
+        ],
+      });
 
       expect(db.get).toHaveBeenNthCalledWith(1, {
         keys: {
@@ -140,20 +172,7 @@ describe('ArtifactTagHelper', () => {
           sk: '01|node-js|true',
         },
       });
-
-      expect(db.put).toHaveBeenCalledTimes(1);
-      expect(db.put).toHaveBeenCalledWith({
-        keyNames: ['pk', 'sk'],
-        item: {
-          pk,
-          sk: '01|node-js|true',
-          artifactTagId: '2-2-2-2',
-          userId,
-          key: 'node-js',
-          label: 'Node JS',
-          count: 0,
-        },
-      });
+      expect(db.put).not.toHaveBeenCalled();
     });
 
     test('all existing', async () => {
@@ -183,7 +202,30 @@ describe('ArtifactTagHelper', () => {
 
       const result = await helper.resolveTags(userId, ['React', 'Node JS']);
 
-      expect(result).toStrictEqual(['1-1-1-1', '2-2-2-2']);
+      expect(result).toStrictEqual({
+        put: [],
+        update: [
+          {
+            keys: {
+              pk,
+              sk: '01|react|true',
+            },
+            setAttributes: {
+              count: 2,
+            },
+          },
+          {
+            keys: {
+              pk,
+              sk: '01|node-js|true',
+            },
+            setAttributes: {
+              count: 2,
+            },
+          },
+        ],
+      });
+
       expect(db.get).toHaveBeenCalledTimes(2);
       expect(db.put).not.toHaveBeenCalled();
     });
@@ -191,7 +233,10 @@ describe('ArtifactTagHelper', () => {
     test('empty labels', async () => {
       const result = await helper.resolveTags(userId, ['', '   ']);
 
-      expect(result).toStrictEqual([]);
+      expect(result).toStrictEqual({
+        put: [],
+        update: [],
+      });
       expect(db.get).not.toHaveBeenCalled();
       expect(db.put).not.toHaveBeenCalled();
     });
@@ -199,29 +244,34 @@ describe('ArtifactTagHelper', () => {
     test('create one new tag', async () => {
       randomUUIDMock.mockReturnValue('3-3-3-3');
       db.get.mockResolvedValue({ item: undefined });
-      db.put.mockResolvedValue({ attributes: undefined });
 
       const result = await helper.resolveTags(userId, ['Vue JS']);
 
-      expect(result).toStrictEqual(['3-3-3-3']);
+      expect(result).toStrictEqual({
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk,
+              sk: '01|vue-js|true',
+              artifactTagId: '3-3-3-3',
+              userId,
+              key: 'vue-js',
+              label: 'Vue JS',
+              count: 1,
+            },
+          },
+        ],
+        update: [],
+      });
+
       expect(db.get).toHaveBeenCalledWith({
         keys: {
           pk,
           sk: '01|vue-js|true',
         },
       });
-      expect(db.put).toHaveBeenCalledWith({
-        keyNames: ['pk', 'sk'],
-        item: {
-          pk,
-          sk: '01|vue-js|true',
-          artifactTagId: '3-3-3-3',
-          userId,
-          key: 'vue-js',
-          label: 'Vue JS',
-          count: 0,
-        },
-      });
+      expect(db.put).not.toHaveBeenCalled();
     });
   });
 
@@ -258,10 +308,10 @@ describe('ArtifactTagHelper', () => {
           },
           {
             pk,
-            sk: '01|nodejs|true',
+            sk: '01|node-js|true',
             artifactTagId: 'tag-2',
             userId,
-            key: 'nodejs',
+            key: 'node-js',
             label: 'Node JS',
             count: 1,
           },
@@ -291,10 +341,10 @@ describe('ArtifactTagHelper', () => {
         },
         {
           pk,
-          sk: '01|nodejs|true',
+          sk: '01|node-js|true',
           artifactTagId: 'tag-2',
           userId,
-          key: 'nodejs',
+          key: 'node-js',
           label: 'Node JS',
           count: 1,
         },

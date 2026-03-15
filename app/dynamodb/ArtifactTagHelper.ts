@@ -2,7 +2,7 @@ import type { JsonRecord } from '@hanlogy/ts-lib';
 import { randomUUID } from 'crypto';
 import type { ArtifactTag } from '@/definitions';
 import { HelperBase } from './HelperBase';
-import type { ArtifactTagEntity } from './types';
+import type { ArtifactTagEntity, ResolveTagsResult } from './types';
 
 export class ArtifactTagHelper extends HelperBase {
   private entity = 'ARTIFACT_TAG';
@@ -27,21 +27,27 @@ export class ArtifactTagHelper extends HelperBase {
     userId,
     key,
     label,
-  }: Omit<ArtifactTagEntity, 'pk' | 'sk' | 'artifactTagId' | 'count'>) {
+  }: Omit<
+    ArtifactTagEntity,
+    'pk' | 'sk' | 'artifactTagId' | 'count'
+  >): Promise<ArtifactTagEntity> {
     const artifactTagId = randomUUID();
+
+    const item = {
+      ...this.buildKeys({ userId, key }),
+      artifactTagId,
+      userId,
+      key,
+      label,
+      count: 0,
+    };
+
     await this.db.put({
       keyNames: ['pk', 'sk'],
-      item: {
-        ...this.buildKeys({ userId, key }),
-        artifactTagId,
-        userId,
-        key,
-        label,
-        count: 0,
-      },
+      item,
     });
 
-    return { artifactTagId };
+    return item;
   }
 
   async get({
@@ -54,18 +60,25 @@ export class ArtifactTagHelper extends HelperBase {
     const { item } = await this.db.get({
       keys: this.buildKeys({ userId, key }),
     });
+
     if (!item) {
       return undefined;
     }
+
     return item as ArtifactTagEntity;
   }
 
-  async resolveTags(userId: string, tagLabels: string[]) {
-    const resolvedId: string[] = [];
+  async resolveTags(
+    userId: string,
+    tagLabels: string[]
+  ): Promise<ResolveTagsResult> {
+    const put: ResolveTagsResult['put'] = [];
+    const update: ResolveTagsResult['update'] = [];
     const keys = new Set<string>();
 
     for (let tagLabel of tagLabels) {
       tagLabel = tagLabel.trim();
+
       if (!tagLabel) {
         continue;
       }
@@ -78,22 +91,39 @@ export class ArtifactTagHelper extends HelperBase {
       if (keys.has(key)) {
         continue;
       }
+
       keys.add(key);
+
       const tag = await this.get({ userId, key });
 
       if (!tag) {
-        const { artifactTagId } = await this.create({
+        const item: ArtifactTagEntity = {
+          ...this.buildKeys({ userId, key }),
+          artifactTagId: randomUUID(),
           userId,
           key,
           label: tagLabel,
+          count: 1,
+        };
+
+        put.push({
+          keyNames: ['pk', 'sk'],
+          item,
         });
-        resolvedId.push(artifactTagId);
       } else {
-        resolvedId.push(tag.artifactTagId);
+        update.push({
+          keys: {
+            pk: tag.pk,
+            sk: tag.sk,
+          },
+          setAttributes: {
+            count: tag.count + 1,
+          },
+        });
       }
     }
 
-    return resolvedId;
+    return { put, update };
   }
 
   async getTags({ userId }: { userId: string }): Promise<ArtifactTag[]> {

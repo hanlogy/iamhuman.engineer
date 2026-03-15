@@ -1,3 +1,4 @@
+import type { PutConfig, UpdateConfig } from '@hanlogy/ts-dynamodb';
 import type { Artifact, ArtifactTag, Profile } from '@/definitions/types';
 
 export interface ProfileEntity extends Profile {
@@ -48,4 +49,12 @@ export interface ArtifactTagEntity extends ArtifactTag {
   readonly pk: string;
   readonly sk: string;
   readonly userId: string;
+}
+
+export interface ResolveTagsResult {
+  put: PutConfig<ArtifactTagEntity, 'pk' | 'sk'>[];
+  update: UpdateConfig<
+    Pick<ArtifactTagEntity, 'count'>,
+    Pick<ArtifactTagEntity, 'pk' | 'sk'>
+  >[];
 }
