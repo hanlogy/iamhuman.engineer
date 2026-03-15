@@ -9,10 +9,12 @@ export async function Header() {
   let headerHeight = 'h-14 sm:h-18 md:h-22';
   const user = await getUserFromCookie();
   const isLoggedIn = !!user;
+
+  let homeLink = '/';
   if (isLoggedIn) {
     headerHeight = 'h-14 sm:h-16';
+    homeLink = `/${user.handle}`;
   }
-  const handle = user?.handle;
 
   return (
     <>
@@ -28,7 +30,7 @@ export async function Header() {
             'mx-auto max-w-6xl'
           )}
         >
-          <Link href={`/${handle ?? ''}`} className="flex items-center">
+          <Link href={homeLink} className="flex items-center">
             <LogoSvg className="w-6 sm:w-7" />
             {!isLoggedIn && (
               <>
@@ -39,11 +41,7 @@ export async function Header() {
               </>
             )}
           </Link>
-          {isLoggedIn && handle ? (
-            <MemberNavBar handle={handle} />
-          ) : (
-            <PublicNavBar />
-          )}
+          {isLoggedIn ? <MemberNavBar user={user} /> : <PublicNavBar />}
         </div>
       </header>
       <div className={headerHeight}></div>

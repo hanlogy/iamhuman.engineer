@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { EngineersSvg, TeamsSvg } from '@/components/svgs';
+import type { UserSummary } from '@/definitions';
 import { AddArtifactbutton } from './AddArtifactButton';
 import { MemberNavDropdown } from './MemberNavDropdown';
 
@@ -20,7 +21,7 @@ const linkItems = [
   },
 ];
 
-export function MemberNavBar({ handle }: { handle: string }) {
+export function MemberNavBar({ user }: { user: UserSummary }) {
   return (
     <div className="flex items-center space-x-6 sm:space-x-8">
       <AddArtifactbutton />
@@ -38,7 +39,7 @@ export function MemberNavBar({ handle }: { handle: string }) {
           </Link>
         );
       })}
-      <MemberNavDropdown handle={handle} />
+      <MemberNavDropdown user={user} />
     </div>
   );
 }

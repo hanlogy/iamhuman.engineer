@@ -1,8 +1,10 @@
 import { clsx, DropdownMenu } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { logout } from '@/actions/user/logout';
+import { Avatar } from '@/components/Avatar';
 import { LinkOrButton } from '@/components/LinkOrButton';
 import { NavLogoutSvg, NavProfileSvg, NavSettingsSvg } from '@/components/svgs';
+import type { UserSummary } from '@/definitions';
 
 const menuItems = [
   {
@@ -25,7 +27,7 @@ const menuItems = [
   },
 ] as const;
 
-export function MemberNavDropdown({ handle }: { handle: string }) {
+export function MemberNavDropdown({ user: { handle } }: { user: UserSummary }) {
   return (
     <DropdownMenu
       className={clsx(
@@ -89,10 +91,9 @@ export function MemberNavDropdown({ handle }: { handle: string }) {
       }}
       buttonBuilder={({ show }) => {
         return (
-          <button
-            className="block h-8 w-8 cursor-pointer rounded-full bg-gray-300"
-            onClick={show}
-          ></button>
+          <button onClick={show} className="block cursor-pointer">
+            <Avatar className="h-8 w-8" />
+          </button>
         );
       }}
     />

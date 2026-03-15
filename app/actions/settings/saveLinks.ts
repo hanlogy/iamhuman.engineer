@@ -19,7 +19,7 @@ export async function saveLinks({
   if (!session) {
     return toActionFailure();
   }
-  const handle = session.handle;
+  const handle = session.payload.user.handle;
 
   const profileHelper = new ProfileHelper();
 
