@@ -16,6 +16,7 @@ export class ArtifactHelper extends HelperBase {
   private buildPk({ userId }: { userId: string }) {
     return this.db.buildKey(this.entity, userId);
   }
+
   private buildSk({ artifactId }: { artifactId: string }) {
     return this.db.buildKey(this.version, artifactId, true);
   }
@@ -102,9 +103,11 @@ export class ArtifactHelper extends HelperBase {
         userId,
       }),
     });
+
     if (!item) {
       return undefined;
     }
+
     return item as ArtifactEntity;
   }
 
@@ -125,7 +128,7 @@ export class ArtifactHelper extends HelperBase {
     const resolvedTags = await tagHelper.resolveTags(userId, tagLabels);
 
     const commonAttributes = {
-      tags: resolvedTags,
+      tags: resolvedTags.tagIds,
       userId,
       type,
       publishedAt,
@@ -147,7 +150,7 @@ export class ArtifactHelper extends HelperBase {
             ...commonAttributes,
           },
         },
-        ...resolvedTags.map((artifactTagId) => ({
+        ...resolvedTags.tagIds.map((artifactTagId) => ({
           keyNames: ['pk', 'sk'],
           item: {
             ...byTagHelper.buildKeys({
@@ -159,7 +162,9 @@ export class ArtifactHelper extends HelperBase {
             ...commonAttributes,
           },
         })),
+        ...resolvedTags.put,
       ],
+      update: resolvedTags.update,
     });
   }
 
