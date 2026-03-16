@@ -209,7 +209,8 @@ export class ArtifactTagHelper extends HelperBase {
       const tag = await this.getByTagId({ userId, artifactTagId });
 
       if (!tag) {
-        throw new Error(`Tag not found: ${artifactTagId}`);
+        // Ignore the missing tag
+        continue;
       }
 
       update.push({

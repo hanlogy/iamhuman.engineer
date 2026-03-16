@@ -590,7 +590,7 @@ describe('ArtifactTagHelper', () => {
       expect(db.put).not.toHaveBeenCalled();
     });
 
-    test('throw when removed tag is not found', async () => {
+    test('ignore missing removed tag', async () => {
       db.get.mockResolvedValueOnce({
         item: {
           pk,
@@ -609,9 +609,17 @@ describe('ArtifactTagHelper', () => {
         items: [],
       });
 
-      await expect(
-        helper.resolveTags(userId, ['React'], ['1-1-1-1', '2-2-2-2'])
-      ).rejects.toThrow('Tag not found: 2-2-2-2');
+      const result = await helper.resolveTags(
+        userId,
+        ['React'],
+        ['1-1-1-1', '2-2-2-2']
+      );
+
+      expect(result).toStrictEqual({
+        tagIds: ['1-1-1-1'],
+        put: [],
+        update: [],
+      });
     });
   });
 
