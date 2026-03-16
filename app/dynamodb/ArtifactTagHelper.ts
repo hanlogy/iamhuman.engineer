@@ -1,3 +1,4 @@
+import { asKey } from '@hanlogy/ts-dynamodb';
 import type { JsonRecord } from '@hanlogy/ts-lib';
 import { randomUUID } from 'crypto';
 import type { ArtifactTag } from '@/definitions';
@@ -45,13 +46,6 @@ export class ArtifactTagHelper extends HelperBase {
       gsi1Pk: this.buildGsi1Pk({ userId, artifactTagId }),
       gsi1Sk: this.db.buildKey(this.version, true),
     };
-  }
-
-  private buildTagKey(label: string) {
-    return label
-      .trim()
-      .toLowerCase()
-      .replace(/[\s-]+/g, '-');
   }
 
   async create({
@@ -146,7 +140,7 @@ export class ArtifactTagHelper extends HelperBase {
         continue;
       }
 
-      const key = this.buildTagKey(tagLabel);
+      const key = asKey(tagLabel);
 
       if (keys.has(key)) {
         continue;
