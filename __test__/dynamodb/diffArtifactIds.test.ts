@@ -5,6 +5,7 @@ describe('diffArtifactIds', () => {
     expect(diffArtifactIds([], [])).toStrictEqual({
       add: [],
       delete: [],
+      untouched: [],
     });
   });
 
@@ -12,6 +13,7 @@ describe('diffArtifactIds', () => {
     expect(diffArtifactIds(['a'], ['a', 'b', 'c'])).toStrictEqual({
       add: ['b', 'c'],
       delete: [],
+      untouched: ['a'],
     });
   });
 
@@ -19,6 +21,7 @@ describe('diffArtifactIds', () => {
     expect(diffArtifactIds(['a', 'b', 'c'], ['a'])).toStrictEqual({
       add: [],
       delete: ['b', 'c'],
+      untouched: ['a'],
     });
   });
 
@@ -26,6 +29,7 @@ describe('diffArtifactIds', () => {
     expect(diffArtifactIds(['a', 'b'], ['b', 'c'])).toStrictEqual({
       add: ['c'],
       delete: ['a'],
+      untouched: ['b'],
     });
   });
 
@@ -33,6 +37,7 @@ describe('diffArtifactIds', () => {
     expect(diffArtifactIds(['a', 'b'], ['a', 'b'])).toStrictEqual({
       add: [],
       delete: [],
+      untouched: ['a', 'b'],
     });
   });
 
@@ -40,13 +45,15 @@ describe('diffArtifactIds', () => {
     expect(diffArtifactIds(['a', 'b'], ['b', 'a'])).toStrictEqual({
       add: [],
       delete: [],
+      untouched: ['b','a'],
     });
   });
 
   test('duplicate ids', () => {
     expect(diffArtifactIds(['a', 'a', 'b'], ['b', 'c', 'c'])).toStrictEqual({
-      add: ['c', 'c'],
-      delete: ['a', 'a'],
+      add: ['c'],
+      delete: ['a'],
+      untouched: ['b'],
     });
   });
 });

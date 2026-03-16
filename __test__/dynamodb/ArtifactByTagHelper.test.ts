@@ -2,7 +2,7 @@ import { ArtifactByTagHelper } from '@/dynamodb/ArtifactByTagHelper';
 import type { BuildPutItemsParams } from '@/dynamodb/types';
 import { FakeDynamoDBHelper } from './FakeDynamoDBHelper';
 
-const paramsBase: Omit<BuildPutItemsParams, 'tags'> = {
+const artifactBase: Omit<BuildPutItemsParams, 'tags'> = {
   artifactId: 'artifact-1',
   userId: 'user-1',
   publishedAt: '2026-03-15T10:00:00.000Z',
@@ -26,39 +26,270 @@ describe('ArtifactByTagHelper', () => {
     jest.clearAllMocks();
   });
 
-  test('with tags', () => {
-    const tags = ['tag-1', 'tag-2'];
-    const result = helper.buildPutItems({
-      ...paramsBase,
-      tags,
+  describe('buildPutItems', () => {
+    test('with tags', () => {
+      const tags = ['1-1-1-1', '2-2-2-2'];
+      const result = helper.buildPutItems({
+        ...artifactBase,
+        tags,
+      });
+
+      expect(result).toStrictEqual([
+        {
+          keyNames: ['pk', 'sk'],
+          item: {
+            pk: 'ARTIFACT_BY_TAG|user-1',
+            sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            ...artifactBase,
+            tags,
+          },
+        },
+        {
+          keyNames: ['pk', 'sk'],
+          item: {
+            pk: 'ARTIFACT_BY_TAG|user-1',
+            sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
+            ...artifactBase,
+            tags,
+          },
+        },
+      ]);
     });
 
-    expect(result).toStrictEqual([
-      {
-        keyNames: ['pk', 'sk'],
-        item: {
-          pk: 'ARTIFACT_BY_TAG|user-1',
-          sk: '01|tag-1|2026-03-15T10:00:00.000Z|artifact-1',
-          ...paramsBase,
-          tags,
-        },
-      },
-      {
-        keyNames: ['pk', 'sk'],
-        item: {
-          pk: 'ARTIFACT_BY_TAG|user-1',
-          sk: '01|tag-2|2026-03-15T10:00:00.000Z|artifact-1',
-          ...paramsBase,
-          tags,
-        },
-      },
-    ]);
+    test('with empty tags', () => {
+      const result = helper.buildPutItems({ ...artifactBase, tags: [] });
+
+      expect(result).toStrictEqual([]);
+      expect(db.buildKey).not.toHaveBeenCalled();
+    });
   });
 
-  test('with empty tags', () => {
-    const result = helper.buildPutItems({ ...paramsBase, tags: [] });
+  describe('resolveUpdate', () => {
+    const tags = ['1-1-1-1', '2-2-2-2'];
 
-    expect(result).toStrictEqual([]);
-    expect(db.buildKey).not.toHaveBeenCalled();
+    test('no change', () => {
+      const result = helper.resolveUpdate({
+        oldArtifact: { ...artifactBase, tags: [...tags] },
+        newArtifact: { ...artifactBase, tags: [...tags] },
+      });
+
+      expect(result).toStrictEqual({
+        put: [],
+        update: [],
+        delete: [],
+      });
+    });
+
+    test('title only', () => {
+      const tags = ['1-1-1-1', '2-2-2-2'];
+      const newTitle = 'React Notes Updated';
+      const result = helper.resolveUpdate({
+        oldArtifact: { ...artifactBase, tags: [...tags] },
+        newArtifact: {
+          ...artifactBase,
+          tags: [...tags],
+          title: newTitle,
+        },
+      });
+
+      expect(result).toStrictEqual({
+        put: [],
+        update: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+            setAttributes: {
+              title: newTitle,
+            },
+          },
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+            setAttributes: {
+              title: newTitle,
+            },
+          },
+        ],
+        delete: [],
+      });
+    });
+
+    test('add tag', () => {
+      const oldTags = ['1-1-1-1', '2-2-2-2'];
+      const newTags = ['1-1-1-1', '2-2-2-2', '3-3-3-3'];
+      const result = helper.resolveUpdate({
+        oldArtifact: { ...artifactBase, tags: oldTags },
+        newArtifact: {
+          ...artifactBase,
+          tags: newTags,
+        },
+      });
+
+      expect(result).toStrictEqual({
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|3-3-3-3|2026-03-15T10:00:00.000Z|artifact-1',
+              ...artifactBase,
+              tags: newTags,
+            },
+          },
+        ],
+        update: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+            setAttributes: {
+              tags: newTags,
+            },
+          },
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+            setAttributes: {
+              tags: newTags,
+            },
+          },
+        ],
+        delete: [],
+      });
+    });
+
+    test('remove tag', () => {
+      const oldTags = ['1-1-1-1', '2-2-2-2'];
+      const newTags = ['1-1-1-1'];
+
+      const result = helper.resolveUpdate({
+        oldArtifact: { ...artifactBase, tags: oldTags },
+        newArtifact: { ...artifactBase, tags: newTags },
+      });
+
+      expect(result).toStrictEqual({
+        put: [],
+        update: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+            setAttributes: {
+              tags: newTags,
+            },
+          },
+        ],
+        delete: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+          },
+        ],
+      });
+    });
+
+    test('publishedAt changed', () => {
+      const tags = ['1-1-1-1', '2-2-2-2'];
+      const result = helper.resolveUpdate({
+        oldArtifact: { ...artifactBase, tags },
+        newArtifact: {
+          ...artifactBase,
+          tags,
+          publishedAt: '2026-03-16T10:00:00.000Z',
+        },
+      });
+
+      expect(result).toStrictEqual({
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|1-1-1-1|2026-03-16T10:00:00.000Z|artifact-1',
+              ...artifactBase,
+              tags,
+              publishedAt: '2026-03-16T10:00:00.000Z',
+            },
+          },
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-16T10:00:00.000Z|artifact-1',
+              ...artifactBase,
+              tags,
+              publishedAt: '2026-03-16T10:00:00.000Z',
+            },
+          },
+        ],
+        update: [],
+        delete: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+          },
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+          },
+        ],
+      });
+    });
+
+    test('add and remove tags together', () => {
+      const oldTags = ['1-1-1-1', '2-2-2-2'];
+      const newTags = ['2-2-2-2', '3-3-3-3'];
+      const result = helper.resolveUpdate({
+        oldArtifact: { ...artifactBase, tags: oldTags },
+        newArtifact: { ...artifactBase, tags: newTags },
+      });
+
+      expect(result).toStrictEqual({
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|3-3-3-3|2026-03-15T10:00:00.000Z|artifact-1',
+              ...artifactBase,
+              tags: newTags,
+            },
+          },
+        ],
+        update: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+            setAttributes: {
+              tags: newTags,
+            },
+          },
+        ],
+        delete: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+          },
+        ],
+      });
+    });
   });
 });

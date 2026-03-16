@@ -64,6 +64,6 @@ export type BuildPutItemsParams = Omit<Artifact, 'tags'> & {
   /**
    * tag ids
    */
-  tags: string[];
-  userId: string;
+  readonly tags: readonly string[];
+  readonly userId: string;
 };
