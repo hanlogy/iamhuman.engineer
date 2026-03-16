@@ -1,11 +1,25 @@
 import type { Artifact, ArtifactLink } from '@/definitions';
 import { isPrimitiveArrayEqual } from '@/helpers/isPrimitiveArrayEqual';
 
+type DiffArtifactField = keyof Pick<
+  Artifact,
+  | 'artifactId'
+  | 'title'
+  | 'type'
+  | 'publishedAt'
+  | 'summary'
+  | 'judgment'
+  | 'tags'
+  | 'links'
+>;
+
+export type DiffArtifactResult = readonly DiffArtifactField[];
+
 export function diffArtifact(
   artifact1: Artifact,
   artifact2: Artifact
-): readonly (keyof Artifact)[] {
-  const changedFields: (keyof Artifact)[] = [];
+): DiffArtifactResult {
+  const changedFields: DiffArtifactField[] = [];
 
   if (artifact1.artifactId !== artifact2.artifactId) {
     changedFields.push('artifactId');

@@ -5,7 +5,7 @@ import type {
   UpdateConfig,
 } from '@hanlogy/ts-dynamodb';
 import { HelperBase } from './HelperBase';
-import { diffArtifact } from './diffArtifact';
+import { diffArtifact, type DiffArtifactResult } from './diffArtifact';
 import { diffArtifactIds } from './diffArtifactIds';
 import type { BuildPutItemsParams } from './types';
 
@@ -143,30 +143,29 @@ export class ArtifactByTagHelper extends HelperBase {
     oldArtifact: BuildPutItemsParams;
     newArtifact: BuildPutItemsParams;
   }): ResolveUpdateResult {
-    const put: ByTagPutConfig[] = [];
-    const update: ByTagUpdateConfig[] = [];
+    const putItems: ByTagPutConfig[] = [];
+    const updateItems: ByTagUpdateConfig[] = [];
     const deleteItems: ByTagDeleteConfig[] = [];
 
     const changedFields = diffArtifact(oldArtifact, newArtifact);
 
     if (changedFields.length === 0) {
-      return { put, update, delete: deleteItems };
+      return {
+        put: putItems,
+        update: updateItems,
+        delete: deleteItems,
+      };
     }
 
     const {
-      add: addedTagIds,
-      delete: removedTagIds,
-      untouched: untouchedTags,
+      added: addedTagIds,
+      removed: removedTagIds,
+      unchanged: unchangedTags,
     } = diffArtifactIds(oldArtifact.tags, newArtifact.tags);
 
-    const shouldReplaceKeptItems = changedFields.some((field) => {
-      return ['artifactId', 'publishedAt'].includes(field);
-    });
+    const shouldRebuildAllItems = this.hasByTagKeyChange(changedFields);
 
-    const shouldUpdateKeptItems =
-      changedFields.length > 0 && !shouldReplaceKeptItems;
-
-    if (shouldReplaceKeptItems) {
+    if (shouldRebuildAllItems) {
       deleteItems.push(
         ...this.buildDeleteItems({
           userId: oldArtifact.userId,
@@ -176,7 +175,7 @@ export class ArtifactByTagHelper extends HelperBase {
         })
       );
 
-      put.push(
+      putItems.push(
         ...this.buildPutItemsByTagIds({
           artifact: newArtifact,
           tagIds: newArtifact.tags,
@@ -184,8 +183,8 @@ export class ArtifactByTagHelper extends HelperBase {
       );
 
       return {
-        put,
-        update,
+        put: putItems,
+        update: updateItems,
         delete: deleteItems,
       };
     }
@@ -199,21 +198,21 @@ export class ArtifactByTagHelper extends HelperBase {
       })
     );
 
-    put.push(
+    putItems.push(
       ...this.buildPutItemsByTagIds({
         artifact: newArtifact,
         tagIds: addedTagIds,
       })
     );
 
-    if (shouldUpdateKeptItems) {
+    if (unchangedTags.length > 0) {
       const setAttributes = this.buildUpdateAttributes({
-        oldArtifact,
+        changedFields,
         newArtifact,
       });
 
-      update.push(
-        ...untouchedTags.map((artifactTagId) => ({
+      updateItems.push(
+        ...unchangedTags.map((artifactTagId) => ({
           keys: this.buildKeys({
             userId: newArtifact.userId,
             artifactId: newArtifact.artifactId,
@@ -226,20 +225,19 @@ export class ArtifactByTagHelper extends HelperBase {
     }
 
     return {
-      put,
-      update,
+      put: putItems,
+      update: updateItems,
       delete: deleteItems,
     };
   }
 
   private buildUpdateAttributes({
-    oldArtifact,
+    changedFields,
     newArtifact,
   }: {
-    oldArtifact: BuildPutItemsParams;
+    changedFields: DiffArtifactResult;
     newArtifact: BuildPutItemsParams;
   }): ByTagSetAttributes {
-    const changedFields = diffArtifact(oldArtifact, newArtifact);
     const setAttributes: ByTagSetAttributes = {};
 
     for (const field of changedFields) {
@@ -274,5 +272,12 @@ export class ArtifactByTagHelper extends HelperBase {
     }
 
     return setAttributes;
+  }
+
+  private hasByTagKeyChange(changedFields: DiffArtifactResult): boolean {
+    return (
+      changedFields.includes('artifactId') ||
+      changedFields.includes('publishedAt')
+    );
   }
 }

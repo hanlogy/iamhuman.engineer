@@ -181,14 +181,14 @@ export class ArtifactTagHelper extends HelperBase {
     });
 
     const {
-      add: addedTagIds,
-      delete: removedTagIds,
-      untouched: untouchedTagIds,
+      added: addedTagIds,
+      removed: removedTagIds,
+      unchanged: unchangedTagIds,
     } = diffArtifactIds(oldTagIds, tagIds);
 
     const addedTagIdSet = new Set(addedTagIds);
     const removedTagIdSet = new Set(removedTagIds);
-    const untouchedTagIdSet = new Set(untouchedTagIds);
+    const untouchedTagIdSet = new Set(unchangedTagIds);
 
     for (const { tag, isExisting } of resolvedTags) {
       if (untouchedTagIdSet.has(tag.artifactTagId)) {
