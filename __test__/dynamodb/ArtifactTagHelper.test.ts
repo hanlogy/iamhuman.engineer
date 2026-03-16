@@ -725,4 +725,126 @@ describe('ArtifactTagHelper', () => {
       await expect(helper.getTags({ userId })).rejects.toThrow();
     });
   });
+
+  describe('buildDecreaseCountItems', () => {
+    test('with some tags', async () => {
+      db.query
+        .mockResolvedValueOnce({
+          items: [
+            {
+              pk,
+              sk: '01|react|true',
+              gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+              gsi1Sk,
+              artifactTagId: '1-1-1-1',
+              userId,
+              key: 'react',
+              label: 'React',
+              count: 5,
+            },
+          ],
+        })
+        .mockResolvedValueOnce({
+          items: [
+            {
+              pk,
+              sk: '01|node-js|true',
+              gsi1Pk: 'ARTIFACT_TAG|user-1|2-2-2-2',
+              gsi1Sk,
+              artifactTagId: '2-2-2-2',
+              userId,
+              key: 'node-js',
+              label: 'Node JS',
+              count: 1,
+            },
+          ],
+        });
+
+      const result = await helper.buildDecreaseCountItems({
+        userId,
+        artifactTagIds: ['1-1-1-1', '2-2-2-2'],
+      });
+
+      expect(result).toStrictEqual([
+        {
+          keys: {
+            pk,
+            sk: '01|react|true',
+          },
+          setAttributes: {
+            count: 4,
+          },
+        },
+        {
+          keys: {
+            pk,
+            sk: '01|node-js|true',
+          },
+          setAttributes: {
+            count: 0,
+          },
+        },
+      ]);
+    });
+
+    test('ignore duplicated ids', async () => {
+      db.query.mockResolvedValueOnce({
+        items: [
+          {
+            pk,
+            sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+            gsi1Sk,
+            artifactTagId: '1-1-1-1',
+            userId,
+            key: 'react',
+            label: 'React',
+            count: 5,
+          },
+        ],
+      });
+
+      const result = await helper.buildDecreaseCountItems({
+        userId,
+        artifactTagIds: ['1-1-1-1', '1-1-1-1'],
+      });
+
+      expect(result).toStrictEqual([
+        {
+          keys: {
+            pk,
+            sk: '01|react|true',
+          },
+          setAttributes: {
+            count: 4,
+          },
+        },
+      ]);
+
+      expect(db.query).toHaveBeenCalledTimes(1);
+    });
+
+    test('ignore missing tags', async () => {
+      db.query.mockResolvedValueOnce({
+        items: [],
+      });
+
+      const result = await helper.buildDecreaseCountItems({
+        userId,
+        artifactTagIds: ['9-9-9-9'],
+      });
+
+      expect(result).toStrictEqual([]);
+    });
+
+    test('empty ids', async () => {
+      const result = await helper.buildDecreaseCountItems({
+        userId,
+        artifactTagIds: [],
+      });
+
+      expect(result).toStrictEqual([]);
+      expect(db.query).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -15,4 +15,5 @@ export class FakeDynamoDBHelper extends DynamoDBHelper {
   put = jest.fn();
   get = jest.fn();
   query = jest.fn();
+  transactWrite = jest.fn();
 }

@@ -92,7 +92,7 @@ export class ArtifactByTagHelper extends HelperBase {
     }));
   }
 
-  private buildDeleteItems({
+  buildDeleteItems({
     userId,
     artifactId,
     publishedAt,

@@ -227,6 +227,43 @@ export class ArtifactTagHelper extends HelperBase {
     return { tagIds, put, update };
   }
 
+  async buildDecreaseCountItems({
+    userId,
+    artifactTagIds,
+  }: {
+    userId: string;
+    artifactTagIds: readonly string[];
+  }): Promise<ResolveTagsResult['update']> {
+    const update: ResolveTagsResult['update'] = [];
+    const seen = new Set<string>();
+
+    for (const artifactTagId of artifactTagIds) {
+      if (seen.has(artifactTagId)) {
+        continue;
+      }
+
+      seen.add(artifactTagId);
+
+      const tag = await this.getByTagId({ userId, artifactTagId });
+
+      if (!tag) {
+        continue;
+      }
+
+      update.push({
+        keys: {
+          pk: tag.pk,
+          sk: tag.sk,
+        },
+        setAttributes: {
+          count: Math.max(tag.count - 1, 0),
+        },
+      });
+    }
+
+    return update;
+  }
+
   async getTags({ userId }: { userId: string }): Promise<ArtifactTag[]> {
     const { items } = await this.db.query({
       keyConditions: [

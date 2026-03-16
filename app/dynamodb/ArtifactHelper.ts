@@ -253,6 +253,48 @@ export class ArtifactHelper extends HelperBase {
     });
   }
 
+  async deleteItem({
+    userId,
+    artifactId,
+  }: {
+    userId: string;
+    artifactId: string;
+  }): Promise<void> {
+    const artifact = await this.get({ userId, artifactId });
+
+    if (!artifact) {
+      throw new Error('Artifact not found');
+    }
+
+    const byTagHelper = this.createHelper(ArtifactByTagHelper);
+    const tagHelper = this.createHelper(ArtifactTagHelper);
+
+    const byTagDeleteItems = byTagHelper.buildDeleteItems({
+      userId: artifact.userId,
+      artifactId: artifact.artifactId,
+      publishedAt: artifact.publishedAt,
+      tagIds: artifact.tags,
+    });
+
+    const tagCountUpdateItems = await tagHelper.buildDecreaseCountItems({
+      userId: artifact.userId,
+      artifactTagIds: artifact.tags,
+    });
+
+    await this.db.transactWrite({
+      delete: [
+        {
+          keys: this.buildKeys({
+            userId: artifact.userId,
+            artifactId: artifact.artifactId,
+          }),
+        },
+        ...byTagDeleteItems,
+      ],
+      update: tagCountUpdateItems,
+    });
+  }
+
   async getItems({ userId }: { userId: string }): Promise<Artifact[]> {
     const { items } = await this.db.query({
       indexName: 'GSI1',
