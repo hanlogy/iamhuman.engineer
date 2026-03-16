@@ -173,6 +173,42 @@ describe('ArtifactTagHelper', () => {
   });
 
   describe('resolveTags', () => {
+    test('add one tag which exists and the count is 0', async () => {
+      db.get
+        .mockResolvedValueOnce({
+          item: {
+            pk,
+            sk: '01|js|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|0-0-0-0',
+            gsi1Sk,
+            artifactTagId: '0-0-0-0',
+            userId,
+            key: 'js',
+            label: 'js',
+            count: 0,
+          },
+        })
+        .mockResolvedValueOnce({ item: undefined });
+
+      const result = await helper.resolveTags(userId, ['js']);
+
+      expect(result).toStrictEqual({
+        tagIds: ['0-0-0-0'],
+        put: [],
+        update: [
+          {
+            keys: {
+              pk: 'ARTIFACT_TAG|user-1',
+              sk: '01|js|true',
+            },
+            setAttributes: {
+              count: 1,
+            },
+          },
+        ],
+      });
+    });
+
     test('create flow with existing and new', async () => {
       randomUUIDMock.mockReturnValue('2-2-2-2');
 

@@ -134,7 +134,10 @@ export class ArtifactTagHelper extends HelperBase {
     const put: ResolveTagsResult['put'] = [];
     const update: ResolveTagsResult['update'] = [];
     const keys = new Set<string>();
-    const resolvedTags: ArtifactTagEntity[] = [];
+    const resolvedTags: Array<{
+      tag: ArtifactTagEntity;
+      isExisting: boolean;
+    }> = [];
 
     for (let tagLabel of newTagLabels) {
       tagLabel = tagLabel.trim();
@@ -151,12 +154,22 @@ export class ArtifactTagHelper extends HelperBase {
 
       keys.add(key);
 
-      let tag = await this.get({ userId, key });
+      const existingTag = await this.get({ userId, key });
 
-      if (!tag) {
-        const artifactTagId = randomUUID();
+      if (existingTag) {
+        // Changed: keep whether this tag already exists in db
+        resolvedTags.push({
+          tag: existingTag,
+          isExisting: true,
+        });
+        continue;
+      }
 
-        tag = {
+      const artifactTagId = randomUUID();
+
+      // Changed: create in-memory new tag only, do not write here
+      resolvedTags.push({
+        tag: {
           ...this.buildKeys({ userId, key }),
           ...this.buildGsi1Keys({ userId, artifactTagId }),
           artifactTagId,
@@ -164,26 +177,35 @@ export class ArtifactTagHelper extends HelperBase {
           key,
           label: tagLabel,
           count: 0,
-        };
-      }
-
-      resolvedTags.push(tag);
+        },
+        isExisting: false,
+      });
     }
 
-    const tagIds = resolvedTags.map(({ artifactTagId }) => artifactTagId);
+    const tagIds = resolvedTags.map(({ tag }) => {
+      return tag.artifactTagId;
+    });
 
-    const { add: addedTagIds, delete: removedTagIds } = diffArtifactIds(
-      oldTagIds,
-      tagIds
-    );
+    const {
+      add: addedTagIds,
+      delete: removedTagIds,
+      untouched: untouchedTagIds,
+    } = diffArtifactIds(oldTagIds, tagIds);
+
     const addedTagIdSet = new Set(addedTagIds);
+    const removedTagIdSet = new Set(removedTagIds);
+    const untouchedTagIdSet = new Set(untouchedTagIds);
 
-    for (const tag of resolvedTags) {
+    for (const { tag, isExisting } of resolvedTags) {
+      if (untouchedTagIdSet.has(tag.artifactTagId)) {
+        continue;
+      }
+
       if (!addedTagIdSet.has(tag.artifactTagId)) {
         continue;
       }
 
-      if (tag.count === 0) {
+      if (!isExisting) {
         put.push({
           keyNames: ['pk', 'sk'],
           item: {
@@ -205,11 +227,10 @@ export class ArtifactTagHelper extends HelperBase {
       });
     }
 
-    for (const artifactTagId of removedTagIds) {
+    for (const artifactTagId of removedTagIdSet) {
       const tag = await this.getByTagId({ userId, artifactTagId });
 
       if (!tag) {
-        // Ignore the missing tag
         continue;
       }
 
