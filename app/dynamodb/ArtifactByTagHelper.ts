@@ -1,6 +1,35 @@
-import type { PutConfig } from '@hanlogy/ts-dynamodb';
+import type {
+  DeleteConfig,
+  PutConfig,
+  SingleTableKeys,
+  UpdateConfig,
+} from '@hanlogy/ts-dynamodb';
 import { HelperBase } from './HelperBase';
 import type { BuildPutItemsParams } from './types';
+
+type ByTagSetAttributes = Partial<{
+  title: BuildPutItemsParams['title'];
+  type: BuildPutItemsParams['type'];
+  summary: BuildPutItemsParams['summary'];
+  judgment: BuildPutItemsParams['judgment'];
+  links: BuildPutItemsParams['links'];
+  tags: BuildPutItemsParams['tags'];
+}>;
+
+type ByTagPutConfig = PutConfig<
+  BuildPutItemsParams & SingleTableKeys,
+  keyof SingleTableKeys
+>;
+
+type ByTagUpdateConfig = UpdateConfig<ByTagSetAttributes, SingleTableKeys>;
+
+type ByTagDeleteConfig = DeleteConfig<SingleTableKeys>;
+
+interface ResolveUpdateResult {
+  readonly put: readonly ByTagPutConfig[];
+  readonly update: readonly ByTagUpdateConfig[];
+  readonly delete: readonly ByTagDeleteConfig[];
+}
 
 export class ArtifactByTagHelper extends HelperBase {
   private entity = 'ARTIFACT_BY_TAG';
@@ -44,7 +73,7 @@ export class ArtifactByTagHelper extends HelperBase {
     };
   }
 
-  buildPutItems(artifact: BuildPutItemsParams): PutConfig[] {
+  buildPutItems(artifact: BuildPutItemsParams): ByTagPutConfig[] {
     const { tags, userId, publishedAt, artifactId } = artifact;
 
     return tags.map((artifactTagId) => ({
