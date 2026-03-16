@@ -48,6 +48,8 @@ export interface ArtifactEntity extends Artifact {
 export interface ArtifactTagEntity extends ArtifactTag {
   readonly pk: string;
   readonly sk: string;
+  readonly gsi1Pk: string;
+  readonly gsi1Sk: string;
   readonly userId: string;
 }
 

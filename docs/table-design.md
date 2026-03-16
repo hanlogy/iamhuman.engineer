@@ -43,20 +43,20 @@ Note:
 - Changing `handle` requires moving the profile item to a new `pk` and updating
   the reverse lookup item in the same transaction.
 
-## Entity: artifact
+## Entity: ARTIFACT
 
 ### base table
 
-1. List all artifacts by a userId
-2. Get artifacts by a userId and a artifactId
+1. List all artifacts by a `userId`
+2. Get one artifact by a `userId` and an `artifactId`
 
 ### GSI 1
 
-1. List all artifacts by a userId and sort by `publishedAt`
+1. List all artifacts by a `userId` and sort by `publishedAt`
 
 ### GSI 2
 
-1. List all artifacts by a type and sort by `publishedAt`
+1. List all artifacts by a `userId` and a `type`, and sort by `publishedAt`
 
 | Attribute   | Type     | Example                        |
 | ----------- | -------- | ------------------------------ |
@@ -64,11 +64,10 @@ Note:
 | sk          | string   | 01#{artifactId}#               |
 | gsi1Pk      | string   | ARTIFACT#{userId}              |
 | gsi1Sk      | string   | 01#{publishedAt}#{artifactId}# |
-| gsi2Pk      | string   | ARTIFACT#{userId}{type}        |
+| gsi2Pk      | string   | ARTIFACT#{userId}#{type}       |
 | gsi2Sk      | string   | 01#{publishedAt}#{artifactId}# |
 | artifactId  | string   | a-b-c-d                        |
 | userId      | string   | a-b-c-d                        |
-| userId      | string   | foo                            |
 | title       | string   | My work                        |
 | type        | string   | talk                           |
 | tags        | string[] |                                |
@@ -81,19 +80,41 @@ Note:
 
 ### base table
 
-| Attribute | Type   | Example                                        |
-| --------- | ------ | ---------------------------------------------- |
-| pk        | string | ARTIFACT_BY_TAG#{userId}                       |
-| sk        | string | 01#{artifactTagId}#{publishedAt}#{artifactId}# |
+1. List artifacts of a user by tag and sort by `publishedAt`
 
-## Entity ARTIFACTTAG
+| Attribute   | Type     | Example                                       |
+| ----------- | -------- | --------------------------------------------- |
+| pk          | string   | ARTIFACT_BY_TAG#{userId}                      |
+| sk          | string   | 01#{artifactTagId}#{publishedAt}#{artifactId} |
+| artifactId  | string   | a-b-c-d                                       |
+| userId      | string   | a-b-c-d                                       |
+| title       | string   | My work                                       |
+| type        | string   | talk                                          |
+| tags        | string[] |                                               |
+| publishedAt | string   | 2026-01-01                                    |
+| summary     | string   |                                               |
+| links       | json[]   |                                               |
+| judgment    | string   |                                               |
 
-| Attribute     | Type   | Example               |
-| ------------- | ------ | --------------------- |
-| pk            | string | ARTIFACT_TAG#{userId} |
-| sk            | string | 01#{key}#             |
-| artifactTagId | string |                       |
-| key           | string |                       |
-| label         | string |                       |
-| count         | string |                       |
-| userId        | string |                       |
+## Entity: ARTIFACT_TAG
+
+### base table
+
+1. List all tags by a `userId`
+2. Get one tag by a `userId` and a normalized `key`
+
+### GSI 1
+
+1. Get one tag by a `userId` and an `artifactTagId`
+
+| Attribute     | Type   | Example                               |
+| ------------- | ------ | ------------------------------------- |
+| pk            | string | ARTIFACT_TAG#{userId}                 |
+| sk            | string | 01#{key}#                             |
+| gsi1Pk        | string | ARTIFACT_TAG#{userId}#{artifactTagId} |
+| gsi1Sk        | string | 01#                                   |
+| artifactTagId | string | a-b-c-d                               |
+| key           | string | node-js                               |
+| label         | string | Node JS                               |
+| count         | number | 3                                     |
+| userId        | string | a-b-c-d                               |

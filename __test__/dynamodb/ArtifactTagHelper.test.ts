@@ -1,4 +1,3 @@
-// ArtifactTagHelper.test.ts
 import { randomUUID } from 'crypto';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
 import { FakeDynamoDBHelper } from './FakeDynamoDBHelper';
@@ -12,6 +11,7 @@ const randomUUIDMock = randomUUID as jest.Mock;
 describe('ArtifactTagHelper', () => {
   const userId = 'user-1';
   const pk = 'ARTIFACT_TAG|user-1';
+  const gsi1Sk = '01|true';
 
   let db: FakeDynamoDBHelper;
   let helper: ArtifactTagHelper;
@@ -37,6 +37,8 @@ describe('ArtifactTagHelper', () => {
     expect(result).toStrictEqual({
       pk,
       sk: '01|react|true',
+      gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+      gsi1Sk,
       artifactTagId: '1-1-1-1',
       userId,
       key: 'react',
@@ -49,6 +51,8 @@ describe('ArtifactTagHelper', () => {
       item: {
         pk,
         sk: '01|react|true',
+        gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+        gsi1Sk,
         artifactTagId: '1-1-1-1',
         userId,
         key: 'react',
@@ -63,6 +67,8 @@ describe('ArtifactTagHelper', () => {
       const item = {
         pk,
         sk: '01|react|true',
+        gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+        gsi1Sk,
         artifactTagId: '1-1-1-1',
         userId,
         key: 'react',
@@ -106,8 +112,68 @@ describe('ArtifactTagHelper', () => {
     });
   });
 
+  describe('getByTagId', () => {
+    test('with result', async () => {
+      db.query.mockResolvedValue({
+        items: [
+          {
+            pk,
+            sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+            gsi1Sk,
+            artifactTagId: '1-1-1-1',
+            userId,
+            key: 'react',
+            label: 'React',
+            count: 2,
+          },
+        ],
+      });
+
+      const result = await helper.getByTagId({
+        userId,
+        artifactTagId: '1-1-1-1',
+      });
+
+      expect(db.query).toHaveBeenCalledWith({
+        indexName: 'GSI1',
+        keyConditions: [
+          {
+            attribute: 'gsi1Pk',
+            value: 'ARTIFACT_TAG|user-1|1-1-1-1',
+          },
+        ],
+      });
+
+      expect(result).toStrictEqual({
+        pk,
+        sk: '01|react|true',
+        gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+        gsi1Sk,
+        artifactTagId: '1-1-1-1',
+        userId,
+        key: 'react',
+        label: 'React',
+        count: 2,
+      });
+    });
+
+    test('without result', async () => {
+      db.query.mockResolvedValue({
+        items: [],
+      });
+
+      const result = await helper.getByTagId({
+        userId,
+        artifactTagId: '1-1-1-1',
+      });
+
+      expect(result).toBeUndefined();
+    });
+  });
+
   describe('resolveTags', () => {
-    test('with existing and new', async () => {
+    test('create flow with existing and new', async () => {
       randomUUIDMock.mockReturnValue('2-2-2-2');
 
       db.get
@@ -115,6 +181,8 @@ describe('ArtifactTagHelper', () => {
           item: {
             pk,
             sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|0-0-0-0',
+            gsi1Sk,
             artifactTagId: '0-0-0-0',
             userId,
             key: 'react',
@@ -141,6 +209,8 @@ describe('ArtifactTagHelper', () => {
             item: {
               pk,
               sk: '01|node-js|true',
+              gsi1Pk: 'ARTIFACT_TAG|user-1|2-2-2-2',
+              gsi1Sk,
               artifactTagId: '2-2-2-2',
               userId,
               key: 'node-js',
@@ -175,14 +245,17 @@ describe('ArtifactTagHelper', () => {
         },
       });
       expect(db.put).not.toHaveBeenCalled();
+      expect(db.query).not.toHaveBeenCalled();
     });
 
-    test('all existing', async () => {
+    test('create flow all existing', async () => {
       db.get
         .mockResolvedValueOnce({
           item: {
             pk,
             sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+            gsi1Sk,
             artifactTagId: '1-1-1-1',
             userId,
             key: 'react',
@@ -194,6 +267,8 @@ describe('ArtifactTagHelper', () => {
           item: {
             pk,
             sk: '01|node-js|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|2-2-2-2',
+            gsi1Sk,
             artifactTagId: '2-2-2-2',
             userId,
             key: 'node-js',
@@ -231,6 +306,240 @@ describe('ArtifactTagHelper', () => {
 
       expect(db.get).toHaveBeenCalledTimes(2);
       expect(db.put).not.toHaveBeenCalled();
+      expect(db.query).not.toHaveBeenCalled();
+    });
+
+    test('update flow without tag changes', async () => {
+      db.get
+        .mockResolvedValueOnce({
+          item: {
+            pk,
+            sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+            gsi1Sk,
+            artifactTagId: '1-1-1-1',
+            userId,
+            key: 'react',
+            label: 'React',
+            count: 5,
+          },
+        })
+        .mockResolvedValueOnce({
+          item: {
+            pk,
+            sk: '01|node-js|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|2-2-2-2',
+            gsi1Sk,
+            artifactTagId: '2-2-2-2',
+            userId,
+            key: 'node-js',
+            label: 'Node JS',
+            count: 3,
+          },
+        });
+
+      const result = await helper.resolveTags(
+        userId,
+        ['React', 'Node JS'],
+        ['1-1-1-1', '2-2-2-2']
+      );
+
+      expect(result).toStrictEqual({
+        tagIds: ['1-1-1-1', '2-2-2-2'],
+        put: [],
+        update: [],
+      });
+
+      expect(db.query).not.toHaveBeenCalled();
+    });
+
+    test('update flow add existing tag only', async () => {
+      db.get
+        .mockResolvedValueOnce({
+          item: {
+            pk,
+            sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+            gsi1Sk,
+            artifactTagId: '1-1-1-1',
+            userId,
+            key: 'react',
+            label: 'React',
+            count: 5,
+          },
+        })
+        .mockResolvedValueOnce({
+          item: {
+            pk,
+            sk: '01|node-js|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|2-2-2-2',
+            gsi1Sk,
+            artifactTagId: '2-2-2-2',
+            userId,
+            key: 'node-js',
+            label: 'Node JS',
+            count: 3,
+          },
+        });
+
+      const result = await helper.resolveTags(
+        userId,
+        ['React', 'Node JS'],
+        ['1-1-1-1']
+      );
+
+      expect(result).toStrictEqual({
+        tagIds: ['1-1-1-1', '2-2-2-2'],
+        put: [],
+        update: [
+          {
+            keys: {
+              pk,
+              sk: '01|node-js|true',
+            },
+            setAttributes: {
+              count: 4,
+            },
+          },
+        ],
+      });
+    });
+
+    test('update flow remove existing tag only', async () => {
+      db.get.mockResolvedValueOnce({
+        item: {
+          pk,
+          sk: '01|react|true',
+          gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+          gsi1Sk,
+          artifactTagId: '1-1-1-1',
+          userId,
+          key: 'react',
+          label: 'React',
+          count: 5,
+        },
+      });
+
+      db.query.mockResolvedValueOnce({
+        items: [
+          {
+            pk,
+            sk: '01|node-js|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|2-2-2-2',
+            gsi1Sk,
+            artifactTagId: '2-2-2-2',
+            userId,
+            key: 'node-js',
+            label: 'Node JS',
+            count: 3,
+          },
+        ],
+      });
+
+      const result = await helper.resolveTags(
+        userId,
+        ['React'],
+        ['1-1-1-1', '2-2-2-2']
+      );
+
+      expect(result).toStrictEqual({
+        tagIds: ['1-1-1-1'],
+        put: [],
+        update: [
+          {
+            keys: {
+              pk,
+              sk: '01|node-js|true',
+            },
+            setAttributes: {
+              count: 2,
+            },
+          },
+        ],
+      });
+
+      expect(db.query).toHaveBeenCalledWith({
+        indexName: 'GSI1',
+        keyConditions: [
+          {
+            attribute: 'gsi1Pk',
+            value: 'ARTIFACT_TAG|user-1|2-2-2-2',
+          },
+        ],
+      });
+    });
+
+    test('update flow add and remove tags together', async () => {
+      randomUUIDMock.mockReturnValue('3-3-3-3');
+
+      db.get
+        .mockResolvedValueOnce({
+          item: {
+            pk,
+            sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+            gsi1Sk,
+            artifactTagId: '1-1-1-1',
+            userId,
+            key: 'react',
+            label: 'React',
+            count: 5,
+          },
+        })
+        .mockResolvedValueOnce({ item: undefined });
+
+      db.query.mockResolvedValueOnce({
+        items: [
+          {
+            pk,
+            sk: '01|node-js|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|2-2-2-2',
+            gsi1Sk,
+            artifactTagId: '2-2-2-2',
+            userId,
+            key: 'node-js',
+            label: 'Node JS',
+            count: 3,
+          },
+        ],
+      });
+
+      const result = await helper.resolveTags(
+        userId,
+        ['React', 'Vue JS'],
+        ['1-1-1-1', '2-2-2-2']
+      );
+
+      expect(result).toStrictEqual({
+        tagIds: ['1-1-1-1', '3-3-3-3'],
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk,
+              sk: '01|vue-js|true',
+              gsi1Pk: 'ARTIFACT_TAG|user-1|3-3-3-3',
+              gsi1Sk,
+              artifactTagId: '3-3-3-3',
+              userId,
+              key: 'vue-js',
+              label: 'Vue JS',
+              count: 1,
+            },
+          },
+        ],
+        update: [
+          {
+            keys: {
+              pk,
+              sk: '01|node-js|true',
+            },
+            setAttributes: {
+              count: 2,
+            },
+          },
+        ],
+      });
     });
 
     test('empty labels', async () => {
@@ -259,6 +568,8 @@ describe('ArtifactTagHelper', () => {
             item: {
               pk,
               sk: '01|vue-js|true',
+              gsi1Pk: 'ARTIFACT_TAG|user-1|3-3-3-3',
+              gsi1Sk,
               artifactTagId: '3-3-3-3',
               userId,
               key: 'vue-js',
@@ -277,6 +588,30 @@ describe('ArtifactTagHelper', () => {
         },
       });
       expect(db.put).not.toHaveBeenCalled();
+    });
+
+    test('throw when removed tag is not found', async () => {
+      db.get.mockResolvedValueOnce({
+        item: {
+          pk,
+          sk: '01|react|true',
+          gsi1Pk: 'ARTIFACT_TAG|user-1|1-1-1-1',
+          gsi1Sk,
+          artifactTagId: '1-1-1-1',
+          userId,
+          key: 'react',
+          label: 'React',
+          count: 5,
+        },
+      });
+
+      db.query.mockResolvedValueOnce({
+        items: [],
+      });
+
+      await expect(
+        helper.resolveTags(userId, ['React'], ['1-1-1-1', '2-2-2-2'])
+      ).rejects.toThrow('Tag not found: 2-2-2-2');
     });
   });
 
@@ -305,6 +640,8 @@ describe('ArtifactTagHelper', () => {
           {
             pk,
             sk: '01|react|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|tag-1',
+            gsi1Sk,
             artifactTagId: 'tag-1',
             userId,
             key: 'react',
@@ -314,6 +651,8 @@ describe('ArtifactTagHelper', () => {
           {
             pk,
             sk: '01|node-js|true',
+            gsi1Pk: 'ARTIFACT_TAG|user-1|tag-2',
+            gsi1Sk,
             artifactTagId: 'tag-2',
             userId,
             key: 'node-js',
@@ -338,6 +677,8 @@ describe('ArtifactTagHelper', () => {
         {
           pk,
           sk: '01|react|true',
+          gsi1Pk: 'ARTIFACT_TAG|user-1|tag-1',
+          gsi1Sk,
           artifactTagId: 'tag-1',
           userId,
           key: 'react',
@@ -347,6 +688,8 @@ describe('ArtifactTagHelper', () => {
         {
           pk,
           sk: '01|node-js|true',
+          gsi1Pk: 'ARTIFACT_TAG|user-1|tag-2',
+          gsi1Sk,
           artifactTagId: 'tag-2',
           userId,
           key: 'node-js',
