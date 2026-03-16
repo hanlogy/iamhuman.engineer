@@ -9,6 +9,7 @@ import type {
   ArtifactEntity,
   CreateArtifactParams,
   BuildPutItemsParams,
+  UpdateArtifactParams,
 } from './types';
 
 type ArtifactSetAttributes = Partial<{
@@ -171,19 +172,18 @@ export class ArtifactHelper extends HelperBase {
     });
   }
 
-  async updateItem({
-    artifactId,
-    title,
-    userId,
-    publishedAt,
-    type,
-    summary,
-    links,
-    judgment,
-    tagLabels,
-  }: CreateArtifactParams & {
-    artifactId: string;
-  }): Promise<void> {
+  async updateItem(
+    { userId, artifactId }: { userId: string; artifactId: string },
+    {
+      title,
+      publishedAt,
+      type,
+      summary,
+      links,
+      judgment,
+      tagLabels,
+    }: UpdateArtifactParams
+  ): Promise<void> {
     const oldArtifact = await this.get({ userId, artifactId });
 
     if (!oldArtifact) {

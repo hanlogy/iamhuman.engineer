@@ -255,17 +255,21 @@ describe('ArtifactHelper', () => {
       db.get.mockResolvedValue({ item: undefined });
 
       await expect(
-        helper.updateItem({
-          artifactId,
-          userId,
-          title: 'My title',
-          type: 'research',
-          publishedAt,
-          summary: 'summary',
-          links,
-          judgment: 'good',
-          tagLabels: ['React'],
-        })
+        helper.updateItem(
+          {
+            artifactId,
+            userId,
+          },
+          {
+            title: 'My title',
+            type: 'research',
+            publishedAt,
+            summary: 'summary',
+            links,
+            judgment: 'good',
+            tagLabels: ['React'],
+          }
+        )
       ).rejects.toThrow('Artifact not found');
     });
 
@@ -285,17 +289,21 @@ describe('ArtifactHelper', () => {
       });
       diffArtifactMock.mockReturnValue([]);
 
-      await helper.updateItem({
-        artifactId,
-        userId,
-        title: 'My title',
-        type: 'research',
-        publishedAt,
-        summary: 'summary',
-        links,
-        judgment: 'good',
-        tagLabels: ['React', 'Node JS'],
-      });
+      await helper.updateItem(
+        {
+          artifactId,
+          userId,
+        },
+        {
+          title: 'My title',
+          type: 'research',
+          publishedAt,
+          summary: 'summary',
+          links,
+          judgment: 'good',
+          tagLabels: ['React', 'Node JS'],
+        }
+      );
 
       expect(mockResolveTags).toHaveBeenCalledWith(
         userId,
@@ -393,17 +401,21 @@ describe('ArtifactHelper', () => {
         'tags',
       ]);
 
-      await helper.updateItem({
-        artifactId,
-        userId,
-        title: 'New title',
-        type: 'knowledge',
-        publishedAt: '2026-03-16',
-        summary: 'summary',
-        links,
-        judgment: 'good',
-        tagLabels: ['React', 'Vue JS'],
-      });
+      await helper.updateItem(
+        {
+          artifactId,
+          userId,
+        },
+        {
+          title: 'New title',
+          type: 'knowledge',
+          publishedAt: '2026-03-16',
+          summary: 'summary',
+          links,
+          judgment: 'good',
+          tagLabels: ['React', 'Vue JS'],
+        }
+      );
 
       expect(db.transactWrite).toHaveBeenCalledWith({
         put: [
@@ -494,17 +506,21 @@ describe('ArtifactHelper', () => {
       });
       diffArtifactMock.mockReturnValue([]);
 
-      await helper.updateItem({
-        artifactId,
-        userId,
-        title: 'My title',
-        type: 'research',
-        publishedAt,
-        summary: 'summary',
-        links,
-        judgment: 'good',
-        tagLabels: ['React', 'Node JS'],
-      });
+      await helper.updateItem(
+        {
+          artifactId,
+          userId,
+        },
+        {
+          title: 'My title',
+          type: 'research',
+          publishedAt,
+          summary: 'summary',
+          links,
+          judgment: 'good',
+          tagLabels: ['React', 'Node JS'],
+        }
+      );
 
       expect(db.transactWrite).toHaveBeenCalledWith({
         put: [],
