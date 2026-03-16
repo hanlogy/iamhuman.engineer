@@ -3,57 +3,57 @@ import { diffArtifactIds } from '@/dynamodb/diffArtifactIds';
 describe('diffArtifactIds', () => {
   test('empty arrays', () => {
     expect(diffArtifactIds([], [])).toStrictEqual({
-      toAdd: [],
-      toDelete: [],
-      toKeep: [],
+      added: [],
+      removed: [],
+      unchanged: [],
     });
   });
 
   test('add only', () => {
     expect(diffArtifactIds(['a'], ['a', 'b', 'c'])).toStrictEqual({
-      toAdd: ['b', 'c'],
-      toDelete: [],
-      toKeep: ['a'],
+      added: ['b', 'c'],
+      removed: [],
+      unchanged: ['a'],
     });
   });
 
   test('delete only', () => {
     expect(diffArtifactIds(['a', 'b', 'c'], ['a'])).toStrictEqual({
-      toAdd: [],
-      toDelete: ['b', 'c'],
-      toKeep: ['a'],
+      added: [],
+      removed: ['b', 'c'],
+      unchanged: ['a'],
     });
   });
 
   test('add and delete', () => {
     expect(diffArtifactIds(['a', 'b'], ['b', 'c'])).toStrictEqual({
-      toAdd: ['c'],
-      toDelete: ['a'],
-      toKeep: ['b'],
+      added: ['c'],
+      removed: ['a'],
+      unchanged: ['b'],
     });
   });
 
   test('same arrays', () => {
     expect(diffArtifactIds(['a', 'b'], ['a', 'b'])).toStrictEqual({
-      toAdd: [],
-      toDelete: [],
-      toKeep: ['a', 'b'],
+      added: [],
+      removed: [],
+      unchanged: ['a', 'b'],
     });
   });
 
   test('different order', () => {
     expect(diffArtifactIds(['a', 'b'], ['b', 'a'])).toStrictEqual({
-      toAdd: [],
-      toDelete: [],
-      toKeep: ['b', 'a'],
+      added: [],
+      removed: [],
+      unchanged: ['b', 'a'],
     });
   });
 
   test('duplicate ids', () => {
     expect(diffArtifactIds(['a', 'a', 'b'], ['b', 'c', 'c'])).toStrictEqual({
-      toAdd: ['c'],
-      toDelete: ['a'],
-      toKeep: ['b'],
+      added: ['c'],
+      removed: ['a'],
+      unchanged: ['b'],
     });
   });
 });

@@ -1,7 +1,7 @@
 export interface DiffArtifactIdsResult {
-  readonly toAdd: readonly string[];
-  readonly toDelete: readonly string[];
-  readonly toKeep: readonly string[];
+  readonly added: readonly string[];
+  readonly removed: readonly string[];
+  readonly unchanged: readonly string[];
 }
 
 export function diffArtifactIds(
@@ -15,13 +15,13 @@ export function diffArtifactIds(
   const ids2Set = new Set(uniqueIds2);
 
   return {
-    toAdd: uniqueIds2.filter((id) => {
+    added: uniqueIds2.filter((id) => {
       return !ids1Set.has(id);
     }),
-    toDelete: uniqueIds1.filter((id) => {
+    removed: uniqueIds1.filter((id) => {
       return !ids2Set.has(id);
     }),
-    toKeep: uniqueIds2.filter((id) => {
+    unchanged: uniqueIds2.filter((id) => {
       return ids1Set.has(id);
     }),
   };
