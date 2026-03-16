@@ -198,6 +198,48 @@ describe('ArtifactByTagHelper', () => {
       });
     });
 
+    test('add and remove tags together', () => {
+      const oldTags = ['1-1-1-1', '2-2-2-2'];
+      const newTags = ['2-2-2-2', '3-3-3-3'];
+      const result = helper.resolveUpdate({
+        oldArtifact: { ...artifactBase, tags: oldTags },
+        newArtifact: { ...artifactBase, tags: newTags },
+      });
+
+      expect(result).toStrictEqual({
+        put: [
+          {
+            keyNames: ['pk', 'sk'],
+            item: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|3-3-3-3|2026-03-15T10:00:00.000Z|artifact-1',
+              ...artifactBase,
+              tags: newTags,
+            },
+          },
+        ],
+        update: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+            setAttributes: {
+              tags: newTags,
+            },
+          },
+        ],
+        delete: [
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+          },
+        ],
+      });
+    });
+
     test('publishedAt changed', () => {
       const tags = ['1-1-1-1', '2-2-2-2'];
       const result = helper.resolveUpdate({
@@ -250,12 +292,18 @@ describe('ArtifactByTagHelper', () => {
       });
     });
 
-    test('add and remove tags together', () => {
+    test('publishedAt changed, with add and remove tags', () => {
       const oldTags = ['1-1-1-1', '2-2-2-2'];
       const newTags = ['2-2-2-2', '3-3-3-3'];
+      const newPublishedAt = '2026-03-16T10:00:00.000Z';
+
       const result = helper.resolveUpdate({
         oldArtifact: { ...artifactBase, tags: oldTags },
-        newArtifact: { ...artifactBase, tags: newTags },
+        newArtifact: {
+          ...artifactBase,
+          tags: newTags,
+          publishedAt: newPublishedAt,
+        },
       });
 
       expect(result).toStrictEqual({
@@ -264,28 +312,35 @@ describe('ArtifactByTagHelper', () => {
             keyNames: ['pk', 'sk'],
             item: {
               pk: 'ARTIFACT_BY_TAG|user-1',
-              sk: '01|3-3-3-3|2026-03-15T10:00:00.000Z|artifact-1',
+              sk: '01|2-2-2-2|2026-03-16T10:00:00.000Z|artifact-1',
               ...artifactBase,
               tags: newTags,
+              publishedAt: newPublishedAt,
             },
           },
-        ],
-        update: [
           {
-            keys: {
+            keyNames: ['pk', 'sk'],
+            item: {
               pk: 'ARTIFACT_BY_TAG|user-1',
-              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
-            },
-            setAttributes: {
+              sk: '01|3-3-3-3|2026-03-16T10:00:00.000Z|artifact-1',
+              ...artifactBase,
               tags: newTags,
+              publishedAt: newPublishedAt,
             },
           },
         ],
+        update: [],
         delete: [
           {
             keys: {
               pk: 'ARTIFACT_BY_TAG|user-1',
               sk: '01|1-1-1-1|2026-03-15T10:00:00.000Z|artifact-1',
+            },
+          },
+          {
+            keys: {
+              pk: 'ARTIFACT_BY_TAG|user-1',
+              sk: '01|2-2-2-2|2026-03-15T10:00:00.000Z|artifact-1',
             },
           },
         ],

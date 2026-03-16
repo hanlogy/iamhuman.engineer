@@ -166,22 +166,6 @@ export class ArtifactByTagHelper extends HelperBase {
     const shouldUpdateKeptItems =
       changedFields.length > 0 && !shouldReplaceKeptItems;
 
-    deleteItems.push(
-      ...this.buildDeleteItems({
-        userId: oldArtifact.userId,
-        artifactId: oldArtifact.artifactId,
-        publishedAt: oldArtifact.publishedAt,
-        tagIds: removedTagIds,
-      })
-    );
-
-    put.push(
-      ...this.buildPutItemsByTagIds({
-        artifact: newArtifact,
-        tagIds: addedTagIds,
-      })
-    );
-
     if (shouldReplaceKeptItems) {
       deleteItems.push(
         ...this.buildDeleteItems({
@@ -205,6 +189,22 @@ export class ArtifactByTagHelper extends HelperBase {
         delete: deleteItems,
       };
     }
+
+    deleteItems.push(
+      ...this.buildDeleteItems({
+        userId: oldArtifact.userId,
+        artifactId: oldArtifact.artifactId,
+        publishedAt: oldArtifact.publishedAt,
+        tagIds: removedTagIds,
+      })
+    );
+
+    put.push(
+      ...this.buildPutItemsByTagIds({
+        artifact: newArtifact,
+        tagIds: addedTagIds,
+      })
+    );
 
     if (shouldUpdateKeptItems) {
       const setAttributes = this.buildUpdateAttributes({
