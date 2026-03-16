@@ -23,14 +23,14 @@ type ByTagPutConfig = PutConfig<
   keyof SingleTableKeys
 >;
 
-type ByTagUpdateConfig = UpdateConfig<ByTagSetAttributes, SingleTableKeys>;
+type ByTagUpdateConfig = UpdateConfig;
 
 type ByTagDeleteConfig = DeleteConfig<SingleTableKeys>;
 
 interface ResolveUpdateResult {
-  readonly put: readonly ByTagPutConfig[];
-  readonly update: readonly ByTagUpdateConfig[];
-  readonly delete: readonly ByTagDeleteConfig[];
+  readonly put: ByTagPutConfig[];
+  readonly update: ByTagUpdateConfig[];
+  readonly delete: ByTagDeleteConfig[];
 }
 
 export class ArtifactByTagHelper extends HelperBase {

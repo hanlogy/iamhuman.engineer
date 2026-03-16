@@ -40,6 +40,10 @@ export type UpdateArtifactParams = Omit<Artifact, 'artifactId' | 'tags'> & {
 export interface ArtifactEntity extends Artifact {
   readonly pk: string;
   readonly sk: string;
+  readonly gsi1Pk: string;
+  readonly gsi1Sk: string;
+  readonly gsi2Pk: string;
+  readonly gsi2Sk: string;
   readonly userId: string;
   readonly createdAt: string;
   readonly updatedAt: string;

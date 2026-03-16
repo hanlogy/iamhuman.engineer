@@ -128,8 +128,8 @@ export class ArtifactTagHelper extends HelperBase {
 
   async resolveTags(
     userId: string,
-    newTagLabels: string[],
-    oldTagIds: string[] = []
+    newTagLabels: readonly string[],
+    oldTagIds: readonly string[] = []
   ): Promise<ResolveTagsResult> {
     const put: ResolveTagsResult['put'] = [];
     const update: ResolveTagsResult['update'] = [];
