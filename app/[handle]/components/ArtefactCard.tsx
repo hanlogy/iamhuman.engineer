@@ -1,5 +1,5 @@
 import type { Artifact } from '@/definitions';
-import { EditArtifactButton } from './EditArtifactButton';
+import { ActionsButton } from './ActionsButton';
 
 export function ArtefactCard({
   artifact,
@@ -17,7 +17,7 @@ export function ArtefactCard({
 
       {isSelf && (
         <div className="text-foreground-secondary absolute top-2 right-2">
-          <EditArtifactButton artifact={artifact} />
+          <ActionsButton artifact={artifact} />
         </div>
       )}
     </div>
