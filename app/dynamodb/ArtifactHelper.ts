@@ -150,18 +150,7 @@ export class ArtifactHelper extends HelperBase {
             ...commonAttributes,
           },
         },
-        ...resolvedTags.tagIds.map((artifactTagId) => ({
-          keyNames: ['pk', 'sk'],
-          item: {
-            ...byTagHelper.buildKeys({
-              userId,
-              artifactId,
-              publishedAt,
-              artifactTagId,
-            }),
-            ...commonAttributes,
-          },
-        })),
+        ...byTagHelper.buildPutItems(commonAttributes),
         ...resolvedTags.put,
       ],
       update: resolvedTags.update,

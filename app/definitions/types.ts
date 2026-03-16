@@ -40,10 +40,10 @@ export interface Artifact {
   readonly artifactId: string;
   readonly title: string;
   readonly type: ArtifactType;
-  readonly tags: string[];
+  readonly tags: readonly string[];
   readonly publishedAt: string;
   readonly summary?: string;
-  readonly links: ArtifactLink[];
+  readonly links: readonly ArtifactLink[];
   readonly judgment?: string;
 }
 

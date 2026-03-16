@@ -59,3 +59,11 @@ export interface ResolveTagsResult {
     Pick<ArtifactTagEntity, 'pk' | 'sk'>
   >[];
 }
+
+export type BuildPutItemsParams = Omit<Artifact, 'tags'> & {
+  /**
+   * tag ids
+   */
+  tags: string[];
+  userId: string;
+};

@@ -1,4 +1,6 @@
+import type { PutConfig } from '@hanlogy/ts-dynamodb';
 import { HelperBase } from './HelperBase';
+import type { BuildPutItemsParams } from './types';
 
 export class ArtifactByTagHelper extends HelperBase {
   private entity = 'ARTIFACT_BY_TAG';
@@ -25,7 +27,7 @@ export class ArtifactByTagHelper extends HelperBase {
     );
   }
 
-  buildKeys({
+  private buildKeys({
     userId,
     artifactId,
     publishedAt,
@@ -40,5 +42,22 @@ export class ArtifactByTagHelper extends HelperBase {
       pk: this.buildPk({ userId }),
       sk: this.buildSk({ artifactId, publishedAt, artifactTagId }),
     };
+  }
+
+  buildPutItems(artifact: BuildPutItemsParams): PutConfig[] {
+    const { tags, userId, publishedAt, artifactId } = artifact;
+
+    return tags.map((artifactTagId) => ({
+      keyNames: ['pk', 'sk'],
+      item: {
+        ...this.buildKeys({
+          userId,
+          artifactId,
+          publishedAt,
+          artifactTagId,
+        }),
+        ...artifact,
+      },
+    }));
   }
 }
