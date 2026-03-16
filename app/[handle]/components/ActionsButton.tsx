@@ -6,9 +6,11 @@ import {
   IconButton,
   IconWrapper,
 } from '@hanlogy/react-web-ui';
+import { deleteArtifact } from '@/actions/artifacts/deleteArtifact';
 import { DeleteSvg, EditSvg, MoreVertSvg } from '@/components/svgs';
 import type { Artifact } from '@/definitions';
 import { useOpenArtifactEditor } from '@/hooks/useOpenArtifactEditor';
+import { useOpenConfirm } from '@/hooks/useOpenConfirm';
 
 const actionItems = [
   { name: 'edit', label: 'Edit', Icon: EditSvg },
@@ -19,13 +21,25 @@ type ActionKey = (typeof actionItems)[number]['name'];
 
 export function ActionsButton({ artifact }: { artifact: Artifact }) {
   const { openEditor } = useOpenArtifactEditor({ artifact });
+  const { openConfirm } = useOpenConfirm();
 
-  const handleSelect = (name: ActionKey) => {
+  const handleSelect = async (name: ActionKey) => {
     switch (name) {
       case 'edit':
         openEditor();
         return;
       case 'delete':
+        const yes = await openConfirm({
+          title: 'Delete artifact?',
+          message: `"${artifact.title}" will be permanently deleted. This action cannot be undone.`,
+          yesLabel: 'Delete',
+        });
+
+        if (yes) {
+          // TODO: show error info in a dialog when failed
+          await deleteArtifact(artifact.artifactId);
+        }
+
         return;
     }
   };
@@ -51,9 +65,9 @@ export function ActionsButton({ artifact }: { artifact: Artifact }) {
       itemBuilder={({ close, item: { name, label, Icon } }) => {
         return (
           <button
-            onClick={() => {
-              handleSelect(name);
+            onClick={async () => {
               close();
+              await handleSelect(name);
             }}
             className="hover:bg-surface-secondary flex h-10 w-full cursor-pointer items-center px-4 text-left"
           >
