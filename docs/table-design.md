@@ -86,6 +86,7 @@ List all artifacts by `type`:
 | summary     | string   |                                |
 | links       | json[]   |                                |
 | judgment    | string   |                                |
+| image       | string?  |                                |
 
 ## Entity: ARTIFACT_BY_TAG
 

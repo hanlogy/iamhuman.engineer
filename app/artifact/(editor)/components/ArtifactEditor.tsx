@@ -5,6 +5,7 @@ import { clsx, useForm } from '@hanlogy/react-web-ui';
 import { useRouter } from 'next/navigation';
 import { saveArtifact } from '@/actions/artifacts/saveArtifact';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { useImageUploadContext } from '@/components/ImageUpload/hooks';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import {
   SelectField,
@@ -48,6 +49,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
   const [tabName, setTabName] = useState<TabName>('summary');
   const [error, setError] = useState<string>('');
   const [isPending, setIsPending] = useState<boolean>(false);
+  const { resolveImage } = useImageUploadContext();
   const [links, setLinks] = useState<(ArtifactLink & { id: string })[]>(
     (() => {
       const items = (artifact?.links ?? []).map((e) => ({
@@ -102,6 +104,11 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
     }
 
     setIsPending(true);
+    const uodImage = await resolveImage();
+    if (!uodImage) {
+      return;
+    }
+
     const { error } = await saveArtifact(artifact?.artifactId, {
       title,
       type,
@@ -112,6 +119,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
       releaseDate,
       summary,
       judgment,
+      uodImage,
     });
     setIsPending(false);
 

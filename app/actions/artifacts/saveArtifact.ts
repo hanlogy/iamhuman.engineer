@@ -5,6 +5,7 @@ import {
   toActionSuccess,
   type ActionResponse,
 } from '@hanlogy/react-kit';
+import type { UODImage } from '@/components/ImageUpload';
 import type { Artifact } from '@/definitions/types';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
 import { getUserFromCookie } from '@/server/userInCookie';
@@ -13,6 +14,7 @@ export async function saveArtifact(
   id: string | undefined,
   attributes: Omit<Artifact, 'artifactId' | 'tags' | 'userId'> & {
     tagLabels: string[];
+    uodImage: UODImage;
   }
 ): Promise<ActionResponse> {
   const artifactHelper = new ArtifactHelper();

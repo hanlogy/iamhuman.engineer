@@ -1,4 +1,5 @@
 import type { PutConfig, UpdateConfig } from '@hanlogy/ts-dynamodb';
+import type { UODImage } from '@/components/ImageUpload';
 import type { Artifact, ArtifactTag, Profile } from '@/definitions/types';
 
 export interface ProfileEntity extends Profile {
@@ -30,6 +31,7 @@ export class DBHelperError<T> extends Error {
 
 export type CreateArtifactParams = Omit<Artifact, 'artifactId' | 'tags'> & {
   tagLabels: string[];
+  uodImage: UODImage;
 };
 
 export type UpdateArtifactParams = Omit<
@@ -37,6 +39,7 @@ export type UpdateArtifactParams = Omit<
   'artifactId' | 'tags' | 'userId'
 > & {
   tagLabels: string[];
+  uodImage: UODImage;
 };
 
 export interface ArtifactEntity extends Artifact {
@@ -75,4 +78,5 @@ export type BuildPutItemsParams = Omit<Artifact, 'tags'> & {
    * tag ids
    */
   readonly tags: readonly string[];
+  readonly image?: string;
 };

@@ -16,6 +16,7 @@ type ByTagSetAttributes = Partial<{
   judgment: BuildPutItemsParams['judgment'];
   links: BuildPutItemsParams['links'];
   tags: BuildPutItemsParams['tags'];
+  image: BuildPutItemsParams['image'];
 }>;
 
 type ByTagPutConfig = PutConfig<
@@ -263,6 +264,10 @@ export class ArtifactByTagHelper extends HelperBase {
 
       if (field === 'links') {
         setAttributes.links = newArtifact.links;
+        continue;
+      }
+      if (field === 'image') {
+        setAttributes.image = newArtifact.image;
         continue;
       }
 

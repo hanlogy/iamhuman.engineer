@@ -11,6 +11,7 @@ type DiffArtifactField = keyof Pick<
   | 'judgment'
   | 'tags'
   | 'links'
+  | 'image'
 >;
 
 export type DiffArtifactResult = readonly DiffArtifactField[];
@@ -43,6 +44,10 @@ export function diffArtifact(
 
   if (artifact1.judgment !== artifact2.judgment) {
     changedFields.push('judgment');
+  }
+
+  if (artifact1.image !== artifact2.image) {
+    changedFields.push('image');
   }
 
   if (!isPrimitiveArrayEqual(artifact1.tags, artifact2.tags)) {

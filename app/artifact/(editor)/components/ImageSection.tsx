@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { IconWrapper, InputLabel } from '@hanlogy/react-web-ui';
 import { ImageUpload } from '@/components/ImageUpload/ImageUpload';
+import { useImageUploadContext } from '@/components/ImageUpload/hooks';
 import { AddSvg } from '@/components/svgs';
 
 export function ImageSection() {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const { imageToPreview } = useImageUploadContext();
+  const [isExpanded, setIsExpanded] = useState<boolean>(!!imageToPreview);
 
   return (
     <>

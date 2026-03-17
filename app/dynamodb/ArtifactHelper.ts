@@ -20,6 +20,7 @@ type ArtifactSetAttributes = Partial<{
   links: ArtifactEntity['links'];
   judgment: ArtifactEntity['judgment'];
   tags: ArtifactEntity['tags'];
+  image: ArtifactEntity['image'];
   gsi1Pk: ArtifactEntity['gsi1Pk'];
   gsi1Sk: ArtifactEntity['gsi1Sk'];
   gsi2Pk: ArtifactEntity['gsi2Pk'];
@@ -146,6 +147,7 @@ export class ArtifactHelper extends HelperBase {
     links,
     judgment,
     tagLabels,
+    uodImage,
   }: CreateArtifactParams) {
     const artifactId = randomUUID();
     const tagHelper = this.createHelper(ArtifactTagHelper);
@@ -163,6 +165,7 @@ export class ArtifactHelper extends HelperBase {
       summary,
       links,
       judgment,
+      image: uodImage.newKey,
     };
 
     await this.db.transactWrite({
@@ -194,6 +197,7 @@ export class ArtifactHelper extends HelperBase {
       links,
       judgment,
       tagLabels,
+      uodImage,
     }: UpdateArtifactParams
   ): Promise<void> {
     const oldArtifact = await this.get({ artifactId });
@@ -221,6 +225,8 @@ export class ArtifactHelper extends HelperBase {
       links,
       judgment,
       tags: resolvedTags.tagIds,
+      ...(uodImage.isDelete ? { image: '' } : {}),
+      ...(uodImage.newKey ? { image: uodImage.newKey } : {}),
     };
 
     const byTagChanges = byTagHelper.resolveUpdate({
@@ -234,6 +240,7 @@ export class ArtifactHelper extends HelperBase {
         links: oldArtifact.links,
         judgment: oldArtifact.judgment,
         tags: oldArtifact.tags,
+        image: oldArtifact.image,
       },
       newArtifact,
     });
@@ -409,6 +416,11 @@ export class ArtifactHelper extends HelperBase {
 
       if (field === 'links') {
         setAttributes.links = newArtifact.links;
+        continue;
+      }
+
+      if (field === 'image') {
+        setAttributes.image = newArtifact.image;
         continue;
       }
 
