@@ -87,6 +87,12 @@ export function ProfileForm({
           })}
         />
         <TextField
+          defaultValue={defaultLocation}
+          label="Location"
+          controller={register('location')}
+        />
+
+        <TextField
           helper={`${host}/${handle}`}
           defaultValue={handle}
           label="Handle"
@@ -103,11 +109,6 @@ export function ProfileForm({
               }
             },
           })}
-        />
-        <TextField
-          defaultValue={defaultLocation}
-          label="Location"
-          controller={register('location')}
         />
 
         <div className="py-5 text-center">

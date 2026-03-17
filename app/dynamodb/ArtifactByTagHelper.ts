@@ -4,6 +4,7 @@ import type {
   SingleTableKeys,
   UpdateConfig,
 } from '@hanlogy/ts-dynamodb';
+import type { Artifact } from '@/definitions';
 import { HelperBase } from './HelperBase';
 import { diffArtifact, type DiffArtifactResult } from './diffArtifact';
 import { diffArtifactIds } from './diffArtifactIds';
@@ -112,6 +113,32 @@ export class ArtifactByTagHelper extends HelperBase {
         artifactTagId,
       }),
     }));
+  }
+
+  async getItems({
+    userId,
+    artifactTagId,
+  }: {
+    userId: string;
+    artifactTagId: string;
+  }): Promise<Artifact[]> {
+    const { items } = await this.db.query({
+      descending: true,
+      keyConditions: [
+        {
+          attribute: 'pk',
+          value: this.buildPk({ userId }),
+        },
+        {
+          attribute: 'sk',
+          value: this.db.buildKey(this.version, artifactTagId),
+          operator: 'begins_with',
+        },
+      ],
+    });
+
+    // TODO: Fix it later
+    return items as Artifact[];
   }
 
   private buildPutItemsByTagIds({

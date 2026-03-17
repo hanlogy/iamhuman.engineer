@@ -1,25 +1,40 @@
-import type { ArtifactTag, Profile } from '@/definitions';
+import type { Artifact, ArtifactTag, Profile } from '@/definitions';
+import { ArtifactByTagHelper } from '@/dynamodb/ArtifactByTagHelper';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
 import { tagIdsToLabels } from '@/helpers/tagIdsToLabels';
 import { ArtefactCard } from './ArtefactCard';
 
 export async function ArtefactList({
+  selectedTag,
   tags,
   profile: { userId },
   isSelf,
 }: {
+  selectedTag?: ArtifactTag | undefined;
   tags: ArtifactTag[];
   profile: Profile;
   isSelf: boolean;
 }) {
-  const artifactHelper = new ArtifactHelper();
-  const artifacts = (await artifactHelper.getItems({ userId })).map(
-    ({ tags: tagIds, ...rest }) => {
+  const artifacts = await (async () => {
+    let artifacts: Artifact[];
+
+    if (selectedTag) {
+      const byTagHelper = new ArtifactByTagHelper();
+      artifacts = await byTagHelper.getItems({
+        userId,
+        artifactTagId: selectedTag.artifactTagId,
+      });
+    } else {
+      const artifactHelper = new ArtifactHelper();
+      artifacts = await artifactHelper.getItems({ userId });
+    }
+
+    return artifacts.map(({ tags: tagIds, ...rest }) => {
       const tagLabels = tagIdsToLabels(tagIds, tags);
 
       return { ...rest, tags: tagLabels };
-    }
-  );
+    });
+  })();
 
   if (artifacts.length === 0) {
     return (

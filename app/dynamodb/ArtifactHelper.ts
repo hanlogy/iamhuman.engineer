@@ -328,6 +328,7 @@ export class ArtifactHelper extends HelperBase {
 
   async getItems({ userId }: { userId: string }): Promise<Artifact[]> {
     const { items } = await this.db.query({
+      descending: true,
       indexName: 'GSI1',
       keyConditions: [
         {

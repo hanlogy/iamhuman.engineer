@@ -10,16 +10,23 @@ import { ArtefactToolbar } from './components/ArtefactToolbar';
 import { ArtifactFilters } from './components/ArtifactFilters';
 import { ProfileSummary } from './components/ProfileSummary';
 
-export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
+export default async function ProfilePage({
+  params,
+  searchParams,
+}: PageProps<'/[handle]'>) {
   const { handle } = await params;
+  const { tag } = await searchParams;
   const profileHelper = new ProfileHelper();
   const profile = await profileHelper.getItem({ handle });
   if (!profile) {
     return notFound();
   }
 
+  const tagKey = typeof tag === 'string' && tag ? tag : undefined;
+
   const tagHelper = new ArtifactTagHelper();
-  const tags = await tagHelper.getTags({ userId: profile.userId }); //.filter((e) => e.count > 0);
+  const tags = await tagHelper.getTags({ userId: profile.userId });
+  const selectedTag = tags.find(({ key }) => key === tagKey);
 
   const { userId: myUserId } = (await getUserFromCookie()) ?? {};
   const isSelf = myUserId === profile.userId;
@@ -31,7 +38,11 @@ export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
           <ProfileSummary profile={profile} />
         </div>
         <div className="hidden md:block">
-          <ArtifactFilters tags={tags} />
+          <ArtifactFilters
+            handle={handle}
+            tags={tags}
+            selectedTag={selectedTag}
+          />
         </div>
       </div>
       <div className="md:flex-1">
@@ -45,7 +56,12 @@ export default async function ProfilePage({ params }: PageProps<'/[handle]'>) {
             </div>
           }
         >
-          <ArtefactList isSelf={isSelf} tags={tags} profile={profile} />
+          <ArtefactList
+            selectedTag={selectedTag}
+            isSelf={isSelf}
+            tags={tags}
+            profile={profile}
+          />
         </Suspense>
       </div>
     </div>
