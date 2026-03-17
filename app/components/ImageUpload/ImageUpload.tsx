@@ -21,12 +21,15 @@ export function ImageUpload({ style }: { style: ImageUploadStyle }) {
   const selectButtonLabel = imageToPreview ? 'Change' : 'Select';
 
   return (
-    <div className="flex flex-col items-center">
+    <>
       <div
-        className={clsx('bg-surface-secondary h-26 w-26 overflow-clip', {
-          'rounded-full': style === 'rounded',
-          'rounded-xl': style === 'square',
-        })}
+        className={clsx(
+          'bg-surface-secondary aspect-square w-full overflow-clip',
+          {
+            'rounded-full': style === 'rounded',
+            'rounded-xl': style === 'square',
+          }
+        )}
       >
         {imageToPreview && (
           <Image
@@ -38,7 +41,7 @@ export function ImageUpload({ style }: { style: ImageUploadStyle }) {
           />
         )}
       </div>
-      <div className="mt-4 space-x-2 text-center">
+      <div className="flex-center mt-4 space-x-2 text-center">
         {canDelete && (
           <Button
             onClick={() => deleteImage()}
@@ -65,6 +68,6 @@ export function ImageUpload({ style }: { style: ImageUploadStyle }) {
         />
       </div>
       <ErrorMessage className="mt-2" message={error} />
-    </div>
+    </>
   );
 }

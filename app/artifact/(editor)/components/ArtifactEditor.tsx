@@ -165,7 +165,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
               }
             },
           })}
-          helper="The date it shipped or was published"
+          helper="The date it was first released or shipped"
           type="date"
         />
       </div>

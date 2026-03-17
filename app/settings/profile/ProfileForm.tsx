@@ -71,7 +71,9 @@ export function ProfileForm({
 
   return (
     <>
-      <ImageUpload style="rounded" />
+      <div className="mx-auto my-4 w-26">
+        <ImageUpload style="rounded" />
+      </div>
       <form className="space-y-6">
         <TextField
           defaultValue={defaultName}
