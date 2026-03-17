@@ -14,6 +14,7 @@ import {
 import { ARTIFACT_TYPES } from '@/definitions';
 import type { Artifact, ArtifactLink, ArtifactType } from '@/definitions/types';
 import { useAppContext } from '@/state/hooks';
+import { ImageSection } from './ImageSection';
 import { LinksSection } from './LinksSection';
 import { Tabs, type TabName } from './Tabs';
 
@@ -172,7 +173,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
       <div className="mx-auto flex max-w-md justify-center pt-12 pb-6">
         <Tabs selectedTab={tabName} onChange={setTabName} />
       </div>
-      <div className="mb-10 space-y-6">
+      <div className="mb-2">
         <div className={clsx({ hidden: tabName !== 'summary' })}>
           <TextareaField
             defaultValue={artifact?.summary}
@@ -193,7 +194,10 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
           />
         </div>
       </div>
-      <div className="flex justify-end">
+      <div>
+        <ImageSection />
+      </div>
+      <div className="mt-4 flex justify-end">
         <ErrorMessage message={error} />
         <div className="min-w-32">
           <FilledButton

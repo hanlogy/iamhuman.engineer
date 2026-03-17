@@ -67,7 +67,7 @@ export function ImageUpload({ style }: { style: ImageUploadStyle }) {
           onChange={setImage}
         />
       </div>
-      <ErrorMessage className="mt-2" message={error} />
+      <ErrorMessage className="mt-2 text-sm" message={error} />
     </>
   );
 }
