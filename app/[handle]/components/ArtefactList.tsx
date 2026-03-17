@@ -1,5 +1,6 @@
 import type { ArtifactTag, Profile } from '@/definitions';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
+import { tagIdsToLabels } from '@/helpers/tagIdsToLabels';
 import { ArtefactCard } from './ArtefactCard';
 
 export async function ArtefactList({
@@ -14,15 +15,7 @@ export async function ArtefactList({
   const artifactHelper = new ArtifactHelper();
   const artifacts = (await artifactHelper.getItems({ userId })).map(
     ({ tags: tagIds, ...rest }) => {
-      const tagLabels = tagIds
-        .map((tagId) => {
-          const tag = tags.find((e) => e.artifactTagId === tagId);
-          if (!tag) {
-            return undefined;
-          }
-          return tag.label;
-        })
-        .filter((e) => e !== undefined);
+      const tagLabels = tagIdsToLabels(tagIds, tags);
 
       return { ...rest, tags: tagLabels };
     }

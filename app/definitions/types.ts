@@ -45,6 +45,7 @@ export interface Artifact {
   readonly summary?: string;
   readonly links: readonly ArtifactLink[];
   readonly judgment?: string;
+  readonly userId: string;
 }
 
 export interface ArtifactTag {

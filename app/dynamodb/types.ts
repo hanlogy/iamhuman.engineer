@@ -29,11 +29,13 @@ export class DBHelperError<T> extends Error {
 }
 
 export type CreateArtifactParams = Omit<Artifact, 'artifactId' | 'tags'> & {
-  userId: string;
   tagLabels: string[];
 };
 
-export type UpdateArtifactParams = Omit<Artifact, 'artifactId' | 'tags'> & {
+export type UpdateArtifactParams = Omit<
+  Artifact,
+  'artifactId' | 'tags' | 'userId'
+> & {
   tagLabels: string[];
 };
 
@@ -73,5 +75,4 @@ export type BuildPutItemsParams = Omit<Artifact, 'tags'> & {
    * tag ids
    */
   readonly tags: readonly string[];
-  readonly userId: string;
 };

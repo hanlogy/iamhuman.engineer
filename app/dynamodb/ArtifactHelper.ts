@@ -127,12 +127,12 @@ export class ArtifactHelper extends HelperBase {
     artifactId,
   }: {
     artifactId: string;
-  }): Promise<ArtifactEntity | null> {
+  }): Promise<ArtifactEntity | undefined> {
     const { item } = await this.db.get({
       keys: this.buildKeys({ artifactId }),
     });
     if (!item) {
-      return null;
+      return undefined;
     }
     return item as ArtifactEntity;
   }
@@ -310,10 +310,10 @@ export class ArtifactHelper extends HelperBase {
     artifactId,
   }: {
     artifactId: string;
-  }): Promise<Artifact | null> {
+  }): Promise<Artifact | undefined> {
     const entity = await this.get({ artifactId });
     if (!entity) {
-      return null;
+      return undefined;
     }
 
     return this.buildArtifact(entity);

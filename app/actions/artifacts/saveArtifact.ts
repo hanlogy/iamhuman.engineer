@@ -11,7 +11,7 @@ import { getUserFromCookie } from '@/server/userInCookie';
 
 export async function saveArtifact(
   id: string | undefined,
-  attributes: Omit<Artifact, 'artifactId' | 'tags'> & {
+  attributes: Omit<Artifact, 'artifactId' | 'tags' | 'userId'> & {
     tagLabels: string[];
   }
 ): Promise<ActionResponse> {
