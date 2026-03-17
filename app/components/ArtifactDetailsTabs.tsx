@@ -6,23 +6,23 @@ const items = [
     value: 'summary',
   },
   {
-    label: 'Links',
-    value: 'links',
-  },
-  {
     label: 'Judgment',
     value: 'judgment',
   },
+  {
+    label: 'Links',
+    value: 'links',
+  },
 ] as const;
 
-export type TabName = (typeof items)[number]['value'];
+export type ArtifactDetailsTabName = (typeof items)[number]['value'];
 
-export function Tabs({
+export function ArtifactDetailsTabs({
   selectedTab,
   onChange,
 }: {
-  selectedTab: TabName;
-  onChange: (tabName: TabName) => void;
+  selectedTab: ArtifactDetailsTabName;
+  onChange: (tabName: ArtifactDetailsTabName) => void;
 }) {
   return (
     <ButtonGroup
@@ -37,12 +37,13 @@ export function Tabs({
           <button
             onClick={() => onChange(value)}
             className={clsx(
-              'text-foreground-muted h-10 cursor-pointer text-center text-sm sm:text-base',
+              'h-8 cursor-pointer text-center text-sm',
               'border-border border',
               {
                 'border-r-0': !isLast,
                 'rounded-l-full': isFirst,
                 'rounded-r-full': isLast,
+                'text-foreground-muted': !isSelected,
                 'bg-surface-secondary font-semibold': isSelected,
               }
             )}

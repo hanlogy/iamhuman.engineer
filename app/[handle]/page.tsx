@@ -5,9 +5,9 @@ import { Shimmer } from '@/components/Shimmer';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
 import { getUserFromCookie } from '@/server/userInCookie';
+import { ArtifactFilters } from './components/ArtifactFilters';
 import { ArtifactList } from './components/ArtifactList';
 import { ArtifactToolbar } from './components/ArtifactToolbar';
-import { ArtifactFilters } from './components/ArtifactFilters';
 import { ProfileSummary } from './components/ProfileSummary';
 
 export default async function ProfilePage({
@@ -33,7 +33,7 @@ export default async function ProfilePage({
 
   return (
     <div className={clsx('my-6', 'md:mx-auto md:flex md:max-w-5xl md:px-6')}>
-      <div className="px-4 md:w-56 md:px-0 md:pr-6 lg:w-2xs lg:pr-8">
+      <div className="px-4 md:w-56 md:px-0 md:pr-6 lg:w-3xs lg:pr-8">
         <div className="mb-8 lg:mb-10">
           <ProfileSummary profile={profile} />
         </div>

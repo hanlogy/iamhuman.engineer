@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { clsx, useForm } from '@hanlogy/react-web-ui';
 import { useRouter } from 'next/navigation';
 import { saveArtifact } from '@/actions/artifacts/saveArtifact';
+import {
+  ArtifactDetailsTabs,
+  type ArtifactDetailsTabName,
+} from '@/components/ArtifactDetailsTabs';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useImageUploadContext } from '@/components/ImageUpload/hooks';
 import { FilledButton } from '@/components/buttons/FilledButton';
@@ -17,7 +21,6 @@ import type { Artifact, ArtifactLink, ArtifactType } from '@/definitions/types';
 import { useAppContext } from '@/state/hooks';
 import { ImageSection } from './ImageSection';
 import { LinksSection } from './LinksSection';
-import { Tabs, type TabName } from './Tabs';
 
 interface FormData {
   title: string;
@@ -46,7 +49,7 @@ const typeOptions = ARTIFACT_TYPES.map((value) => {
 export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
   const router = useRouter();
   const { register, validate, getValues, setFieldError } = useForm<FormData>();
-  const [tabName, setTabName] = useState<TabName>('summary');
+  const [tabName, setTabName] = useState<ArtifactDetailsTabName>('summary');
   const [error, setError] = useState<string>('');
   const [isPending, setIsPending] = useState<boolean>(false);
   const { resolveImage } = useImageUploadContext();
@@ -179,7 +182,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
         />
       </div>
       <div className="mx-auto flex max-w-md justify-center pt-12 pb-6">
-        <Tabs selectedTab={tabName} onChange={setTabName} />
+        <ArtifactDetailsTabs selectedTab={tabName} onChange={setTabName} />
       </div>
       <div className="mb-2">
         <div className={clsx({ hidden: tabName !== 'summary' })}>

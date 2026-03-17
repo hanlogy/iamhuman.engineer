@@ -18,7 +18,7 @@ export function Avatar({
       width={100}
       height={100}
       alt="avatar"
-      className={clsx('rounded-full', className)}
+      className={clsx('rounded-full object-cover', className)}
     />
   ) : (
     <div
