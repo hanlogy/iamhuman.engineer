@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FormErrorListener } from '@hanlogy/react-web-ui';
+import { type FormErrorListener } from '@hanlogy/react-web-ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 
 export const FormErrorMessage = ({

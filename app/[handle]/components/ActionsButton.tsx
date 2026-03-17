@@ -6,10 +6,10 @@ import {
   IconButton,
   IconWrapper,
 } from '@hanlogy/react-web-ui';
+import { useRouter } from 'next/navigation';
 import { deleteArtifact } from '@/actions/artifacts/deleteArtifact';
 import { DeleteSvg, EditSvg, MoreVertSvg } from '@/components/svgs';
 import type { Artifact } from '@/definitions';
-import { useOpenArtifactEditor } from '@/hooks/useOpenArtifactEditor';
 import { useOpenConfirm } from '@/hooks/useOpenConfirm';
 
 const actionItems = [
@@ -20,13 +20,13 @@ const actionItems = [
 type ActionKey = (typeof actionItems)[number]['name'];
 
 export function ActionsButton({ artifact }: { artifact: Artifact }) {
-  const { openEditor } = useOpenArtifactEditor({ artifact });
+  const router = useRouter();
   const { openConfirm } = useOpenConfirm();
 
   const handleSelect = async (name: ActionKey) => {
     switch (name) {
       case 'edit':
-        openEditor();
+        await router.push(`/artifact?id=${artifact.artifactId}`);
         return;
       case 'delete':
         const yes = await openConfirm({

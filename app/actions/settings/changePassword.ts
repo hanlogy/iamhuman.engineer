@@ -34,7 +34,7 @@ export async function changePassword({
     await cognitoHelper.changePassword({
       previousPassword: oldPassword,
       proposedPassword: newPassword,
-      accessToken: session.accessToken,
+      accessToken: session.payload.accessToken,
     });
 
     return toActionSuccess();

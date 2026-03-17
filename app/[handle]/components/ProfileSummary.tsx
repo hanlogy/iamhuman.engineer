@@ -1,25 +1,21 @@
-import { clsx, IconButton, IconWrapper } from '@hanlogy/react-web-ui';
+import { clsx, IconWrapper } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { Avatar } from '@/components/Avatar';
 import { SocialMediaIcon } from '@/components/SocialMediaIcon';
-import { FilterListSvg } from '@/components/svgs';
-import type { ArtifactTag, Profile } from '@/definitions/types';
+import type { Profile } from '@/definitions/types';
 import { isEmail } from '@/helpers/isEmail';
-import { SearchForm } from './SearchForm';
 
 export async function ProfileSummary({
   profile: { name, avatar, location, links },
-  tags,
 }: {
   profile: Profile;
-  tags: ArtifactTag[];
 }) {
   return (
     <>
       <div className="flex items-start md:block">
         <Avatar
           avatar={avatar}
-          className={clsx('mr-4 h-18 w-18', 'md:mb-2 md:h-22 md:w-22')}
+          className={clsx('mr-2 h-18 w-18', 'lg:mr-0 lg:mb-2 lg:h-22 lg:w-22')}
         />
         <div
           className={clsx(
@@ -27,11 +23,13 @@ export async function ProfileSummary({
             'md:block md:min-h-auto'
           )}
         >
-          <div className="text-xl font-medium">
+          <div>
             {name ? (
-              name
+              <span className="text-lg font-medium lg:text-xl">{name}</span>
             ) : (
-              <span className="text-foreground-muted italic">Name not set</span>
+              <div className="bg-surface-secondary text-foreground-muted mb-0.5 inline-block rounded-full px-3 py-1 italic">
+                Name not set
+              </div>
             )}
           </div>
           {location && (
@@ -56,27 +54,6 @@ export async function ProfileSummary({
           )}
         </div>
       </div>
-      <div className="mt-2 mb-2 flex items-center justify-end space-x-2 md:mt-8 md:block md:space-x-0">
-        <SearchForm />
-        <IconButton className="border-border border md:hidden">
-          <FilterListSvg />
-        </IconButton>
-      </div>
-
-      {tags.length > 0 && (
-        <div>
-          {tags.map(({ artifactTagId, label, count }) => {
-            return (
-              <div key={artifactTagId}>
-                {label} {count}
-              </div>
-            );
-          })}
-        </div>
-      )}
     </>
   );
 }
-
-/*
- */

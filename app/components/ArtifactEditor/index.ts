@@ -1,1 +1,0 @@
-export { ArtifactEditor } from './ArtifactEditor';

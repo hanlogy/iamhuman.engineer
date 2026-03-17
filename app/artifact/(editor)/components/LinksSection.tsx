@@ -1,6 +1,6 @@
 import { Button, clsx, IconButton } from '@hanlogy/react-web-ui';
+import { DeleteSvg } from '@/components/svgs';
 import type { ArtifactLink } from '@/definitions/types';
-import { DeleteSvg } from '../svgs';
 
 export interface Link extends ArtifactLink {
   id: string;

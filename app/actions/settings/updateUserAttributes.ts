@@ -31,7 +31,7 @@ export async function updateUserAttributes({
           Value: email,
         },
       ],
-      accessToken: session.accessToken,
+      accessToken: session.payload.accessToken,
     });
 
     return toActionSuccess();

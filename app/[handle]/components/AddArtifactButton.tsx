@@ -1,23 +1,20 @@
 import { clsx, IconWrapper } from '@hanlogy/react-web-ui';
+import Link from 'next/link';
 import { AddSvg } from '@/components/svgs';
-import { useOpenArtifactEditor } from '@/hooks/useOpenArtifactEditor';
 
 export function AddArtifactButton() {
-  const { openEditor } = useOpenArtifactEditor();
-
   return (
-    <button
-      onClick={openEditor}
-      type="button"
+    <Link
       className={clsx(
         'border-border flex-center text-foreground-secondary h-8 w-8 cursor-pointer rounded-full border',
         'md:w-auto md:px-3'
       )}
+      href="/artifact"
     >
       <IconWrapper size="small">
         <AddSvg />
       </IconWrapper>
       <div className="hidden text-sm font-medium md:block">Add</div>
-    </button>
+    </Link>
   );
 }

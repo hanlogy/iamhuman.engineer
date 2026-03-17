@@ -5,6 +5,7 @@ import {
   toActionSuccess,
   type ActionResponse,
 } from '@hanlogy/react-kit';
+import type { GetSignedUrlResult } from '@/lib/s3/type';
 import { getS3Helper } from '@/server/helpersRepo';
 
 export async function prepareSignedUrlForImage({
@@ -15,13 +16,7 @@ export async function prepareSignedUrlForImage({
   folder: string;
   contentType: string;
   size: number;
-}): Promise<
-  ActionResponse<{
-    uploadUrl: string;
-    key: string;
-    publicUrl: string;
-  }>
-> {
+}): Promise<ActionResponse<GetSignedUrlResult>> {
   if (!contentType.startsWith('image/')) {
     return toActionFailure({
       message: 'Invalid file type',

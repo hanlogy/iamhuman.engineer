@@ -1,17 +1,16 @@
 import type { ArtifactTag, Profile } from '@/definitions';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
-import { getUserFromCookie } from '@/server/userInCookie';
 import { ArtefactCard } from './ArtefactCard';
 
-export async function ArtefactsList({
+export async function ArtefactList({
   tags,
   profile: { userId },
+  isSelf,
 }: {
   tags: ArtifactTag[];
   profile: Profile;
+  isSelf: boolean;
 }) {
-  const { userId: myUserId } = (await getUserFromCookie()) ?? {};
-  const isSelf = myUserId === userId;
   const artifactHelper = new ArtifactHelper();
   const artifacts = (await artifactHelper.getItems({ userId })).map(
     ({ tags: tagIds, ...rest }) => {
@@ -45,7 +44,7 @@ export async function ArtefactsList({
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       {artifacts.map((artifact) => {
         const { artifactId } = artifact;
 

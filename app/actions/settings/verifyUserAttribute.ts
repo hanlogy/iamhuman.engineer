@@ -34,7 +34,7 @@ export async function verifyUserAttribute({
     await cognitoHelper.verifyUserAttribute({
       attributeName: name,
       code,
-      accessToken: session.accessToken,
+      accessToken: session.payload.accessToken,
     });
 
     return toActionSuccess();
