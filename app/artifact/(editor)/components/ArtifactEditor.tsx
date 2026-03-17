@@ -21,7 +21,7 @@ interface FormData {
   title: string;
   type: ArtifactType;
   tags: string;
-  publishedAt: string;
+  releaseDate: string;
   summary: string;
   judgment: string;
 }
@@ -81,12 +81,12 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
       title,
       type,
       tags: rawTags = '',
-      publishedAt,
+      releaseDate,
       summary,
       judgment,
     } = getValues();
 
-    if (!title || !type || !publishedAt) {
+    if (!title || !type || !releaseDate) {
       return;
     }
 
@@ -108,7 +108,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
       links: links
         .map(({ title, url }) => ({ title: title.trim(), url: url.trim() }))
         .filter(({ url }) => Boolean(url)),
-      publishedAt,
+      releaseDate,
       summary,
       judgment,
     });
@@ -156,11 +156,11 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
           controller={register('tags')}
         />
         <TextField
-          defaultValue={artifact?.publishedAt}
+          defaultValue={artifact?.releaseDate}
           label="Date"
-          controller={register('publishedAt', {
-            validator: ({ publishedAt }) => {
-              if (!publishedAt) {
+          controller={register('releaseDate', {
+            validator: ({ releaseDate }) => {
+              if (!releaseDate) {
                 return 'Date is required';
               }
             },

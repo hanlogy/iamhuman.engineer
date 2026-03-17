@@ -6,7 +6,7 @@ type DiffArtifactField = keyof Pick<
   | 'artifactId'
   | 'title'
   | 'type'
-  | 'publishedAt'
+  | 'releaseDate'
   | 'summary'
   | 'judgment'
   | 'tags'
@@ -33,8 +33,8 @@ export function diffArtifact(
     changedFields.push('type');
   }
 
-  if (artifact1.publishedAt !== artifact2.publishedAt) {
-    changedFields.push('publishedAt');
+  if (artifact1.releaseDate !== artifact2.releaseDate) {
+    changedFields.push('releaseDate');
   }
 
   if (artifact1.summary !== artifact2.summary) {

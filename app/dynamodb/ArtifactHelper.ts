@@ -15,7 +15,7 @@ import type {
 type ArtifactSetAttributes = Partial<{
   title: ArtifactEntity['title'];
   type: ArtifactEntity['type'];
-  publishedAt: ArtifactEntity['publishedAt'];
+  releaseDate: ArtifactEntity['releaseDate'];
   summary: ArtifactEntity['summary'];
   links: ArtifactEntity['links'];
   judgment: ArtifactEntity['judgment'];
@@ -24,57 +24,52 @@ type ArtifactSetAttributes = Partial<{
   gsi1Sk: ArtifactEntity['gsi1Sk'];
   gsi2Pk: ArtifactEntity['gsi2Pk'];
   gsi2Sk: ArtifactEntity['gsi2Sk'];
+  gsi3Pk: ArtifactEntity['gsi3Pk'];
+  gsi3Sk: ArtifactEntity['gsi3Sk'];
 }>;
 
 export class ArtifactHelper extends HelperBase {
   private entity = 'ARTIFACT';
   private version = '01';
 
-  private buildPk({ userId }: { userId: string }) {
+  private buildPk({ artifactId }: { artifactId: string }) {
+    return this.db.buildKey(this.entity, artifactId);
+  }
+
+  private buildSk() {
+    return this.db.buildKey(this.version, true);
+  }
+
+  private buildKeys({ artifactId }: { artifactId: string }) {
+    return { pk: this.buildPk({ artifactId }), sk: this.buildSk() };
+  }
+
+  private buildGsi1Pk({ userId }: { userId: string }) {
     return this.db.buildKey(this.entity, userId);
   }
 
-  private buildSk({ artifactId }: { artifactId: string }) {
-    return this.db.buildKey(this.version, artifactId, true);
-  }
-
-  private buildKeys({
-    userId,
-    artifactId,
-  }: {
-    userId: string;
-    artifactId: string;
-  }) {
-    return {
-      pk: this.buildPk({ userId }),
-      sk: this.buildSk({ artifactId }),
-    };
-  }
-
-  private buildGsi1Pk = this.buildPk;
-
   private buildGsi1Sk({
-    publishedAt,
+    releaseDate,
     artifactId,
   }: {
-    publishedAt: string;
+    releaseDate: string;
     artifactId: string;
   }) {
-    return this.db.buildKey(this.version, publishedAt, artifactId, true);
+    return this.db.buildKey(this.version, releaseDate, artifactId, true);
   }
 
   private buildGsi1Keys({
     userId,
-    publishedAt,
+    releaseDate,
     artifactId,
   }: {
     userId: string;
-    publishedAt: string;
+    releaseDate: string;
     artifactId: string;
   }) {
     return {
       gsi1Pk: this.buildGsi1Pk({ userId }),
-      gsi1Sk: this.buildGsi1Sk({ publishedAt, artifactId }),
+      gsi1Sk: this.buildGsi1Sk({ releaseDate, artifactId }),
     };
   }
 
@@ -93,35 +88,51 @@ export class ArtifactHelper extends HelperBase {
   private buildGsi2Keys({
     userId,
     type,
-    publishedAt,
+    releaseDate,
     artifactId,
   }: {
     userId: string;
     type: ArtifactType;
-    publishedAt: string;
+    releaseDate: string;
     artifactId: string;
   }) {
     return {
       gsi2Pk: this.buildGsi2Pk({ userId, type }),
-      gsi2Sk: this.buildGsi2Sk({ publishedAt, artifactId }),
+      gsi2Sk: this.buildGsi2Sk({ releaseDate, artifactId }),
+    };
+  }
+
+  private buildGsi3Pk({ type }: { type: ArtifactType }) {
+    return this.db.buildKey(this.entity, type);
+  }
+
+  private buildGsi3Sk = this.buildGsi1Sk;
+
+  private buildGsi3Keys({
+    type,
+    releaseDate,
+    artifactId,
+  }: {
+    type: ArtifactType;
+    releaseDate: string;
+    artifactId: string;
+  }) {
+    return {
+      gsi3Pk: this.buildGsi3Pk({ type }),
+      gsi3Sk: this.buildGsi3Sk({ releaseDate, artifactId }),
     };
   }
 
   async get({
-    userId,
     artifactId,
   }: {
-    userId: string;
     artifactId: string;
-  }): Promise<ArtifactEntity | undefined> {
+  }): Promise<ArtifactEntity | null> {
     const { item } = await this.db.get({
-      keys: this.buildKeys({
-        artifactId,
-        userId,
-      }),
+      keys: this.buildKeys({ artifactId }),
     });
     if (!item) {
-      return undefined;
+      return null;
     }
     return item as ArtifactEntity;
   }
@@ -129,7 +140,7 @@ export class ArtifactHelper extends HelperBase {
   async createItem({
     title,
     userId,
-    publishedAt,
+    releaseDate,
     type,
     summary,
     links,
@@ -146,7 +157,7 @@ export class ArtifactHelper extends HelperBase {
       tags: resolvedTags.tagIds,
       userId,
       type,
-      publishedAt,
+      releaseDate,
       artifactId,
       title,
       summary,
@@ -159,9 +170,10 @@ export class ArtifactHelper extends HelperBase {
         {
           keyNames: ['pk', 'sk'],
           item: {
-            ...this.buildKeys({ userId, artifactId }),
-            ...this.buildGsi1Keys({ userId, artifactId, publishedAt }),
-            ...this.buildGsi2Keys({ userId, artifactId, type, publishedAt }),
+            ...this.buildKeys({ artifactId }),
+            ...this.buildGsi1Keys({ userId, artifactId, releaseDate }),
+            ...this.buildGsi2Keys({ userId, artifactId, type, releaseDate }),
+            ...this.buildGsi3Keys({ artifactId, type, releaseDate }),
             ...commonAttributes,
           },
         },
@@ -176,7 +188,7 @@ export class ArtifactHelper extends HelperBase {
     { userId, artifactId }: { userId: string; artifactId: string },
     {
       title,
-      publishedAt,
+      releaseDate,
       type,
       summary,
       links,
@@ -184,7 +196,7 @@ export class ArtifactHelper extends HelperBase {
       tagLabels,
     }: UpdateArtifactParams
   ): Promise<void> {
-    const oldArtifact = await this.get({ userId, artifactId });
+    const oldArtifact = await this.get({ artifactId });
 
     if (!oldArtifact) {
       throw new Error('Artifact not found');
@@ -202,7 +214,7 @@ export class ArtifactHelper extends HelperBase {
     const newArtifact: BuildPutItemsParams = {
       artifactId,
       userId,
-      publishedAt,
+      releaseDate,
       type,
       title,
       summary,
@@ -215,7 +227,7 @@ export class ArtifactHelper extends HelperBase {
       oldArtifact: {
         artifactId: oldArtifact.artifactId,
         userId: oldArtifact.userId,
-        publishedAt: oldArtifact.publishedAt,
+        releaseDate: oldArtifact.releaseDate,
         type: oldArtifact.type,
         title: oldArtifact.title,
         summary: oldArtifact.summary,
@@ -260,9 +272,9 @@ export class ArtifactHelper extends HelperBase {
     userId: string;
     artifactId: string;
   }): Promise<void> {
-    const artifact = await this.get({ userId, artifactId });
+    const artifact = await this.get({ artifactId });
 
-    if (!artifact) {
+    if (!artifact || artifact.userId !== userId) {
       throw new Error('Artifact not found');
     }
 
@@ -272,7 +284,7 @@ export class ArtifactHelper extends HelperBase {
     const byTagDeleteItems = byTagHelper.buildDeleteItems({
       userId: artifact.userId,
       artifactId: artifact.artifactId,
-      publishedAt: artifact.publishedAt,
+      releaseDate: artifact.releaseDate,
       tagIds: artifact.tags,
     });
 
@@ -285,7 +297,6 @@ export class ArtifactHelper extends HelperBase {
       delete: [
         {
           keys: this.buildKeys({
-            userId: artifact.userId,
             artifactId: artifact.artifactId,
           }),
         },
@@ -293,6 +304,19 @@ export class ArtifactHelper extends HelperBase {
       ],
       update: tagCountUpdateItems,
     });
+  }
+
+  async getItem({
+    artifactId,
+  }: {
+    artifactId: string;
+  }): Promise<Artifact | null> {
+    const entity = await this.get({ artifactId });
+    if (!entity) {
+      return null;
+    }
+
+    return this.buildArtifact(entity);
   }
 
   async getItems({ userId }: { userId: string }): Promise<Artifact[]> {
@@ -306,17 +330,23 @@ export class ArtifactHelper extends HelperBase {
       ],
     });
 
-    return items.map(
-      ({
-        pk: _pk,
-        sk: _sk,
-        gsi1Pk: _gsi1Pk,
-        gsi1Sk: _gsi1Sk,
-        gsi2Pk: _gsi2Pk,
-        gsi2Sk: _gsi2Sk,
-        ...rest
-      }) => rest as Artifact
-    );
+    return items.map((e) => this.buildArtifact(e as ArtifactEntity));
+  }
+
+  private buildArtifact(entity: ArtifactEntity): Artifact {
+    const {
+      pk: _pk,
+      sk: _sk,
+      gsi1Pk: _gsi1Pk,
+      gsi1Sk: _gsi1Sk,
+      gsi2Pk: _gsi2Pk,
+      gsi2Sk: _gsi2Sk,
+      gsi3Pk: _gsi3Pk,
+      gsi3Sk: _gsi3Sk,
+      ...rest
+    } = entity;
+
+    return rest;
   }
 
   private buildUpdateItemConfig({
@@ -344,21 +374,24 @@ export class ArtifactHelper extends HelperBase {
           userId: newArtifact.userId,
           type: newArtifact.type,
         });
-        setAttributes.gsi2Sk = this.buildGsi2Sk({
-          publishedAt: newArtifact.publishedAt,
-          artifactId: newArtifact.artifactId,
+        setAttributes.gsi3Pk = this.buildGsi3Pk({
+          type: newArtifact.type,
         });
         continue;
       }
 
-      if (field === 'publishedAt') {
-        setAttributes.publishedAt = newArtifact.publishedAt;
+      if (field === 'releaseDate') {
+        setAttributes.releaseDate = newArtifact.releaseDate;
         setAttributes.gsi1Sk = this.buildGsi1Sk({
-          publishedAt: newArtifact.publishedAt,
+          releaseDate: newArtifact.releaseDate,
           artifactId: newArtifact.artifactId,
         });
         setAttributes.gsi2Sk = this.buildGsi2Sk({
-          publishedAt: newArtifact.publishedAt,
+          releaseDate: newArtifact.releaseDate,
+          artifactId: newArtifact.artifactId,
+        });
+        setAttributes.gsi3Sk = this.buildGsi3Sk({
+          releaseDate: newArtifact.releaseDate,
           artifactId: newArtifact.artifactId,
         });
         continue;
@@ -386,7 +419,6 @@ export class ArtifactHelper extends HelperBase {
 
     return {
       keys: this.buildKeys({
-        userId: newArtifact.userId,
         artifactId: newArtifact.artifactId,
       }),
       setAttributes,

@@ -47,31 +47,42 @@ Note:
 
 ### base table
 
-1. List all artifacts by a `userId`
-2. Get one artifact by a `userId` and an `artifactId`
+Get one artifact by a `artifactId`
 
 ### GSI 1
 
-1. List all artifacts by a `userId` and sort by `publishedAt`
+List all artifacts by a `userId`:
+
+- sort by `releaseDate`
 
 ### GSI 2
 
-1. List all artifacts by a `userId` and a `type`, and sort by `publishedAt`
+List all artifacts by `userId` and `type`:
+
+- sort by `releaseDate`
+
+### GSI 3
+
+List all artifacts by `type`:
+
+- sort by `releaseDate`
 
 | Attribute   | Type     | Example                        |
 | ----------- | -------- | ------------------------------ |
-| pk          | string   | ARTIFACT#{userId}              |
-| sk          | string   | 01#{artifactId}#               |
+| pk          | string   | ARTIFACT#{artifactId}          |
+| sk          | string   | 01#                            |
 | gsi1Pk      | string   | ARTIFACT#{userId}              |
-| gsi1Sk      | string   | 01#{publishedAt}#{artifactId}# |
+| gsi1Sk      | string   | 01#{releaseDate}#{artifactId}# |
 | gsi2Pk      | string   | ARTIFACT#{userId}#{type}       |
-| gsi2Sk      | string   | 01#{publishedAt}#{artifactId}# |
+| gsi2Sk      | string   | 01#{releaseDate}#{artifactId}# |
+| gsi3Pk      | string   | ARTIFACT#{type}                |
+| gsi3Sk      | string   | 01#{releaseDate}#{artifactId}# |
 | artifactId  | string   | a-b-c-d                        |
 | userId      | string   | a-b-c-d                        |
 | title       | string   | My work                        |
 | type        | string   | talk                           |
 | tags        | string[] |                                |
-| publishedAt | string   | 2026-01-01                     |
+| releaseDate | string   | 2026-01-01                     |
 | summary     | string   |                                |
 | links       | json[]   |                                |
 | judgment    | string   |                                |
@@ -80,18 +91,18 @@ Note:
 
 ### base table
 
-1. List artifacts of a user by tag and sort by `publishedAt`
+1. List artifacts of a user by tag and sort by `releaseDate`
 
 | Attribute   | Type     | Example                                       |
 | ----------- | -------- | --------------------------------------------- |
 | pk          | string   | ARTIFACT_BY_TAG#{userId}                      |
-| sk          | string   | 01#{artifactTagId}#{publishedAt}#{artifactId} |
+| sk          | string   | 01#{artifactTagId}#{releaseDate}#{artifactId} |
 | artifactId  | string   | a-b-c-d                                       |
 | userId      | string   | a-b-c-d                                       |
 | title       | string   | My work                                       |
 | type        | string   | talk                                          |
 | tags        | string[] |                                               |
-| publishedAt | string   | 2026-01-01                                    |
+| releaseDate | string   | 2026-01-01                                    |
 | summary     | string   |                                               |
 | links       | json[]   |                                               |
 | judgment    | string   |                                               |

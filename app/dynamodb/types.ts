@@ -44,6 +44,8 @@ export interface ArtifactEntity extends Artifact {
   readonly gsi1Sk: string;
   readonly gsi2Pk: string;
   readonly gsi2Sk: string;
+  readonly gsi3Pk: string;
+  readonly gsi3Sk: string;
   readonly userId: string;
   readonly createdAt: string;
   readonly updatedAt: string;

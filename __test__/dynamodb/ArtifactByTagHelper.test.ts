@@ -5,7 +5,7 @@ import { FakeDynamoDBHelper } from './FakeDynamoDBHelper';
 const artifactBase: Omit<BuildPutItemsParams, 'tags'> = {
   artifactId: 'artifact-1',
   userId: 'user-1',
-  publishedAt: '2026-03-15T10:00:00.000Z',
+  releaseDate: '2026-03-15T10:00:00.000Z',
   type: 'research',
   title: 'React Notes',
   summary: 'summary',
@@ -240,14 +240,14 @@ describe('ArtifactByTagHelper', () => {
       });
     });
 
-    test('publishedAt changed', () => {
+    test('releaseDate changed', () => {
       const tags = ['1-1-1-1', '2-2-2-2'];
       const result = helper.resolveUpdate({
         oldArtifact: { ...artifactBase, tags },
         newArtifact: {
           ...artifactBase,
           tags,
-          publishedAt: '2026-03-16T10:00:00.000Z',
+          releaseDate: '2026-03-16T10:00:00.000Z',
         },
       });
 
@@ -260,7 +260,7 @@ describe('ArtifactByTagHelper', () => {
               sk: '01|1-1-1-1|2026-03-16T10:00:00.000Z|artifact-1',
               ...artifactBase,
               tags,
-              publishedAt: '2026-03-16T10:00:00.000Z',
+              releaseDate: '2026-03-16T10:00:00.000Z',
             },
           },
           {
@@ -270,7 +270,7 @@ describe('ArtifactByTagHelper', () => {
               sk: '01|2-2-2-2|2026-03-16T10:00:00.000Z|artifact-1',
               ...artifactBase,
               tags,
-              publishedAt: '2026-03-16T10:00:00.000Z',
+              releaseDate: '2026-03-16T10:00:00.000Z',
             },
           },
         ],
@@ -292,7 +292,7 @@ describe('ArtifactByTagHelper', () => {
       });
     });
 
-    test('publishedAt changed, with add and remove tags', () => {
+    test('releaseDate changed, with add and remove tags', () => {
       const oldTags = ['1-1-1-1', '2-2-2-2'];
       const newTags = ['2-2-2-2', '3-3-3-3'];
       const newPublishedAt = '2026-03-16T10:00:00.000Z';
@@ -302,7 +302,7 @@ describe('ArtifactByTagHelper', () => {
         newArtifact: {
           ...artifactBase,
           tags: newTags,
-          publishedAt: newPublishedAt,
+          releaseDate: newPublishedAt,
         },
       });
 
@@ -315,7 +315,7 @@ describe('ArtifactByTagHelper', () => {
               sk: '01|2-2-2-2|2026-03-16T10:00:00.000Z|artifact-1',
               ...artifactBase,
               tags: newTags,
-              publishedAt: newPublishedAt,
+              releaseDate: newPublishedAt,
             },
           },
           {
@@ -325,7 +325,7 @@ describe('ArtifactByTagHelper', () => {
               sk: '01|3-3-3-3|2026-03-16T10:00:00.000Z|artifact-1',
               ...artifactBase,
               tags: newTags,
-              publishedAt: newPublishedAt,
+              releaseDate: newPublishedAt,
             },
           },
         ],

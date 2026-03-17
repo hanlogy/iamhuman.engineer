@@ -64,7 +64,7 @@ describe('ArtifactHelper', () => {
   const artifactId = 'artifact-1';
   const pk = 'ARTIFACT|user-1';
   const sk = '01|artifact-1|true';
-  const publishedAt = '2026-03-15';
+  const releaseDate = '2026-03-15';
   const links = [{ title: 'Example', url: 'https://example.com' }];
 
   let db: FakeDynamoDBHelper;
@@ -95,7 +95,7 @@ describe('ArtifactHelper', () => {
       title: 'My title',
       type: 'research',
       tags: ['tag-1', 'tag-2'],
-      publishedAt,
+      releaseDate,
       summary: 'summary',
       links,
       judgment: 'good',
@@ -176,7 +176,7 @@ describe('ArtifactHelper', () => {
         userId,
         title: 'My title',
         type: 'research',
-        publishedAt,
+        releaseDate,
         summary: 'summary',
         links,
         judgment: 'good',
@@ -191,7 +191,7 @@ describe('ArtifactHelper', () => {
         tags: ['tag-1', 'tag-2'],
         userId,
         type: 'research',
-        publishedAt,
+        releaseDate,
         artifactId,
         title: 'My title',
         summary: 'summary',
@@ -212,7 +212,7 @@ describe('ArtifactHelper', () => {
               tags: ['tag-1', 'tag-2'],
               userId,
               type: 'research',
-              publishedAt,
+              releaseDate,
               artifactId,
               title: 'My title',
               summary: 'summary',
@@ -263,7 +263,7 @@ describe('ArtifactHelper', () => {
           {
             title: 'My title',
             type: 'research',
-            publishedAt,
+            releaseDate,
             summary: 'summary',
             links,
             judgment: 'good',
@@ -297,7 +297,7 @@ describe('ArtifactHelper', () => {
         {
           title: 'My title',
           type: 'research',
-          publishedAt,
+          releaseDate,
           summary: 'summary',
           links,
           judgment: 'good',
@@ -314,7 +314,7 @@ describe('ArtifactHelper', () => {
         oldArtifact: {
           artifactId,
           userId,
-          publishedAt,
+          releaseDate,
           type: 'research',
           title: 'My title',
           summary: 'summary',
@@ -325,7 +325,7 @@ describe('ArtifactHelper', () => {
         newArtifact: {
           artifactId,
           userId,
-          publishedAt,
+          releaseDate,
           type: 'research',
           title: 'My title',
           summary: 'summary',
@@ -396,7 +396,7 @@ describe('ArtifactHelper', () => {
       });
       diffArtifactMock.mockReturnValue([
         'title',
-        'publishedAt',
+        'releaseDate',
         'type',
         'tags',
       ]);
@@ -409,7 +409,7 @@ describe('ArtifactHelper', () => {
         {
           title: 'New title',
           type: 'knowledge',
-          publishedAt: '2026-03-16',
+          releaseDate: '2026-03-16',
           summary: 'summary',
           links,
           judgment: 'good',
@@ -442,7 +442,7 @@ describe('ArtifactHelper', () => {
             },
             setAttributes: {
               title: 'New title',
-              publishedAt: '2026-03-16',
+              releaseDate: '2026-03-16',
               gsi1Sk: '01|2026-03-16|artifact-1|true',
               type: 'knowledge',
               gsi2Pk: 'ARTIFACT|user-1|knowledge',
@@ -514,7 +514,7 @@ describe('ArtifactHelper', () => {
         {
           title: 'My title',
           type: 'research',
-          publishedAt,
+          releaseDate,
           summary: 'summary',
           links,
           judgment: 'good',
@@ -578,7 +578,7 @@ describe('ArtifactHelper', () => {
       expect(mockBuildDeleteItems).toHaveBeenCalledWith({
         userId,
         artifactId,
-        publishedAt,
+        releaseDate,
         tagIds: ['tag-1', 'tag-2'],
       });
       expect(mockBuildDecreaseCountItems).toHaveBeenCalledWith({
@@ -648,7 +648,7 @@ describe('ArtifactHelper', () => {
           title: 'My title',
           type: 'research',
           tags: ['tag-1', 'tag-2'],
-          publishedAt,
+          releaseDate,
           summary: 'summary',
           links,
           judgment: 'good',
@@ -661,7 +661,7 @@ describe('ArtifactHelper', () => {
           title: 'My title 2',
           type: 'research',
           tags: ['tag-1', 'tag-2'],
-          publishedAt,
+          releaseDate,
           summary: 'summary',
           links,
           judgment: 'good',

@@ -7,7 +7,7 @@ function createArtifact(overrides?: Partial<Artifact>): Artifact {
     title: 'My Artifact',
     type: 'code',
     tags: ['react', 'typescript'],
-    publishedAt: '2026-03-16',
+    releaseDate: '2026-03-16',
     summary: 'summary',
     links: [
       {
@@ -64,13 +64,13 @@ describe('diffArtifact', () => {
     expect(diffArtifact(artifact1, artifact2)).toStrictEqual(['tags']);
   });
 
-  test('publishedAt', () => {
+  test('releaseDate', () => {
     const artifact1 = createArtifact();
     const artifact2 = createArtifact({
-      publishedAt: '2026-03-17',
+      releaseDate: '2026-03-17',
     });
 
-    expect(diffArtifact(artifact1, artifact2)).toStrictEqual(['publishedAt']);
+    expect(diffArtifact(artifact1, artifact2)).toStrictEqual(['releaseDate']);
   });
 
   test('summary', () => {

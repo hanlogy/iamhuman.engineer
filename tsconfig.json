@@ -5,6 +5,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    //"strictNullChecks": true,
+    //"exactOptionalPropertyTypes": true,
     "noEmit": true,
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,

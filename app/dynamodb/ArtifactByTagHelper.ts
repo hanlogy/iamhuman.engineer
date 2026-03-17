@@ -43,17 +43,17 @@ export class ArtifactByTagHelper extends HelperBase {
 
   private buildSk({
     artifactTagId,
-    publishedAt,
+    releaseDate,
     artifactId,
   }: {
     artifactTagId: string;
-    publishedAt: string;
+    releaseDate: string;
     artifactId: string;
   }) {
     return this.db.buildKey(
       this.version,
       artifactTagId,
-      publishedAt,
+      releaseDate,
       artifactId
     );
   }
@@ -61,22 +61,22 @@ export class ArtifactByTagHelper extends HelperBase {
   private buildKeys({
     userId,
     artifactId,
-    publishedAt,
+    releaseDate,
     artifactTagId,
   }: {
     userId: string;
     artifactTagId: string;
-    publishedAt: string;
+    releaseDate: string;
     artifactId: string;
   }) {
     return {
       pk: this.buildPk({ userId }),
-      sk: this.buildSk({ artifactId, publishedAt, artifactTagId }),
+      sk: this.buildSk({ artifactId, releaseDate, artifactTagId }),
     };
   }
 
   buildPutItems(artifact: BuildPutItemsParams): ByTagPutConfig[] {
-    const { tags, userId, publishedAt, artifactId } = artifact;
+    const { tags, userId, releaseDate, artifactId } = artifact;
 
     return tags.map((artifactTagId) => ({
       keyNames: ['pk', 'sk'],
@@ -84,7 +84,7 @@ export class ArtifactByTagHelper extends HelperBase {
         ...this.buildKeys({
           userId,
           artifactId,
-          publishedAt,
+          releaseDate,
           artifactTagId,
         }),
         ...artifact,
@@ -95,19 +95,19 @@ export class ArtifactByTagHelper extends HelperBase {
   buildDeleteItems({
     userId,
     artifactId,
-    publishedAt,
+    releaseDate,
     tagIds,
   }: {
     userId: string;
     artifactId: string;
-    publishedAt: string;
+    releaseDate: string;
     tagIds: readonly string[];
   }): ByTagDeleteConfig[] {
     return tagIds.map((artifactTagId) => ({
       keys: this.buildKeys({
         userId,
         artifactId,
-        publishedAt,
+        releaseDate,
         artifactTagId,
       }),
     }));
@@ -120,7 +120,7 @@ export class ArtifactByTagHelper extends HelperBase {
     artifact: BuildPutItemsParams;
     tagIds: readonly string[];
   }): ByTagPutConfig[] {
-    const { userId, publishedAt, artifactId } = artifact;
+    const { userId, releaseDate, artifactId } = artifact;
 
     return tagIds.map((artifactTagId) => ({
       keyNames: ['pk', 'sk'],
@@ -128,7 +128,7 @@ export class ArtifactByTagHelper extends HelperBase {
         ...this.buildKeys({
           userId,
           artifactId,
-          publishedAt,
+          releaseDate,
           artifactTagId,
         }),
         ...artifact,
@@ -170,7 +170,7 @@ export class ArtifactByTagHelper extends HelperBase {
         ...this.buildDeleteItems({
           userId: oldArtifact.userId,
           artifactId: oldArtifact.artifactId,
-          publishedAt: oldArtifact.publishedAt,
+          releaseDate: oldArtifact.releaseDate,
           tagIds: oldArtifact.tags,
         })
       );
@@ -193,7 +193,7 @@ export class ArtifactByTagHelper extends HelperBase {
       ...this.buildDeleteItems({
         userId: oldArtifact.userId,
         artifactId: oldArtifact.artifactId,
-        publishedAt: oldArtifact.publishedAt,
+        releaseDate: oldArtifact.releaseDate,
         tagIds: removedTagIds,
       })
     );
@@ -216,7 +216,7 @@ export class ArtifactByTagHelper extends HelperBase {
           keys: this.buildKeys({
             userId: newArtifact.userId,
             artifactId: newArtifact.artifactId,
-            publishedAt: newArtifact.publishedAt,
+            releaseDate: newArtifact.releaseDate,
             artifactTagId,
           }),
           setAttributes,
@@ -277,7 +277,7 @@ export class ArtifactByTagHelper extends HelperBase {
   private hasByTagKeyChange(changedFields: DiffArtifactResult): boolean {
     return (
       changedFields.includes('artifactId') ||
-      changedFields.includes('publishedAt')
+      changedFields.includes('releaseDate')
     );
   }
 }

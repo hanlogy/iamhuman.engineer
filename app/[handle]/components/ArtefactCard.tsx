@@ -8,11 +8,11 @@ export function ArtefactCard({
   artifact: Artifact;
   isSelf: boolean;
 }) {
-  const { artifactId, publishedAt, title } = artifact;
+  const { artifactId, releaseDate, title } = artifact;
 
   return (
     <div key={artifactId} className="bg-surface relative p-4 md:rounded-xl">
-      <div>{publishedAt}</div>
+      <div>{releaseDate}</div>
       <div>{title}</div>
 
       {isSelf && (

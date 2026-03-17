@@ -41,7 +41,7 @@ export interface Artifact {
   readonly title: string;
   readonly type: ArtifactType;
   readonly tags: readonly string[];
-  readonly publishedAt: string;
+  readonly releaseDate: string;
   readonly summary?: string;
   readonly links: readonly ArtifactLink[];
   readonly judgment?: string;
