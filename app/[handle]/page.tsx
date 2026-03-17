@@ -5,8 +5,8 @@ import { Shimmer } from '@/components/Shimmer';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
 import { getUserFromCookie } from '@/server/userInCookie';
-import { ArtefactList } from './components/ArtefactList';
-import { ArtefactToolbar } from './components/ArtefactToolbar';
+import { ArtifactList } from './components/ArtifactList';
+import { ArtifactToolbar } from './components/ArtifactToolbar';
 import { ArtifactFilters } from './components/ArtifactFilters';
 import { ProfileSummary } from './components/ProfileSummary';
 
@@ -46,7 +46,7 @@ export default async function ProfilePage({
         </div>
       </div>
       <div className="md:flex-1">
-        <ArtefactToolbar isSelf={isSelf} />
+        <ArtifactToolbar isSelf={isSelf} />
         <Suspense
           fallback={
             <div className="space-y-6">
@@ -56,7 +56,7 @@ export default async function ProfilePage({
             </div>
           }
         >
-          <ArtefactList
+          <ArtifactList
             selectedTag={selectedTag}
             isSelf={isSelf}
             tags={tags}

@@ -1,7 +1,7 @@
 import type { Artifact } from '@/definitions';
 import { ActionsButton } from './ActionsButton';
 
-export function ArtefactCard({
+export function ArtifactCard({
   artifact,
   isSelf,
 }: {

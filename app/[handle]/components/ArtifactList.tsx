@@ -2,9 +2,9 @@ import type { Artifact, ArtifactTag, Profile } from '@/definitions';
 import { ArtifactByTagHelper } from '@/dynamodb/ArtifactByTagHelper';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
 import { tagIdsToLabels } from '@/helpers/tagIdsToLabels';
-import { ArtefactCard } from './ArtefactCard';
+import { ArtifactCard } from './ArtifactCard';
 
-export async function ArtefactList({
+export async function ArtifactList({
   selectedTag,
   tags,
   profile: { userId },
@@ -57,7 +57,7 @@ export async function ArtefactList({
         const { artifactId } = artifact;
 
         return (
-          <ArtefactCard isSelf={isSelf} artifact={artifact} key={artifactId} />
+          <ArtifactCard isSelf={isSelf} artifact={artifact} key={artifactId} />
         );
       })}
     </div>

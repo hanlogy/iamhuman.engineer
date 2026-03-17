@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { AddSvg, FilterListSvg } from '@/components/svgs';
 import { SearchForm } from './SearchForm';
 
-export function ArtefactToolbar({ isSelf }: { isSelf: boolean }) {
+export function ArtifactToolbar({ isSelf }: { isSelf: boolean }) {
   return (
     <div className="mb-4 flex items-center justify-between px-4 md:px-0">
       <h1 className="mr-4 text-lg font-medium md:pl-2">Artifacts</h1>
