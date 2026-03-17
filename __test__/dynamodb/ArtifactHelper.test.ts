@@ -62,8 +62,9 @@ const diffArtifactMock = diffArtifact as jest.Mock;
 describe('ArtifactHelper', () => {
   const userId = 'user-1';
   const artifactId = 'artifact-1';
-  const pk = 'ARTIFACT|user-1';
-  const sk = '01|artifact-1|true';
+  const pk = `ARTIFACT|${artifactId}`;
+  const sk = '01|true';
+  const gsi1Pk = `ARTIFACT|${userId}`;
   const releaseDate = '2026-03-15';
   const links = [{ title: 'Example', url: 'https://example.com' }];
 
@@ -86,10 +87,12 @@ describe('ArtifactHelper', () => {
     return {
       pk,
       sk,
-      gsi1Pk: pk,
+      gsi1Pk,
       gsi1Sk: '01|2026-03-15|artifact-1|true',
       gsi2Pk: 'ARTIFACT|user-1|research',
       gsi2Sk: '01|2026-03-15|artifact-1|true',
+      gsi3Pk: 'ARTIFACT|research',
+      gsi3Sk: '01|2026-03-15|artifact-1|true',
       artifactId,
       userId,
       title: 'My title',
@@ -101,6 +104,7 @@ describe('ArtifactHelper', () => {
       judgment: 'good',
       createdAt: '2026-03-15T10:00:00.000Z',
       updatedAt: '2026-03-15T10:00:00.000Z',
+      image: undefined,
       ...override,
     };
   }
@@ -110,7 +114,7 @@ describe('ArtifactHelper', () => {
       const item = createArtifactEntity();
       db.get.mockResolvedValue({ item });
 
-      const result = await helper.get({ userId, artifactId });
+      const result = await helper.get({ artifactId });
 
       expect(db.get).toHaveBeenCalledWith({
         keys: {
@@ -124,7 +128,7 @@ describe('ArtifactHelper', () => {
     test('without result', async () => {
       db.get.mockResolvedValue({ item: undefined });
 
-      const result = await helper.get({ userId, artifactId });
+      const result = await helper.get({ artifactId });
 
       expect(db.get).toHaveBeenCalledWith({
         keys: {
@@ -181,6 +185,7 @@ describe('ArtifactHelper', () => {
         links,
         judgment: 'good',
         tagLabels: ['React', 'Node JS'],
+        uodImage: { isDelete: false },
       });
 
       expect(mockResolveTags).toHaveBeenCalledWith(userId, [
@@ -205,10 +210,12 @@ describe('ArtifactHelper', () => {
             item: {
               pk,
               sk,
-              gsi1Pk: pk,
+              gsi1Pk,
               gsi1Sk: '01|2026-03-15|artifact-1|true',
               gsi2Pk: 'ARTIFACT|user-1|research',
               gsi2Sk: '01|2026-03-15|artifact-1|true',
+              gsi3Pk: 'ARTIFACT|research',
+              gsi3Sk: '01|2026-03-15|artifact-1|true',
               tags: ['tag-1', 'tag-2'],
               userId,
               type: 'research',
@@ -268,6 +275,7 @@ describe('ArtifactHelper', () => {
             links,
             judgment: 'good',
             tagLabels: ['React'],
+            uodImage: { isDelete: false },
           }
         )
       ).rejects.toThrow('Artifact not found');
@@ -302,6 +310,7 @@ describe('ArtifactHelper', () => {
           links,
           judgment: 'good',
           tagLabels: ['React', 'Node JS'],
+          uodImage: { isDelete: false },
         }
       );
 
@@ -414,6 +423,7 @@ describe('ArtifactHelper', () => {
           links,
           judgment: 'good',
           tagLabels: ['React', 'Vue JS'],
+          uodImage: { isDelete: false },
         }
       );
 
@@ -447,6 +457,8 @@ describe('ArtifactHelper', () => {
               type: 'knowledge',
               gsi2Pk: 'ARTIFACT|user-1|knowledge',
               gsi2Sk: '01|2026-03-16|artifact-1|true',
+              gsi3Pk: 'ARTIFACT|knowledge',
+              gsi3Sk: '01|2026-03-16|artifact-1|true',
               tags: ['tag-1', 'tag-3'],
             },
           },
@@ -519,6 +531,7 @@ describe('ArtifactHelper', () => {
           links,
           judgment: 'good',
           tagLabels: ['React', 'Node JS'],
+          uodImage: { isDelete: false },
         }
       );
 
@@ -637,7 +650,7 @@ describe('ArtifactHelper', () => {
         keyConditions: [
           {
             attribute: 'gsi1Pk',
-            value: pk,
+            value: gsi1Pk,
           },
         ],
       });
@@ -654,6 +667,7 @@ describe('ArtifactHelper', () => {
           judgment: 'good',
           createdAt: '2026-03-15T10:00:00.000Z',
           updatedAt: '2026-03-15T10:00:00.000Z',
+          image: undefined,
         },
         {
           artifactId: 'artifact-2',
@@ -667,6 +681,7 @@ describe('ArtifactHelper', () => {
           judgment: 'good',
           createdAt: '2026-03-15T10:00:00.000Z',
           updatedAt: '2026-03-15T10:00:00.000Z',
+          image: undefined,
         },
       ]);
     });
