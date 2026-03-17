@@ -62,7 +62,7 @@ export function diffArtifact(
 }
 
 function isLinkEqual(link1: ArtifactLink, link2: ArtifactLink): boolean {
-  return link1.title === link2.title && link1.url === link2.url;
+  return link1.text === link2.text && link1.url === link2.url;
 }
 
 function isLinkArrayEqual(

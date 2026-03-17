@@ -47,7 +47,7 @@ export function ArtifactFilters({
                   </div>
                   <div
                     className={clsx(
-                      'flex-center h-6 min-w-6 rounded-full text-sm font-medium',
+                      'flex-center text-foreground-muted h-6 min-w-6 rounded-full text-sm font-medium',
                       {
                         'bg-surface': !isSelected,
                         'bg-surface-secondary': isSelected,

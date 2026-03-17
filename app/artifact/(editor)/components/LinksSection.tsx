@@ -13,11 +13,7 @@ export function LinksSection({
   links: Link[];
   onChange: (values: Link[]) => void;
 }) {
-  const handleOnChange = (
-    id: string,
-    field: 'url' | 'title',
-    value: string
-  ) => {
+  const handleOnChange = (id: string, field: 'url' | 'text', value: string) => {
     onChange(
       links.map((item) => {
         if (item.id === id) {
@@ -32,7 +28,7 @@ export function LinksSection({
   };
 
   const handleAdd = () => {
-    onChange([...links, { id: crypto.randomUUID(), url: '', title: '' }]);
+    onChange([...links, { id: crypto.randomUUID(), url: '', text: '' }]);
   };
 
   const handleDelete = (id: string) => {
@@ -42,14 +38,14 @@ export function LinksSection({
   return (
     <>
       <div className="space-y-4">
-        {links.map(({ id, title, url }) => {
+        {links.map(({ id, text, url }) => {
           return (
             <div key={id} className="flex items-end">
               <div className="border-border bg-surface-secondary flex flex-1 flex-col rounded-lg border">
                 <Input
-                  onChange={(v) => handleOnChange(id, 'title', v)}
-                  defaultValue={title}
-                  label="Title"
+                  onChange={(v) => handleOnChange(id, 'text', v)}
+                  defaultValue={text ?? ''}
+                  label="Text (Optional)"
                   type="text"
                   className="border-b-border border-b"
                 />

@@ -60,7 +60,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
       if (!items.length) {
         items.push({
           id: crypto.randomUUID(),
-          title: '',
+          text: '',
           url: '',
         });
       }
@@ -114,7 +114,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
       type,
       tagLabels,
       links: links
-        .map(({ title, url }) => ({ title: title.trim(), url: url.trim() }))
+        .map(({ text, url }) => ({ text: text?.trim(), url: url.trim() }))
         .filter(({ url }) => Boolean(url)),
       releaseDate,
       summary,

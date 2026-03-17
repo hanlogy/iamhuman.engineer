@@ -32,8 +32,8 @@ export interface Profile {
 export type ArtifactType = (typeof ARTIFACT_TYPES)[number];
 
 export interface ArtifactLink {
-  readonly title: string;
   readonly url: string;
+  readonly text?: string;
 }
 
 export interface Artifact {
