@@ -5,7 +5,7 @@ import type {
   S3HelperInterface,
 } from './type';
 
-export class FakeS3Helper implements S3HelperInterface {
+export class FakeS3ServerHelper implements S3HelperInterface {
   constructor() {}
   async getSignedUrl({
     folder,

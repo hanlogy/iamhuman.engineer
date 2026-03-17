@@ -7,7 +7,7 @@ import type {
   S3HelperInterface,
 } from './type';
 
-export class S3Helper implements S3HelperInterface {
+export class S3ServerHelper implements S3HelperInterface {
   readonly client: S3Client;
   readonly bucketName: string;
 

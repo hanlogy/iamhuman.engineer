@@ -6,6 +6,7 @@ import {
   type ActionResponse,
 } from '@hanlogy/react-kit';
 import type { S3Folder } from '@/definitions/types';
+import { saveFileToPublic } from '@/lib/s3';
 import { prepareSignedUrlForImage } from './prepareSignedUrlForImage';
 
 export async function uploadImage({
@@ -28,7 +29,7 @@ export async function uploadImage({
   }
 
   if (process.env.NODE_ENV === 'development') {
-    // Do nothing now
+    await saveFileToPublic({ key: `upload/${urlData.key}`, file: image });
   } else {
     const response = await fetch(urlData.uploadUrl, {
       method: 'PUT',
