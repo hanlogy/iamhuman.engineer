@@ -102,7 +102,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
       .filter((e) => Boolean(e));
 
     if (tagLabels.length > 5) {
-      setFieldError('tags', 'Maximum 5 tags allowed');
+      setFieldError('tags', 'You can add up to 5 tags');
       return;
     }
 
@@ -164,7 +164,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
         <TextField
           defaultValue={artifact?.tags.join(', ')}
           label="Tags"
-          helper="Separate multiple tags tags by commas (,)"
+          helper="Separate multiple tags by commas (,)"
           controller={register('tags')}
         />
         <TextField
@@ -190,7 +190,13 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
             defaultValue={artifact?.summary}
             rows={10}
             label="Summary"
-            controller={register('summary')}
+            controller={register('summary', {
+              validator: ({ summary }) => {
+                if (summary && summary.length > 500) {
+                  return 'Summary must be 500 characters or less';
+                }
+              },
+            })}
           />
         </div>
         <div className={clsx({ hidden: tabName !== 'links' })}>
@@ -201,7 +207,13 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
             defaultValue={artifact?.judgment}
             rows={10}
             label="Judgment"
-            controller={register('judgment')}
+            controller={register('judgment', {
+              validator: ({ judgment }) => {
+                if (judgment && judgment.length > 500) {
+                  return 'Judgment must be 500 characters or less';
+                }
+              },
+            })}
           />
         </div>
       </div>

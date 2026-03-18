@@ -36,7 +36,7 @@ export async function ProfileSummary({
             <div className="text-foreground-secondary">{location}</div>
           )}
           {links && (
-            <div className="my-1 flex">
+            <div className="my-1 -ml-1.5 flex">
               {links.map((link) => {
                 const href = isEmail(link) ? `mailto:${link}` : link;
                 return (
