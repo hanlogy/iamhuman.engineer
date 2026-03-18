@@ -3,30 +3,46 @@
   "version": "0.2.4",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 9150  --experimental-https  --experimental-https-key ./certificates/dev-key.pem  --experimental-https-cert ./certificates/dev-cert.pem",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev -p 9150  --experimental-https  --experimental-https-key ./certificates/dev-key.pem  --experimental-https-cert ./certificates/dev-cert.pem",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "jest"
   },
   "dependencies": {
-    "@hanlogy/react-web-ui": "^1.1.4",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1003.0",
+    "@aws-sdk/client-s3": "^3.1008.0",
+    "@aws-sdk/s3-request-presigner": "^3.1008.0",
+    "@hanlogy/react-kit": "^1.0.2",
+    "@hanlogy/react-web-ui": "^1.1.7",
+    "@hanlogy/ts-cognito": "^1.3.1",
+    "@hanlogy/ts-dynamodb": "^1.2.0",
     "@hanlogy/ts-lib": "^1.0.0",
+    "jose": "^6.2.0",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-icons": "^5.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

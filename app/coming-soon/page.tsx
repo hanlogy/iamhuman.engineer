@@ -1,4 +1,4 @@
-import { gitHubUrl } from '../definitions/constants';
+import { GIT_HUB_URL } from '@/definitions';
 
 export default function ComingSoonPage() {
   return (
@@ -9,7 +9,7 @@ export default function ComingSoonPage() {
           Please follow our
           <a
             className="text-accent px-2 font-bold underline"
-            href={gitHubUrl}
+            href={GIT_HUB_URL}
             target="_blank"
           >
             GitHub

@@ -1,22 +1,22 @@
 import { clsx } from '@hanlogy/react-web-ui';
-import { CodeIcon, ConditionsIcon, GlobeIcon } from '@/app/components/icons';
+import { CodeSvg, ConditionsSvg, GlobeSvg } from '@/components/svgs';
 import { SectionTitle } from './SectionTitle';
 
 const items = [
   {
-    Icon: CodeIcon,
+    Icon: CodeSvg,
     title: 'For you',
     description:
       'A canonical place to point to. One link that says "this is what I\'ve done."',
   },
   {
-    Icon: ConditionsIcon,
+    Icon: ConditionsSvg,
     title: 'For discoverers',
     description:
       'Conference organizers, researchers, investors, recruiters, collaborators, anyone looking for engineers defined by their work, not their self-promotion.',
   },
   {
-    Icon: GlobeIcon,
+    Icon: GlobeSvg,
     title: 'For the web',
     description: 'A quiet signal of humanity in an era of AI-generated noise.',
   },
