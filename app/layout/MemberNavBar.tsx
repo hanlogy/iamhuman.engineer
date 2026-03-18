@@ -9,13 +9,13 @@ const linkItems = [
   {
     name: 'engineers',
     label: 'Engineers',
-    href: '/coming-soon',
+    href: '/engineers',
     Icon: EngineersSvg,
   },
   {
     name: 'teams',
     label: 'Teams',
-    href: '/coming-soon',
+    href: '/teams',
     Icon: TeamsSvg,
   },
 ];
@@ -24,6 +24,9 @@ export function MemberNavBar({ user }: { user: UserSummary }) {
   return (
     <div className="flex items-center space-x-6 sm:space-x-8">
       {linkItems.map(({ name, label, href, Icon }) => {
+        if (name === 'teams') {
+          return <></>;
+        }
         return (
           <Link
             key={name}

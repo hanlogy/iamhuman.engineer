@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { CloseSvg, MenuSvg } from '@/components/svgs';
 
 const navItems = [
-  { name: 'engineers', label: 'Engineers', href: '/coming-soon' },
-  { name: 'teams', label: 'Teams', href: '/coming-soon' },
+  { name: 'engineers', label: 'Engineers', href: '/engineers' },
+  { name: 'teams', label: 'Teams', href: '/teams' },
   { name: 'login', label: 'Login', href: '/login' },
   { name: 'signup', label: 'Sign up', href: '/signup' },
 ] as const;
@@ -32,6 +32,10 @@ export function PublicNavBar() {
           )}
         >
           {navItems.map(({ name, label, href }) => {
+            if (name === 'teams') {
+              return <></>;
+            }
+
             const isSignUp = name === 'signup';
 
             return (
