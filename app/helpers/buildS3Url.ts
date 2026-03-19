@@ -1,5 +1,3 @@
-import { S3_PUBLIC_BASE_URL } from '@/definitions';
-
 export function buildS3Url(url: string): string;
 export function buildS3Url(url: string | undefined): string | undefined;
 export function buildS3Url(url: string | undefined): string | undefined {
@@ -7,5 +5,5 @@ export function buildS3Url(url: string | undefined): string | undefined {
     return undefined;
   }
 
-  return `${S3_PUBLIC_BASE_URL}/${url}`;
+  return `${process.env.NEXT_PUBLIC_S3_URL}/${url}`;
 }
