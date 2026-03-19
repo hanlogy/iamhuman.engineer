@@ -15,11 +15,12 @@ export async function saveLinks({
 }): Promise<ActionResponse> {
   const { getSession } = await createSessionManager();
 
-  const session = await getSession();
+  const session = await getSession({ checkDb: true });
   if (!session) {
     return toActionFailure();
   }
-  const handle = session.payload.user.handle;
+
+  const { handle } = session;
 
   const profileHelper = new ProfileHelper();
 

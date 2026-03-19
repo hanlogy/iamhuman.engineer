@@ -1,13 +1,14 @@
 import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { LogoSvg } from '@/components/svgs';
-import { getUserFromCookie } from '@/server/userInCookie';
+import { createSessionManager } from '@/server/auth/createSessionManager';
 import { MemberNavBar } from './MemberNavBar';
 import { PublicNavBar } from './PublicNavBar';
 
 export async function Header() {
   let headerHeight = 'h-14 sm:h-18 md:h-22';
-  const user = await getUserFromCookie();
+  const { getSession } = await createSessionManager();
+  const user = await getSession();
   const isLoggedIn = !!user;
 
   let homeLink = '/';

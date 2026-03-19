@@ -21,10 +21,10 @@ export async function changePassword({
   oldPassword: string;
   newPassword: string;
 }): Promise<ActionResponse> {
-  const { getSession } = await createSessionManager();
+  const { getAccessToken } = await createSessionManager();
 
-  const session = await getSession();
-  if (!session) {
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
     return toActionFailure();
   }
 
@@ -34,7 +34,7 @@ export async function changePassword({
     await cognitoHelper.changePassword({
       previousPassword: oldPassword,
       proposedPassword: newPassword,
-      accessToken: session.payload.accessToken,
+      accessToken,
     });
 
     return toActionSuccess();

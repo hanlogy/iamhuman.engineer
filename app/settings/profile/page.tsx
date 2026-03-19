@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { ImageUploadProvider } from '@/components/ImageUpload';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
 import { buildS3Url } from '@/helpers/buildS3Url';
-import { getUserFromCookie } from '@/server/userInCookie';
+import { createSessionManager } from '@/server/auth/createSessionManager';
 import { ProfileForm } from './ProfileForm';
 
 export default async function ProfileSettingPage({
@@ -12,7 +12,8 @@ export default async function ProfileSettingPage({
   className?: string;
 }) {
   const profileHelper = new ProfileHelper();
-  const { handle } = (await getUserFromCookie()) ?? {};
+  const { getSession } = await createSessionManager();
+  const { handle } = (await getSession()) ?? {};
   if (!handle) {
     return notFound();
   }

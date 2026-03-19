@@ -1,19 +1,22 @@
 import { ARTIFACT_TYPES } from './constants';
 
-export interface SessionPayload {
+export interface Session {
+  readonly sessionId: string;
+  readonly userId: string;
   readonly accessToken: string;
   readonly refreshToken: string;
-  /**
-   * User summary
-   */
-  readonly user: Readonly<{
-    userId: string;
-    handle: string;
-    avatar?: string;
-  }>;
 }
 
-export type UserSummary = SessionPayload['user'];
+export interface UserSummary {
+  readonly userId: string;
+  readonly handle: string;
+  readonly avatar?: string;
+}
+
+export type SessionCookiePayload = UserSummary & {
+  readonly sessionId: string;
+  readonly expiresAt: number;
+};
 
 export type S3Folder = 'profiles' | 'artifacts';
 

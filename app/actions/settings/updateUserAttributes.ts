@@ -13,10 +13,10 @@ export async function updateUserAttributes({
 }: {
   email: string;
 }): Promise<ActionResponse> {
-  const { getSession } = await createSessionManager();
+  const { getAccessToken } = await createSessionManager();
 
-  const session = await getSession();
-  if (!session) {
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
     return toActionFailure();
   }
 
@@ -31,7 +31,7 @@ export async function updateUserAttributes({
           Value: email,
         },
       ],
-      accessToken: session.payload.accessToken,
+      accessToken,
     });
 
     return toActionSuccess();

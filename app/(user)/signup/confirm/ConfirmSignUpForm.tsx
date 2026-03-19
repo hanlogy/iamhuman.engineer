@@ -2,7 +2,7 @@
 
 import { useRef, useState, type SubmitEvent } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
-import { redirect, RedirectType } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { confirmSignUp } from '@/actions/user/confirmSignUp';
 import { login } from '@/actions/user/login';
 import { resendSignUpConfirmationCode } from '@/actions/user/resendSignUpConfirmationCode';
@@ -20,6 +20,7 @@ export function ConfirmSignUpForm({
 }: {
   userToConfirm: UserToConfirm;
 }) {
+  const router = useRouter();
   const { register, validate, getValues, setFormErrorListener, setFormError } =
     useForm<FormData>();
 
@@ -59,16 +60,19 @@ export function ConfirmSignUpForm({
       }
     }
 
-    const { error: errorFromLogin } = await login({
+    const { error: errorFromLogin, data } = await login({
       email,
       password,
     });
 
-    // Redirctly to login if auto login failed
+    // Redirect to login if auto login failed
     // TODO: Add an error log
     if (errorFromLogin) {
-      redirect('/login', RedirectType.push);
+      router.push('/login');
+      return;
     }
+
+    router.push(`/${data.handle}`);
   };
 
   const startCountdown = () => {

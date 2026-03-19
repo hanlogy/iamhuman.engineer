@@ -5,7 +5,7 @@ import { headers } from 'next/headers';
 import { Footer } from '@/layout/Footer';
 import { Header } from '@/layout/Header';
 import './globals.css';
-import { getUserFromCookie } from './server/userInCookie';
+import { createSessionManager } from './server/auth/createSessionManager';
 import { AppContextProvider } from './state/provider';
 
 const robotoSans = Roboto({
@@ -32,7 +32,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const header = await headers();
-  const user = await getUserFromCookie();
+  const { getSession } = await createSessionManager();
+  const user = await getSession();
 
   const host = header.get('x-forwarded-host') ?? header.get('host') ?? '';
 

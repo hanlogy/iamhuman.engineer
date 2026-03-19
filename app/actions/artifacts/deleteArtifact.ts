@@ -15,15 +15,11 @@ export async function deleteArtifact(
   const helper = new ArtifactHelper();
 
   const { getSession } = await createSessionManager();
-  const session = await getSession();
+  const session = await getSession({ checkDb: true });
   if (!session) {
     return toActionFailure();
   }
-  const {
-    payload: {
-      user: { userId },
-    },
-  } = session;
+  const { userId } = session;
 
   try {
     await helper.deleteItem({ userId, artifactId });

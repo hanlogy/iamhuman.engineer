@@ -10,7 +10,6 @@ import type { UODImage } from '@/components/ImageUpload';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
 import { DBHelperError } from '@/dynamodb/types';
 import { createSessionManager } from '@/server/auth';
-import { getCognitoHelper } from '@/server/helpersRepo';
 
 export async function saveProfile({
   name,
@@ -30,22 +29,15 @@ export async function saveProfile({
   if (!handle) {
     return toActionFailure({ message: 'Handle is required' });
   }
-  const { getSession } = await createSessionManager();
 
-  const session = await getSession();
+  const { getSession, updateUser } = await createSessionManager();
+
+  const session = await getSession({ checkDb: true });
   if (!session) {
     return toActionFailure();
   }
-  const cognitoHelper = getCognitoHelper();
-  const decodedAccessToken = cognitoHelper.decodeAccessToken(
-    session.payload.accessToken
-  );
-  if (!decodedAccessToken) {
-    return toActionFailure();
-  }
 
-  const { sub: userId } = decodedAccessToken;
-
+  const { userId } = session;
   const profileHelper = new ProfileHelper();
 
   try {
@@ -57,7 +49,6 @@ export async function saveProfile({
     });
 
     if (changed.handle || changed.avatar !== undefined) {
-      const { updateUser } = await createSessionManager();
       await updateUser(changed);
     }
 

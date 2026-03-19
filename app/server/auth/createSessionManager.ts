@@ -1,14 +1,12 @@
-import { isPlainObject, type JsonRecord } from '@hanlogy/ts-lib';
 import {
   SESSION_AGE,
   SESSION_KEY,
-  USER_KEY,
-  type SessionPayload,
+  type SessionCookiePayload,
   type UserSummary,
 } from '@/definitions';
+import { SessionHelper } from '@/dynamodb/SessionHelper';
 import { createCookieHelper, type CookieStore } from '../createCookieHelper';
-import { createEncryptedJwt, decryptJwt } from '../jwt';
-import { getSecretHex } from './getSecretHex';
+import { getCognitoHelper } from '../helpersRepo';
 
 export async function createSessionManager({
   cookieStore,
@@ -18,138 +16,129 @@ export async function createSessionManager({
   const { getCookie, setCookie, deleteCookie } =
     await createCookieHelper(cookieStore);
 
-  const getRawSession = () => {
-    return getCookie(SESSION_KEY);
+  const getRawSession = () => getCookie(SESSION_KEY);
+
+  const hasSession = (): boolean => !!getRawSession();
+
+  const destroySession = () => deleteCookie(SESSION_KEY);
+
+  const getSession = async (options?: {
+    checkDb?: boolean;
+  }): Promise<SessionCookiePayload | undefined> => {
+    const raw = getRawSession();
+    if (!raw) return undefined;
+
+    try {
+      const session = JSON.parse(raw) as SessionCookiePayload;
+
+      if (!options?.checkDb) {
+        return session;
+      }
+
+      const record = await new SessionHelper().getItem(session.sessionId);
+
+      if (!record) {
+        destroySession();
+        return undefined;
+      }
+
+      return session;
+    } catch {
+      return undefined;
+    }
   };
 
-  const hasSession = (): boolean => {
-    return !!getRawSession();
+  const setSession = (
+    payload: Omit<SessionCookiePayload, 'expiresAt'>,
+    /**
+     * **CAUTION**: It is in seconds, not ms.
+     */
+    expiresIn: number = SESSION_AGE
+  ): void => {
+    const expiresAt = Math.floor(Date.now() / 1000) + expiresIn;
+    setCookie(SESSION_KEY, JSON.stringify({ ...payload, expiresAt }), {
+      maxAge: expiresIn,
+    });
   };
 
-  const destroySession = () => {
-    deleteCookie(SESSION_KEY);
-    deleteCookie(USER_KEY);
+  const updateSession = async (
+    updater: (
+      current: SessionCookiePayload
+    ) => Omit<SessionCookiePayload, 'expiresAt'>
+  ): Promise<void> => {
+    const session = await getSession({ checkDb: true });
+    if (!session) {
+      throw new Error('You have not logged in');
+    }
+
+    const expiresIn = Math.floor(session.expiresAt - Date.now() / 1000);
+    if (expiresIn <= 0) {
+      throw new Error('Session has expired');
+    }
+
+    setSession(updater(session), expiresIn);
   };
 
-  const getSession = async (): Promise<{
-    payload: SessionPayload;
-    expiresAt: number;
-  } | null> => {
-    const session = getRawSession();
-
+  const getAccessToken = async (): Promise<string | null> => {
+    const session = await getSession({ checkDb: true });
     if (!session) {
       return null;
     }
 
-    const data = await decryptJwt({
-      token: session,
-      secretHex: getSecretHex(),
-    });
-
-    if (!data) {
+    const sessionHelper = new SessionHelper();
+    const tokens = await sessionHelper.getItem(session.sessionId);
+    if (!tokens) {
+      destroySession();
       return null;
     }
 
-    const { payload: payloadLike, expiresAt } = data;
-    const payload = buildSessionPayload(payloadLike);
-    if (!payload || !expiresAt) {
+    const cognitoHelper = getCognitoHelper();
+    const { isValid, error } = await cognitoHelper.verifyAccessToken(
+      tokens.accessToken
+    );
+
+    if (isValid) {
+      return tokens.accessToken;
+    }
+
+    if (error.code !== 'expired') {
+      destroySession();
       return null;
     }
 
-    return { payload, expiresAt };
-  };
+    const refreshed = await cognitoHelper.refreshToken({
+      refreshToken: tokens.refreshToken,
+    });
 
-  const setSession = async (
-    payload: Readonly<SessionPayload>,
-    /**
-     * **CAUTION**: It is in seconds, not ms.
-     */
-    expiresAt?: number | undefined
-  ): Promise<void> => {
-    let expiresIn = SESSION_AGE;
-
-    if (expiresAt !== undefined) {
-      expiresIn = Math.floor(expiresAt - Date.now() / 1000);
-
-      if (expiresIn <= 0) {
-        throw new Error('expiresAt must be in the future');
-      }
+    if (!refreshed?.accessToken) {
+      destroySession();
+      return null;
     }
 
-    const encryptedSession = await createEncryptedJwt({
-      payload,
-      secretHex: getSecretHex(),
-      expiresIn,
-    });
-
-    setCookie(SESSION_KEY, encryptedSession, {
-      maxAge: expiresIn,
-    });
+    await sessionHelper.updateAccessToken(
+      session.sessionId,
+      refreshed.accessToken
+    );
+    return refreshed.accessToken;
   };
 
   const updateUser = async ({
     avatar,
     handle,
   }: Partial<Pick<UserSummary, 'avatar' | 'handle'>>): Promise<void> => {
-    const session = await getSession();
-    if (!session) {
-      throw new Error('You have not logged in');
-    }
-
-    const {
-      payload: { user, ...payloadRest },
-      expiresAt,
-    } = session;
-
-    await setSession(
-      {
-        ...payloadRest,
-        user: {
-          ...user,
-          ...(avatar !== undefined ? { avatar } : {}),
-          ...(handle ? { handle } : {}),
-        },
-      },
-      expiresAt
-    );
+    await updateSession((current) => ({
+      ...current,
+      ...(handle ? { handle } : {}),
+      ...(avatar !== undefined ? { avatar } : {}),
+    }));
   };
 
   return {
     hasSession,
     destroySession,
+    getAccessToken,
     updateUser,
     setSession,
     getSession,
-  };
-}
-
-function buildSessionPayload(data: JsonRecord | null): SessionPayload | null {
-  if (!data) {
-    return null;
-  }
-
-  const { accessToken, refreshToken, user } = data;
-  if (
-    typeof accessToken !== 'string' ||
-    typeof refreshToken !== 'string' ||
-    !isPlainObject(user)
-  ) {
-    return null;
-  }
-
-  const { userId, handle, avatar } = user;
-
-  if (
-    typeof userId !== 'string' ||
-    typeof handle !== 'string' ||
-    (avatar !== undefined && typeof avatar !== 'string')
-  ) {
-    return null;
-  }
-
-  return {
-    accessToken,
-    refreshToken,
-    user: { userId, handle, avatar },
   };
 }

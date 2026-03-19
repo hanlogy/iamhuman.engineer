@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
-import { getUserFromCookie } from '@/server/userInCookie';
+import { createSessionManager } from '@/server/auth/createSessionManager';
 import { LinksForm } from './LinksForm';
 
 export default async function LinksSettingPage() {
   const profileHelper = new ProfileHelper();
-  const { handle } = (await getUserFromCookie()) ?? {};
+  const { getSession } = await createSessionManager();
+  const { handle } = (await getSession()) ?? {};
   if (!handle) {
     return notFound();
   }

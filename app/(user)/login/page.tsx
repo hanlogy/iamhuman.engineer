@@ -3,6 +3,7 @@
 import { type SubmitEvent } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { login } from '@/actions/user/login';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
@@ -14,6 +15,7 @@ interface FormData {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const { register, validate, getValues, setFormError, setFormErrorListener } =
     useForm<FormData>();
 
@@ -26,10 +28,13 @@ export default function LoginPage() {
 
     const values = getValues();
 
-    const { error } = await login(values);
+    const { error, data } = await login(values);
 
     if (error) {
       switch (error.code) {
+        case 'userNotConfirmed':
+          router.push('/signup/confirm');
+          return;
         case 'userNotFound':
         case 'notAuthorized':
           setFormError('Incorrect email or password');
@@ -39,6 +44,8 @@ export default function LoginPage() {
       setFormError('Unknown error');
       return;
     }
+
+    router.push(`/${data.handle}`);
   };
 
   return (

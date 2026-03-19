@@ -1,6 +1,7 @@
 import { USER_TO_CONFIRM_KEY } from '@/definitions';
 import { createCookieHelper } from '@/server/createCookieHelper';
 
+// TODO: Use JWE to protect it.
 export interface UserToConfirm {
   email: string;
   password: string;
@@ -35,10 +36,4 @@ export async function getUserToConfirm(): Promise<UserToConfirm | undefined> {
   } catch {
     return undefined;
   }
-}
-
-export async function deleteUserToConfirm() {
-  const { deleteCookie } = await createCookieHelper();
-
-  deleteCookie(USER_TO_CONFIRM_KEY);
 }

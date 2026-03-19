@@ -20,10 +20,10 @@ export async function verifyUserAttribute({
   name: 'email';
   code: string;
 }): Promise<ActionResponse> {
-  const { getSession } = await createSessionManager();
+  const { getAccessToken } = await createSessionManager();
 
-  const session = await getSession();
-  if (!session) {
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
     return toActionFailure();
   }
 
@@ -34,7 +34,7 @@ export async function verifyUserAttribute({
     await cognitoHelper.verifyUserAttribute({
       attributeName: name,
       code,
-      accessToken: session.payload.accessToken,
+      accessToken,
     });
 
     return toActionSuccess();

@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { Shimmer } from '@/components/Shimmer';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
 import { ProfileHelper } from '@/dynamodb/ProfileHelper';
-import { getUserFromCookie } from '@/server/userInCookie';
+import { createSessionManager } from '@/server/auth/createSessionManager';
 import { ArtifactFilters } from './components/ArtifactFilters';
 import { ArtifactList } from './components/ArtifactList';
 import { ArtifactToolbar } from './components/ArtifactToolbar';
@@ -28,7 +28,8 @@ export default async function ProfilePage({
   const tags = await tagHelper.getTags({ userId: profile.userId });
   const selectedTag = tags.find(({ key }) => key === tagKey);
 
-  const { userId: myUserId } = (await getUserFromCookie()) ?? {};
+  const { getSession } = await createSessionManager();
+  const { userId: myUserId } = (await getSession()) ?? {};
   const isSelf = myUserId === profile.userId;
 
   return (
