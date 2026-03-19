@@ -1,5 +1,6 @@
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { clsx } from '@hanlogy/react-web-ui';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProfile } from '@/actions/profile/getProfile';
 import { Shimmer } from '@/components/Shimmer';
@@ -10,13 +11,31 @@ import { ArtifactList } from './components/ArtifactList';
 import { ArtifactToolbar } from './components/ArtifactToolbar';
 import { ProfileSummary } from './components/ProfileSummary';
 
+const getCachedProfile = cache(getProfile);
+
+export async function generateMetadata({
+  params,
+}: PageProps<'/[handle]'>): Promise<Metadata> {
+  const { handle } = await params;
+  const profileResult = await getCachedProfile({ handle });
+
+  if (!profileResult.success) {
+    return {};
+  }
+
+  const { name } = profileResult.data;
+  const title = `${name ?? 'Profile'} - IAmHuman.Engineer`;
+
+  return { title };
+}
+
 export default async function ProfilePage({
   params,
   searchParams,
 }: PageProps<'/[handle]'>) {
   const { handle } = await params;
   const { tag } = await searchParams;
-  const profileResult = await getProfile({ handle });
+  const profileResult = await getCachedProfile({ handle });
   if (!profileResult.success) {
     return notFound();
   }
