@@ -12,6 +12,18 @@ helper tables to keep the main table clean and predictable.
   - Static segments in `pk`/`sk` are **UPPERCASE**
   - Dynamic/computed segments are **lowercase**, with spaces and `-` removed
 
+## Entity: session
+
+| Attribute    | Type   | Example             |
+| ------------ | ------ | ------------------- |
+| pk           | string | SESSION#{sessionId} |
+| sk           | string | 01#                 |
+| sessionId    | string | a-b-c-d             |
+| userId       | string | 1-2-3-4             |
+| accessToken  | string |                     |
+| refreshToken | string |                     |
+| expiresIn    | number | 3600                |
+
 ## Entity: profile
 
 1. look for a profile by `handle` (most frequent)
