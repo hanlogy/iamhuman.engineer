@@ -1,5 +1,13 @@
 import { ARTIFACT_TYPES } from './constants';
 
+export interface Session {
+  readonly sessionId: string;
+  readonly userId: string;
+  readonly accessToken: string;
+  readonly refreshToken: string;
+  readonly expiresIn: number;
+}
+
 export interface SessionPayload {
   readonly accessToken: string;
   readonly refreshToken: string;

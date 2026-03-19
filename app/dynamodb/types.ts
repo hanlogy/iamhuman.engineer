@@ -1,6 +1,6 @@
 import type { PutConfig, UpdateConfig } from '@hanlogy/ts-dynamodb';
 import type { UODImage } from '@/components/ImageUpload';
-import type { Artifact, ArtifactTag, Profile } from '@/definitions/types';
+import type { Artifact, ArtifactTag, Profile, Session } from '@/definitions/types';
 
 export interface ProfileEntity extends Profile {
   readonly pk: string;
@@ -71,6 +71,11 @@ export interface ResolveTagsResult {
     Pick<ArtifactTagEntity, 'count'>,
     Pick<ArtifactTagEntity, 'pk' | 'sk'>
   >[];
+}
+
+export interface SessionEntity extends Session {
+  readonly pk: string;
+  readonly sk: string;
 }
 
 export type BuildPutItemsParams = Omit<Artifact, 'tags'> & {
