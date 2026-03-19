@@ -1,23 +1,17 @@
 import { notFound } from 'next/navigation';
-import { ProfileHelper } from '@/dynamodb/ProfileHelper';
-import { createSessionManager } from '@/server/auth/createSessionManager';
+import { getMyProfile } from '@/actions/profile/getMyProfile';
 import { LinksForm } from './LinksForm';
 
 export default async function LinksSettingPage() {
-  const profileHelper = new ProfileHelper();
-  const { getSession } = await createSessionManager();
-  const { handle } = (await getSession()) ?? {};
-  if (!handle) {
+  const profileResult = await getMyProfile();
+
+  if (!profileResult.success) {
     return notFound();
   }
 
-  const profile = await profileHelper.getItem({ handle });
-
-  if (!profile) {
-    return;
-  }
-
-  const links = (profile.links?.length ? profile.links : ['']).map((url) => {
+  const links = (
+    profileResult.data.links?.length ? profileResult.data.links : ['']
+  ).map((url: string) => {
     return {
       id: crypto.randomUUID(),
       url,

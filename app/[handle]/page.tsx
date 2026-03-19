@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import { clsx } from '@hanlogy/react-web-ui';
 import { notFound } from 'next/navigation';
+import { getProfile } from '@/actions/profile/getProfile';
 import { Shimmer } from '@/components/Shimmer';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
-import { ProfileHelper } from '@/dynamodb/ProfileHelper';
 import { createSessionManager } from '@/server/auth/createSessionManager';
 import { ArtifactFilters } from './components/ArtifactFilters';
 import { ArtifactList } from './components/ArtifactList';
@@ -16,11 +16,11 @@ export default async function ProfilePage({
 }: PageProps<'/[handle]'>) {
   const { handle } = await params;
   const { tag } = await searchParams;
-  const profileHelper = new ProfileHelper();
-  const profile = await profileHelper.getItem({ handle });
-  if (!profile) {
+  const profileResult = await getProfile({ handle });
+  if (!profileResult.success) {
     return notFound();
   }
+  const profile = profileResult.data;
 
   const tagKey = typeof tag === 'string' && tag ? tag : undefined;
 
