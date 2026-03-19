@@ -1,11 +1,12 @@
 import {
   SESSION_AGE,
   SESSION_KEY,
-  USER_KEY,
-  type SessionPayload,
+  type SessionCookiePayload,
   type UserSummary,
 } from '@/definitions';
+import { SessionHelper } from '@/dynamodb/SessionHelper';
 import { createCookieHelper, type CookieStore } from '../createCookieHelper';
+import { getCognitoHelper } from '../helpersRepo';
 
 export async function createSessionManager({
   cookieStore,
@@ -15,35 +16,40 @@ export async function createSessionManager({
   const { getCookie, setCookie, deleteCookie } =
     await createCookieHelper(cookieStore);
 
-  const getRawSession = () => {
-    return getCookie(SESSION_KEY);
-  };
+  const getRawSession = () => getCookie(SESSION_KEY);
 
-  const hasSession = (): boolean => {
-    return !!getRawSession();
-  };
+  const hasSession = (): boolean => !!getRawSession();
 
-  const destroySession = () => {
-    deleteCookie(SESSION_KEY);
-    deleteCookie(USER_KEY);
-  };
+  const destroySession = () => deleteCookie(SESSION_KEY);
 
-  const getSession = (): SessionPayload | null => {
+  const getSession = async (options?: {
+    checkDb?: boolean;
+  }): Promise<SessionCookiePayload | undefined> => {
     const raw = getRawSession();
-
-    if (!raw) {
-      return null;
-    }
+    if (!raw) return undefined;
 
     try {
-      return JSON.parse(raw) as SessionPayload;
+      const session = JSON.parse(raw) as SessionCookiePayload;
+
+      if (!options?.checkDb) {
+        return session;
+      }
+
+      const record = await new SessionHelper().getItem(session.sessionId);
+
+      if (!record) {
+        destroySession();
+        return undefined;
+      }
+
+      return session;
     } catch {
-      return null;
+      return undefined;
     }
   };
 
   const setSession = (
-    payload: Readonly<Omit<SessionPayload, 'expiresAt'>>,
+    payload: Omit<SessionCookiePayload, 'expiresAt'>,
     /**
      * **CAUTION**: It is in seconds, not ms.
      */
@@ -55,10 +61,12 @@ export async function createSessionManager({
     });
   };
 
-  const updateSession = (
-    updater: (current: SessionPayload) => Omit<SessionPayload, 'expiresAt'>
-  ): void => {
-    const session = getSession();
+  const updateSession = async (
+    updater: (
+      current: SessionCookiePayload
+    ) => Omit<SessionCookiePayload, 'expiresAt'>
+  ): Promise<void> => {
+    const session = await getSession({ checkDb: true });
     if (!session) {
       throw new Error('You have not logged in');
     }
@@ -71,24 +79,64 @@ export async function createSessionManager({
     setSession(updater(session), expiresIn);
   };
 
-  const updateUser = ({
+  const getAccessToken = async (): Promise<string | null> => {
+    const session = await getSession({ checkDb: true });
+    if (!session) {
+      return null;
+    }
+
+    const sessionHelper = new SessionHelper();
+    const tokens = await sessionHelper.getItem(session.sessionId);
+    if (!tokens) {
+      destroySession();
+      return null;
+    }
+
+    const cognitoHelper = getCognitoHelper();
+    const { isValid, error } = await cognitoHelper.verifyAccessToken(
+      tokens.accessToken
+    );
+
+    if (isValid) {
+      return tokens.accessToken;
+    }
+
+    if (error.code !== 'expired') {
+      destroySession();
+      return null;
+    }
+
+    const refreshed = await cognitoHelper.refreshToken({
+      refreshToken: tokens.refreshToken,
+    });
+
+    if (!refreshed?.accessToken) {
+      destroySession();
+      return null;
+    }
+
+    await sessionHelper.updateAccessToken(
+      session.sessionId,
+      refreshed.accessToken
+    );
+    return refreshed.accessToken;
+  };
+
+  const updateUser = async ({
     avatar,
     handle,
-  }: Partial<Pick<UserSummary, 'avatar' | 'handle'>>): void => {
-    updateSession(({ user, ...rest }) => ({
-      ...rest,
-      user: {
-        ...user,
-        ...(avatar !== undefined ? { avatar } : {}),
-        ...(handle ? { handle } : {}),
-      },
+  }: Partial<Pick<UserSummary, 'avatar' | 'handle'>>): Promise<void> => {
+    await updateSession((current) => ({
+      ...current,
+      ...(handle ? { handle } : {}),
+      ...(avatar !== undefined ? { avatar } : {}),
     }));
   };
 
   return {
     hasSession,
     destroySession,
-    updateSession,
+    getAccessToken,
     updateUser,
     setSession,
     getSession,

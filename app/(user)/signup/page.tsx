@@ -3,6 +3,7 @@
 import { type SubmitEvent } from 'react';
 import { useForm } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { signup } from '@/actions/user/signup';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import { FormErrorMessage } from '@/components/form/FormErrorMessage';
@@ -15,6 +16,7 @@ interface FormData {
 }
 
 export default function SignupPage() {
+  const router = useRouter();
   const {
     register,
     validate,
@@ -48,6 +50,8 @@ export default function SignupPage() {
       setFormError('Unknown error');
       return;
     }
+
+    router.push('/signup/confirm');
   };
 
   return (

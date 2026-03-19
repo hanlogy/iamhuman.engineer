@@ -56,4 +56,3 @@ export function ArtifactCard({
     </div>
   );
 }
-3;

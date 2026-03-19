@@ -5,26 +5,18 @@ export interface Session {
   readonly userId: string;
   readonly accessToken: string;
   readonly refreshToken: string;
-  readonly expiresIn: number;
 }
 
-export interface SessionPayload {
+export interface UserSummary {
+  readonly userId: string;
+  readonly handle: string;
+  readonly avatar?: string;
+}
+
+export type SessionCookiePayload = UserSummary & {
   readonly sessionId: string;
-  /**
-   * Unix timestamp in seconds
-   */
   readonly expiresAt: number;
-  /**
-   * User summary
-   */
-  readonly user: Readonly<{
-    userId: string;
-    handle: string;
-    avatar?: string;
-  }>;
-}
-
-export type UserSummary = SessionPayload['user'];
+};
 
 export type S3Folder = 'profiles' | 'artifacts';
 

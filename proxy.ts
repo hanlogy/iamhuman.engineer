@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { handleSession } from '@/proxy/handleSession';
+import { createSessionManager } from '@/server/auth/createSessionManager';
 import {
   createCookieHelper,
   createCookieStoreFromServer,
@@ -7,20 +7,20 @@ import {
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
-  const { setCookie, cookieStore } = await createCookieHelper(
+  const { cookieStore } = await createCookieHelper(
     createCookieStoreFromServer(request, response)
   );
 
-  const { handle, isLoggedIn } =
-    (await handleSession({ setCookie, cookieStore })) ?? {};
+  const { getSession } = await createSessionManager({ cookieStore });
+  const user = await getSession();
 
   const pathname = request.nextUrl.pathname;
 
   if (pathname === '/') {
-    if (handle) {
-      return NextResponse.redirect(new URL(`/${handle}`, request.url));
+    if (user) {
+      return NextResponse.redirect(new URL(`/${user.handle}`, request.url));
     }
-  } else if (pathname.startsWith('/settings') && !isLoggedIn) {
+  } else if (pathname.startsWith('/settings') && !user) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 

@@ -23,9 +23,9 @@ export class SessionHelper extends HelperBase {
       return undefined;
     }
 
-    const { pk, sk, userId, accessToken, refreshToken, expiresIn } = item;
+    const { pk, sk, userId, accessToken, refreshToken } = item;
 
-    return { pk, sk, sessionId, userId, accessToken, refreshToken, expiresIn };
+    return { pk, sk, sessionId, userId, accessToken, refreshToken };
   }
 
   async getItem(sessionId: string): Promise<Session | undefined> {
@@ -44,7 +44,6 @@ export class SessionHelper extends HelperBase {
     userId,
     accessToken,
     refreshToken,
-    expiresIn,
   }: Omit<SessionEntity, 'pk' | 'sk' | 'sessionId'>): Promise<Session> {
     const sessionId = randomUUID();
 
@@ -53,7 +52,6 @@ export class SessionHelper extends HelperBase {
       userId,
       accessToken,
       refreshToken,
-      expiresIn,
     };
 
     await this.db.put({
@@ -65,6 +63,16 @@ export class SessionHelper extends HelperBase {
     });
 
     return session;
+  }
+
+  async updateAccessToken(
+    sessionId: string,
+    accessToken: string
+  ): Promise<void> {
+    await this.db.update({
+      keys: this.buildKeys({ sessionId }),
+      setAttributes: { accessToken },
+    });
   }
 
   async deleteItem(sessionId: string): Promise<void> {

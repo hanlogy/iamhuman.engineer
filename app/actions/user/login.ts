@@ -8,10 +8,11 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
   toActionFailure,
+  toActionSuccess,
   type ActionResponse,
   type ErrorCode,
 } from '@hanlogy/react-kit';
-import { redirect } from 'next/navigation';
+import { SessionHelper } from '@/dynamodb/SessionHelper';
 import { UserHelper } from '@/dynamodb/UserHelper';
 import { createSessionManager } from '@/server/auth/createSessionManager';
 import { getCognitoHelper } from '@/server/helpersRepo';
@@ -23,7 +24,7 @@ export async function login({
 }: Partial<{
   email: string;
   password: string;
-}>): Promise<ActionResponse> {
+}>): Promise<ActionResponse<{ handle: string }>> {
   if (!email || !password) {
     return toActionFailure();
   }
@@ -49,18 +50,25 @@ export async function login({
       });
     }
 
-    const { setSession } = await createSessionManager();
     const userHelper = new UserHelper();
-    await setSession({
+    const user = await userHelper.getOrCreateSummary(userId);
+
+    const sessionHelper = new SessionHelper();
+    const { sessionId } = await sessionHelper.createItem({
+      userId,
       accessToken,
       refreshToken,
-      user: await userHelper.getOrCreateSummary(userId),
     });
+
+    const { setSession } = await createSessionManager();
+    setSession({ sessionId, ...user });
+
+    return toActionSuccess({ handle: user.handle });
   } catch (error) {
     let code: ErrorCode = 'unknown';
     if (error instanceof UserNotConfirmedException) {
       await setUserToConfirm({ email, password, from: 'login' });
-      redirect('/signup/confirm');
+      code = 'userNotConfirmed';
     } else if (error instanceof UserNotFoundException) {
       code = 'userNotFound';
     } else if (error instanceof NotAuthorizedException) {
@@ -71,6 +79,4 @@ export async function login({
 
     return toActionFailure({ code });
   }
-
-  redirect('/');
 }

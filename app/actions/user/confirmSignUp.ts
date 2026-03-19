@@ -11,7 +11,6 @@ import {
   type ActionResponse,
   type ErrorCode,
 } from '@hanlogy/react-kit';
-import { deleteUserToConfirm } from '@/server/confirmSignUpManager';
 import { getCognitoHelper } from '@/server/helpersRepo';
 
 export async function confirmSignUp({
@@ -33,7 +32,6 @@ export async function confirmSignUp({
       confirmationCode: code,
     });
 
-    await deleteUserToConfirm();
     return toActionSuccess();
   } catch (error) {
     let code: ErrorCode = 'unknown';

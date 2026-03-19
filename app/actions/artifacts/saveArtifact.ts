@@ -8,7 +8,7 @@ import {
 import type { UODImage } from '@/components/ImageUpload';
 import type { Artifact } from '@/definitions/types';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
-import { getUserFromCookie } from '@/server/userInCookie';
+import { createSessionManager } from '@/server/auth/createSessionManager';
 
 export async function saveArtifact(
   id: string | undefined,
@@ -18,7 +18,8 @@ export async function saveArtifact(
   }
 ): Promise<ActionResponse> {
   const artifactHelper = new ArtifactHelper();
-  const { userId } = (await getUserFromCookie()) ?? {};
+  const { getSession } = await createSessionManager();
+  const { userId } = (await getSession()) ?? {};
 
   if (!userId) {
     return toActionFailure();

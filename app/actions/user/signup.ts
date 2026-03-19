@@ -5,8 +5,8 @@ import {
   type ActionResponse,
   type ErrorCode,
   toActionFailure,
+  toActionSuccess,
 } from '@hanlogy/react-kit';
-import { redirect } from 'next/navigation';
 import { setUserToConfirm } from '@/server/confirmSignUpManager';
 import { getCognitoHelper } from '@/server/helpersRepo';
 
@@ -31,6 +31,8 @@ export async function signup({
     });
 
     await setUserToConfirm({ email, password, from: 'signup' });
+
+    return toActionSuccess();
   } catch (e) {
     let code: ErrorCode = 'unknown';
 
@@ -40,6 +42,4 @@ export async function signup({
 
     return toActionFailure({ code });
   }
-
-  redirect('/signup/confirm');
 }

@@ -22,7 +22,6 @@ helper tables to keep the main table clean and predictable.
 | userId       | string | 1-2-3-4             |
 | accessToken  | string |                     |
 | refreshToken | string |                     |
-| expiresIn    | number | 3600                |
 
 ## Entity: profile
 
