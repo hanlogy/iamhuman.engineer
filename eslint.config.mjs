@@ -15,7 +15,22 @@ const eslintConfig = defineConfig([
   ]),
   {
     files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
+      // "no-eq-null": "error",
+
+      // "@typescript-eslint/strict-boolean-expressions": "error",
+      // "@typescript-eslint/no-unnecessary-condition": "error",
+      // "@typescript-eslint/prefer-nullish-coalescing": "error",
+      // "@typescript-eslint/no-non-null-assertion": "error",
+
+      "@typescript-eslint/no-floating-promises": "error",
+
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

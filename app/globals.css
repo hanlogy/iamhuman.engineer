@@ -80,3 +80,9 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

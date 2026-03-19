@@ -1,6 +1,6 @@
+import { type ReactNode } from 'react';
 import { clsx } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
-import { ReactNode } from 'react';
 
 export function LinkButton({
   children,

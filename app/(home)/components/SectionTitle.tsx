@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { clsx } from '@hanlogy/react-web-ui';
 
 export function SectionTitle({ children }: PropsWithChildren) {
