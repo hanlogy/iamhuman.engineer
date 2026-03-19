@@ -1,5 +1,6 @@
 'use client';
 
+import { Fragment } from 'react/jsx-runtime';
 import Link from 'next/link';
 import { EngineersSvg, TeamsSvg } from '@/components/svgs';
 import type { UserSummary } from '@/definitions';
@@ -25,7 +26,7 @@ export function MemberNavBar({ user }: { user: UserSummary }) {
     <div className="flex items-center space-x-6 sm:space-x-8">
       {linkItems.map(({ name, label, href, Icon }) => {
         if (name === 'teams') {
-          return <></>;
+          return <Fragment key={name}></Fragment>;
         }
         return (
           <Link

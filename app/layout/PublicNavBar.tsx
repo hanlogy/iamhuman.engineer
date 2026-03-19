@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { clsx, IconButton } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
 import { CloseSvg, MenuSvg } from '@/components/svgs';
@@ -33,7 +33,7 @@ export function PublicNavBar() {
         >
           {navItems.map(({ name, label, href }) => {
             if (name === 'teams') {
-              return <></>;
+              return <Fragment key={name}></Fragment>;
             }
 
             const isSignUp = name === 'signup';
