@@ -1,3 +1,4 @@
+import { isEmail } from '@/helpers/isEmail';
 import type { IconType } from 'react-icons';
 import {
   FaDiscord,
@@ -67,15 +68,6 @@ const PLATFORM_ICONS: Record<SocialPlatform, IconType> = {
   website: FaGlobe,
 };
 
-function isEmail(value: string): boolean {
-  const normalizedValue = value.trim();
-
-  if (normalizedValue.length === 0) {
-    return false;
-  }
-
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue);
-}
 
 function normalizeUrl(url: string): string {
   const value = url.trim();

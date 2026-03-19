@@ -104,7 +104,7 @@ export function ProfileForm({
               if (!handle || handle.length < 3) {
                 return 'Invalid handle';
               }
-              if (!/^[a-z0-9_.-]+$/i.test(handle)) {
+              if (!/^[a-z0-9-]+$/i.test(handle)) {
                 return 'Invalid handle';
               }
             },

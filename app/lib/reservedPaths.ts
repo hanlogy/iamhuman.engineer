@@ -285,9 +285,6 @@ export const reservedPaths = [
   'wearehuman-engineer',
   'nordcarry',
   'zhiguang',
-  'zhiguang.chen',
-  'zhiguang-chen',
   'yourui',
-  'yourui.chen',
   'yourui-chen',
 ];

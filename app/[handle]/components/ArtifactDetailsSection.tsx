@@ -19,6 +19,10 @@ export function ArtifactDetailsSection({
     <div className="text-foreground-muted text-sm italic">{text}</div>
   );
 
+  const formatText = (text: string) => (
+    <span className="whitespace-pre-line">{text.replace(/\n{2,}/g, '\n')}</span>
+  );
+
   return (
     <>
       <div className="mb-4 max-w-xs">
@@ -31,7 +35,7 @@ export function ArtifactDetailsSection({
             hidden: tab !== 'summary',
           })}
         >
-          {summary ? summary : showEmpty('Summary is empty')}
+          {summary ? formatText(summary) : showEmpty('Summary is empty')}
         </div>
         <div
           className={clsx({
@@ -42,7 +46,7 @@ export function ArtifactDetailsSection({
             <div className="space-y-3">
               {links.map(({ text, url }) => {
                 return (
-                  <div className="text-sm" key={url}>
+                  <div className="text-sm break-all" key={url}>
                     <div className="font-medium">{text}</div>
                     <a className="hover:underline" href={url} target="_blank">
                       {url}
@@ -60,7 +64,7 @@ export function ArtifactDetailsSection({
             hidden: tab !== 'judgment',
           })}
         >
-          {judgment ? judgment : showEmpty('Judgment is empty')}
+          {judgment ? formatText(judgment) : showEmpty('Judgment is empty')}
         </div>
       </div>
     </>
