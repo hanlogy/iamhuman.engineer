@@ -9,8 +9,11 @@ export interface Session {
 }
 
 export interface SessionPayload {
-  readonly accessToken: string;
-  readonly refreshToken: string;
+  readonly sessionId: string;
+  /**
+   * Unix timestamp in seconds
+   */
+  readonly expiresAt: number;
   /**
    * User summary
    */

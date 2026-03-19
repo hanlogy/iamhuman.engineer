@@ -1,4 +1,3 @@
-import { isPlainObject, type JsonRecord } from '@hanlogy/ts-lib';
 import {
   SESSION_AGE,
   SESSION_KEY,
@@ -7,8 +6,6 @@ import {
   type UserSummary,
 } from '@/definitions';
 import { createCookieHelper, type CookieStore } from '../createCookieHelper';
-import { createEncryptedJwt, decryptJwt } from '../jwt';
-import { getSecretHex } from './getSecretHex';
 
 export async function createSessionManager({
   cookieStore,
@@ -31,125 +28,69 @@ export async function createSessionManager({
     deleteCookie(USER_KEY);
   };
 
-  const getSession = async (): Promise<{
-    payload: SessionPayload;
-    expiresAt: number;
-  } | null> => {
-    const session = getRawSession();
+  const getSession = (): SessionPayload | null => {
+    const raw = getRawSession();
 
-    if (!session) {
+    if (!raw) {
       return null;
     }
 
-    const data = await decryptJwt({
-      token: session,
-      secretHex: getSecretHex(),
-    });
-
-    if (!data) {
+    try {
+      return JSON.parse(raw) as SessionPayload;
+    } catch {
       return null;
     }
-
-    const { payload: payloadLike, expiresAt } = data;
-    const payload = buildSessionPayload(payloadLike);
-    if (!payload || !expiresAt) {
-      return null;
-    }
-
-    return { payload, expiresAt };
   };
 
-  const setSession = async (
-    payload: Readonly<SessionPayload>,
+  const setSession = (
+    payload: Readonly<Omit<SessionPayload, 'expiresAt'>>,
     /**
      * **CAUTION**: It is in seconds, not ms.
      */
-    expiresAt?: number | undefined
-  ): Promise<void> => {
-    let expiresIn = SESSION_AGE;
-
-    if (expiresAt !== undefined) {
-      expiresIn = Math.floor(expiresAt - Date.now() / 1000);
-
-      if (expiresIn <= 0) {
-        throw new Error('expiresAt must be in the future');
-      }
-    }
-
-    const encryptedSession = await createEncryptedJwt({
-      payload,
-      secretHex: getSecretHex(),
-      expiresIn,
-    });
-
-    setCookie(SESSION_KEY, encryptedSession, {
+    expiresIn: number = SESSION_AGE
+  ): void => {
+    const expiresAt = Math.floor(Date.now() / 1000) + expiresIn;
+    setCookie(SESSION_KEY, JSON.stringify({ ...payload, expiresAt }), {
       maxAge: expiresIn,
     });
   };
 
-  const updateUser = async ({
-    avatar,
-    handle,
-  }: Partial<Pick<UserSummary, 'avatar' | 'handle'>>): Promise<void> => {
-    const session = await getSession();
+  const updateSession = (
+    updater: (current: SessionPayload) => Omit<SessionPayload, 'expiresAt'>
+  ): void => {
+    const session = getSession();
     if (!session) {
       throw new Error('You have not logged in');
     }
 
-    const {
-      payload: { user, ...payloadRest },
-      expiresAt,
-    } = session;
+    const expiresIn = Math.floor(session.expiresAt - Date.now() / 1000);
+    if (expiresIn <= 0) {
+      throw new Error('Session has expired');
+    }
 
-    await setSession(
-      {
-        ...payloadRest,
-        user: {
-          ...user,
-          ...(avatar !== undefined ? { avatar } : {}),
-          ...(handle ? { handle } : {}),
-        },
+    setSession(updater(session), expiresIn);
+  };
+
+  const updateUser = ({
+    avatar,
+    handle,
+  }: Partial<Pick<UserSummary, 'avatar' | 'handle'>>): void => {
+    updateSession(({ user, ...rest }) => ({
+      ...rest,
+      user: {
+        ...user,
+        ...(avatar !== undefined ? { avatar } : {}),
+        ...(handle ? { handle } : {}),
       },
-      expiresAt
-    );
+    }));
   };
 
   return {
     hasSession,
     destroySession,
+    updateSession,
     updateUser,
     setSession,
     getSession,
-  };
-}
-
-function buildSessionPayload(data: JsonRecord | null): SessionPayload | null {
-  if (!data) {
-    return null;
-  }
-
-  const { accessToken, refreshToken, user } = data;
-  if (
-    typeof accessToken !== 'string' ||
-    typeof refreshToken !== 'string' ||
-    !isPlainObject(user)
-  ) {
-    return null;
-  }
-
-  const { userId, handle, avatar } = user;
-
-  if (
-    typeof userId !== 'string' ||
-    typeof handle !== 'string' ||
-    (avatar !== undefined && typeof avatar !== 'string')
-  ) {
-    return null;
-  }
-
-  return {
-    accessToken,
-    refreshToken,
-    user: { userId, handle, avatar },
   };
 }
