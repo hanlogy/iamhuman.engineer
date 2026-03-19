@@ -33,7 +33,9 @@ export default async function ProfilePage({
   const isSelf = myUserId === profile.userId;
 
   return (
-    <div className={clsx('my-6', 'md:mx-auto md:flex md:max-w-5xl md:px-6')}>
+    <div
+      className={clsx('mt-6 mb-26', 'md:mx-auto md:flex md:max-w-5xl md:px-6')}
+    >
       <div className="px-4 md:w-56 md:px-0 md:pr-6 lg:w-3xs lg:pr-8">
         <div className="mb-8 lg:mb-10">
           <ProfileSummary profile={profile} />

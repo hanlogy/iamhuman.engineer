@@ -43,7 +43,7 @@ export function ArtifactDetailsTabs({
                 'border-r-0': !isLast,
                 'rounded-l-full': isFirst,
                 'rounded-r-full': isLast,
-                'text-foreground-muted': !isSelected,
+                'bg-surface text-foreground-muted': !isSelected,
                 'bg-surface-secondary font-semibold': isSelected,
               }
             )}
