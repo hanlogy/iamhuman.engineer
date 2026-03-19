@@ -19,9 +19,12 @@ export function ArtifactCard({
   return (
     <div
       key={artifactId}
-      className={clsx('bg-surface p-4 md:rounded-xl lg:relative lg:p-6', {
-        'lg:pl-42': hasImage,
-      })}
+      className={clsx(
+        'bg-surface hover:border-accent border-surface border-2 p-4 transition-all duration-200 md:rounded-xl lg:relative lg:p-6',
+        {
+          'lg:pl-42': hasImage,
+        }
+      )}
     >
       <div className="mb-4 flex items-center">
         {image && (
