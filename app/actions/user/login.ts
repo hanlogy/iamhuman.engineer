@@ -14,7 +14,6 @@ import {
 import { redirect } from 'next/navigation';
 import { UserHelper } from '@/dynamodb/UserHelper';
 import { createSessionManager } from '@/server/auth/createSessionManager';
-import { getUserIdFromAccessToken } from '@/server/auth/getUserIdFromAccessToken';
 import { getCognitoHelper } from '@/server/helpersRepo';
 import { setUserToConfirm } from '../../server/confirmSignUpManager';
 
@@ -43,8 +42,7 @@ export async function login({
       });
     }
 
-    const userHelper = new UserHelper();
-    const userId = getUserIdFromAccessToken(accessToken);
+    const { sub: userId } = cognito.decodeAccessToken(accessToken) ?? {};
     if (!userId) {
       return toActionFailure({
         message: 'Failed to extract user id from accessToken',
@@ -52,6 +50,7 @@ export async function login({
     }
 
     const { setSession } = await createSessionManager();
+    const userHelper = new UserHelper();
     await setSession({
       accessToken,
       refreshToken,
