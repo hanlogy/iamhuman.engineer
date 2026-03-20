@@ -16,7 +16,7 @@ export function ArtifactDetailsSection({
   const [tab, setTab] = useState<ArtifactDetailsTabName>('summary');
 
   const showEmpty = (text: string) => (
-    <div className="text-foreground-muted group-hover:text-on-accent text-sm italic">{text}</div>
+    <div className="text-foreground-muted text-sm italic">{text}</div>
   );
 
   const formatText = (text: string) => (
@@ -29,7 +29,7 @@ export function ArtifactDetailsSection({
         <ArtifactDetailsTabs selectedTab={tab} onChange={setTab} />
       </div>
 
-      <div className="text-foreground-secondary group-hover:text-on-accent min-h-12 text-sm leading-relaxed md:text-base">
+      <div className="text-foreground-secondary min-h-12 text-sm leading-relaxed md:text-base">
         <div
           className={clsx({
             hidden: tab !== 'summary',
