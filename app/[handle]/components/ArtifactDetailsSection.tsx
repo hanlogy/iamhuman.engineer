@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { clsx } from '@hanlogy/react-web-ui';
 import {
   ArtifactDetailsTabs,
+  tabItems,
   type ArtifactDetailsTabName,
 } from '@/components/ArtifactDetailsTabs';
 import type { Artifact } from '@/definitions';
@@ -25,47 +26,69 @@ export function ArtifactDetailsSection({
 
   return (
     <>
-      <div className="mb-4 max-w-xs">
+      <div className="mb-4 max-w-xs group-[.expanded]:hidden">
         <ArtifactDetailsTabs selectedTab={tab} onChange={setTab} />
       </div>
 
-      <div className="text-foreground-secondary min-h-12 text-sm leading-relaxed md:text-base">
-        <div
-          className={clsx({
-            hidden: tab !== 'summary',
-          })}
-        >
-          {summary ? formatText(summary) : showEmpty('Summary is empty')}
-        </div>
-        <div
-          className={clsx({
-            hidden: tab !== 'links',
-          })}
-        >
-          {links.length > 0 ? (
-            <div className="space-y-3">
-              {links.map(({ text, url }) => {
-                return (
-                  <div className="text-sm break-all" key={url}>
-                    <div className="font-medium">{text}</div>
-                    <a className="hover:underline" href={url} target="_blank">
-                      {url}
-                    </a>
-                  </div>
-                );
-              })}
+      <div className="min-h-12 text-sm leading-relaxed group-[.expanded]:mt-9 group-[.expanded]:space-y-8 md:text-base">
+        {tabItems.map(({ value, label }) => {
+          return (
+            <div key={value}>
+              <div className="mb-2 hidden font-medium group-[.expanded]:block">
+                {label}
+              </div>
+              <div
+                className={clsx(
+                  {
+                    hidden: tab !== value,
+                  },
+                  'text-foreground-secondary',
+                  'group-[.expanded]:block'
+                )}
+                key={value}
+              >
+                {value === 'summary' && (
+                  <>
+                    {summary
+                      ? formatText(summary)
+                      : showEmpty('Summary is empty')}
+                  </>
+                )}
+                {value === 'judgment' && (
+                  <>
+                    {judgment
+                      ? formatText(judgment)
+                      : showEmpty('Judgment is empty')}
+                  </>
+                )}
+                {value === 'links' && (
+                  <>
+                    {links.length > 0 ? (
+                      <div className="space-y-3">
+                        {links.map(({ text, url }) => {
+                          return (
+                            <div className="text-sm break-all" key={url}>
+                              <div className="font-medium">{text}</div>
+                              <a
+                                className="hover:underline"
+                                href={url}
+                                target="_blank"
+                              >
+                                {url}
+                              </a>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      showEmpty('Links is empty')
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-          ) : (
-            showEmpty('Links is empty')
-          )}
-        </div>
-        <div
-          className={clsx({
-            hidden: tab !== 'judgment',
-          })}
-        >
-          {judgment ? formatText(judgment) : showEmpty('Judgment is empty')}
-        </div>
+          );
+        })}
       </div>
     </>
   );

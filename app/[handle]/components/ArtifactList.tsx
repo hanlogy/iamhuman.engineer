@@ -3,6 +3,7 @@ import { ArtifactByTagHelper } from '@/dynamodb/ArtifactByTagHelper';
 import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
 import { tagIdsToLabels } from '@/helpers/tagIdsToLabels';
 import { ArtifactCard } from './ArtifactCard';
+import { ArtifactCardExpander } from './ArtifactCardExpander';
 
 export async function ArtifactList({
   selectedTag,
@@ -57,7 +58,9 @@ export async function ArtifactList({
         const { artifactId } = artifact;
 
         return (
-          <ArtifactCard isSelf={isSelf} artifact={artifact} key={artifactId} />
+          <ArtifactCardExpander key={artifactId}>
+            <ArtifactCard artifact={artifact} isSelf={isSelf} />
+          </ArtifactCardExpander>
         );
       })}
     </div>
