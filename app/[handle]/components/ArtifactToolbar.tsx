@@ -1,6 +1,6 @@
-import { clsx, IconButton, IconWrapper } from '@hanlogy/react-web-ui';
+import { clsx, IconWrapper } from '@hanlogy/react-web-ui';
 import Link from 'next/link';
-import { AddSvg, FilterListSvg } from '@/components/svgs';
+import { AddSvg } from '@/components/svgs';
 import { DownloadButton } from './download';
 
 /*import { SearchForm } from './SearchForm';*/
@@ -30,12 +30,14 @@ export function ArtifactToolbar({
         </Link>
       )}
       <div className="flex-1"></div>
-      <div className="space-x-2">
+      <div className="flex items-center space-x-2">
         <DownloadButton userId={userId} />
-        {/*<SearchForm />*/}
+        {/*
+        <SearchForm />
         <IconButton className="border-border border md:hidden">
           <FilterListSvg />
         </IconButton>
+        */}
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ export function ArtifactCardExpander({ children }: { children: ReactNode }) {
       )}
     >
       {children}
-      <div className="absolute right-3 bottom-3 md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
+      <div className="absolute right-3 bottom-3 hidden md:block md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
         <IconButton
           size="xsmall"
           className="hover:bg-surface-secondary"
