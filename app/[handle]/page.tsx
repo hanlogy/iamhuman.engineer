@@ -2,9 +2,9 @@ import { Suspense, cache } from 'react';
 import { clsx } from '@hanlogy/react-web-ui';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getArtifactTags } from '@/actions/artifacts/getArtifactTags';
 import { getProfile } from '@/actions/profile/getProfile';
 import { Shimmer } from '@/components/Shimmer';
-import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
 import { createSessionManager } from '@/server/auth/createSessionManager';
 import { ArtifactFilters } from './components/ArtifactFilters';
 import { ArtifactList } from './components/ArtifactList';
@@ -43,8 +43,8 @@ export default async function ProfilePage({
 
   const tagKey = typeof tag === 'string' && tag ? tag : undefined;
 
-  const tagHelper = new ArtifactTagHelper();
-  const tags = await tagHelper.getTags({ userId: profile.userId });
+  const tagsResult = await getArtifactTags({ userId: profile.userId });
+  const tags = tagsResult.success ? tagsResult.data : [];
   const selectedTag = tags.find(({ key }) => key === tagKey);
 
   const { getSession } = await createSessionManager();
