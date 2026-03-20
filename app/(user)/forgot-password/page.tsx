@@ -51,7 +51,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <>
+    <div className="mx-auto my-10 max-w-lg px-4">
       <h1 className="my-8 text-center text-2xl font-semibold">
         Forgot Password
       </h1>
@@ -85,6 +85,6 @@ export default function ForgotPassword() {
           </Link>
         </div>
       </form>
-    </>
+    </div>
   );
 }
