@@ -1,5 +1,6 @@
 'use server';
 
+import { cache } from 'react';
 import { toActionSuccess, type ActionResponse } from '@hanlogy/react-kit';
 import type { ArtifactTag } from '@/definitions';
 import { ArtifactTagHelper } from '@/dynamodb/ArtifactTagHelper';
@@ -14,3 +15,5 @@ export async function getArtifactTags({
 
   return toActionSuccess(tags);
 }
+
+export const getCachedArtifactTags = cache(getArtifactTags);

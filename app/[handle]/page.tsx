@@ -2,7 +2,7 @@ import { Suspense, cache } from 'react';
 import { clsx } from '@hanlogy/react-web-ui';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getArtifactTags } from '@/actions/artifacts/getArtifactTags';
+import { getCachedArtifactTags } from '@/actions/artifacts/getArtifactTags';
 import { getProfile } from '@/actions/profile/getProfile';
 import { Shimmer } from '@/components/Shimmer';
 import { createSessionManager } from '@/server/auth/createSessionManager';
@@ -43,7 +43,7 @@ export default async function ProfilePage({
 
   const tagKey = typeof tag === 'string' && tag ? tag : undefined;
 
-  const tagsResult = await getArtifactTags({ userId: profile.userId });
+  const tagsResult = await getCachedArtifactTags({ userId: profile.userId });
   const tags = tagsResult.success ? tagsResult.data : [];
   const selectedTag = tags.find(({ key }) => key === tagKey);
 
@@ -81,7 +81,6 @@ export default async function ProfilePage({
           <ArtifactList
             selectedTag={selectedTag}
             isSelf={isSelf}
-            tags={tags}
             profile={profile}
           />
         </Suspense>

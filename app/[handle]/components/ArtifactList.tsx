@@ -5,18 +5,15 @@ import { ArtifactCardExpander } from './ArtifactCardExpander';
 
 export async function ArtifactList({
   selectedTag,
-  tags,
   profile: { userId },
   isSelf,
 }: {
   selectedTag?: ArtifactTag | undefined;
-  tags: ArtifactTag[];
   profile: Profile;
   isSelf: boolean;
 }) {
   const result = await getArtifacts({
     userId,
-    tags,
     artifactTagId: selectedTag?.artifactTagId,
   });
   const artifacts = result.success ? result.data : [];
