@@ -140,6 +140,21 @@ export const MoreVertSvg = createGoogleSvg(
   'M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z'
 );
 
+export const FullscreenSvg = createGoogleSvg(
+  // fullscreen 400
+  'M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z'
+);
+
+export const FullscreenExitSvg = createGoogleSvg(
+  // fullscreen_exit 400
+  'M240-120v-120H120v-80h200v200h-80Zm400 0v-200h200v80H720v120h-80ZM120-640v-80h120v-120h80v200H120Zm520 0v-200h80v120h120v80H640Z'
+);
+
+export const DownloadSvg = createGoogleSvg(
+  // download_2 400
+  'M160-80v-80h640v80H160Zm320-160L200-600h160v-280h240v280h160L480-240Zm0-130 116-150h-76v-280h-80v280h-76l116 150Zm0-150Z'
+);
+
 function createGoogleSvg(path: string) {
   return function GoogleIcon(props: SVGProps<SVGSVGElement>) {
     return (

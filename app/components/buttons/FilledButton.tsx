@@ -7,7 +7,14 @@ export function FilledButton({
   ...props
 }: PropsWithChildren<ButtonProps>) {
   return (
-    <Button className={clsx("bg-accent text-on-accent", className)} size="medium" {...props}>
+    <Button
+      className={clsx(
+        'bg-accent text-on-accent disabled:cursor-not-allowed disabled:opacity-40',
+        className
+      )}
+      size="medium"
+      {...props}
+    >
       {children}
     </Button>
   );

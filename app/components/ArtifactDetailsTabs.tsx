@@ -1,6 +1,6 @@
 import { ButtonGroup, clsx } from '@hanlogy/react-web-ui';
 
-const items = [
+export const tabItems = [
   {
     label: 'Summary',
     value: 'summary',
@@ -15,7 +15,7 @@ const items = [
   },
 ] as const;
 
-export type ArtifactDetailsTabName = (typeof items)[number]['value'];
+export type ArtifactDetailsTabName = (typeof tabItems)[number]['value'];
 
 export function ArtifactDetailsTabs({
   selectedTab,
@@ -53,7 +53,7 @@ export function ArtifactDetailsTabs({
           </button>
         );
       }}
-      items={items}
+      items={tabItems}
       value={selectedTab}
     />
   );

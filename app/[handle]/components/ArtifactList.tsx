@@ -1,40 +1,22 @@
-import type { Artifact, ArtifactTag, Profile } from '@/definitions';
-import { ArtifactByTagHelper } from '@/dynamodb/ArtifactByTagHelper';
-import { ArtifactHelper } from '@/dynamodb/ArtifactHelper';
-import { tagIdsToLabels } from '@/helpers/tagIdsToLabels';
+import { getArtifacts } from '@/actions/artifacts/getArtifacts';
+import type { ArtifactTag, Profile } from '@/definitions';
 import { ArtifactCard } from './ArtifactCard';
+import { ArtifactCardExpander } from './ArtifactCardExpander';
 
 export async function ArtifactList({
   selectedTag,
-  tags,
   profile: { userId },
   isSelf,
 }: {
   selectedTag?: ArtifactTag | undefined;
-  tags: ArtifactTag[];
   profile: Profile;
   isSelf: boolean;
 }) {
-  const artifacts = await (async () => {
-    let artifacts: Artifact[];
-
-    if (selectedTag) {
-      const byTagHelper = new ArtifactByTagHelper();
-      artifacts = await byTagHelper.getItems({
-        userId,
-        artifactTagId: selectedTag.artifactTagId,
-      });
-    } else {
-      const artifactHelper = new ArtifactHelper();
-      artifacts = await artifactHelper.getItems({ userId });
-    }
-
-    return artifacts.map(({ tags: tagIds, ...rest }) => {
-      const tagLabels = tagIdsToLabels(tagIds, tags);
-
-      return { ...rest, tags: tagLabels };
-    });
-  })();
+  const result = await getArtifacts({
+    userId,
+    artifactTagId: selectedTag?.artifactTagId,
+  });
+  const artifacts = result.success ? result.data : [];
 
   if (artifacts.length === 0) {
     return (
@@ -57,7 +39,9 @@ export async function ArtifactList({
         const { artifactId } = artifact;
 
         return (
-          <ArtifactCard isSelf={isSelf} artifact={artifact} key={artifactId} />
+          <ArtifactCardExpander key={artifactId}>
+            <ArtifactCard artifact={artifact} isSelf={isSelf} />
+          </ArtifactCardExpander>
         );
       })}
     </div>
