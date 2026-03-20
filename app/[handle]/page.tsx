@@ -68,7 +68,7 @@ export default async function ProfilePage({
         </div>
       </div>
       <div className="md:flex-1">
-        <ArtifactToolbar isSelf={isSelf} />
+        <ArtifactToolbar isSelf={isSelf} userId={profile.userId} />
         <Suspense
           fallback={
             <div className="space-y-6">

@@ -150,6 +150,11 @@ export const FullscreenExitSvg = createGoogleSvg(
   'M240-120v-120H120v-80h200v200h-80Zm400 0v-200h200v80H720v120h-80ZM120-640v-80h120v-120h80v200H120Zm520 0v-200h80v120h120v80H640Z'
 );
 
+export const DownloadSvg = createGoogleSvg(
+  // download_2 400
+  'M160-80v-80h640v80H160Zm320-160L200-600h160v-280h240v280h160L480-240Zm0-130 116-150h-76v-280h-80v280h-76l116 150Zm0-150Z'
+);
+
 function createGoogleSvg(path: string) {
   return function GoogleIcon(props: SVGProps<SVGSVGElement>) {
     return (
