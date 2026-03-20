@@ -14,19 +14,19 @@ export function Hero() {
             'md:mb-10 md:text-5xl'
           )}
         >
-          We are the engineers who ship
+          We work with intent.
         </h1>
         <p
           className={clsx(
-            'text-foreground-secondary mx-auto max-w-2xl',
+            'text-foreground-secondary mx-auto max-w-2xl leading-relaxed',
             'sm:text-lg',
             'md:text-xl'
           )}
         >
-          No feed, no hot takes. Just our real work: PRs, shipped products,
-          packages, talks, and case studies.
+          A quiet place for engineers to document the decisions, tradeoffs, and
+          reasoning behind our work. No feed. No likes.
         </p>
-        <div className="text-foreground-muted mt-2 text-sm italic">
+        <div className="text-foreground-muted mt-2 text-sm italic sm:mt-4">
           Not anti-AI. Pro craft, proof, and accountability.
         </div>
         <div
