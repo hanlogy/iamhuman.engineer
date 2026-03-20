@@ -18,6 +18,7 @@
     "@hanlogy/ts-cognito": "^1.3.1",
     "@hanlogy/ts-dynamodb": "^1.2.0",
     "@hanlogy/ts-lib": "^1.0.0",
+    "@react-pdf/renderer": "^4.3.2",
     "jose": "^6.2.0",
     "next": "16.1.6",
     "react": "19.2.3",

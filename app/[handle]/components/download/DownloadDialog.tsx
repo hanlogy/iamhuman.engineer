@@ -7,6 +7,7 @@ import {
   DialogScaffold,
   DialogTopbar,
 } from '@hanlogy/react-web-ui';
+import { downloadArtifacts } from '@/actions/artifacts/downloadArtifacts';
 import { getArtifacts } from '@/actions/artifacts/getArtifacts';
 import { FilledButton } from '@/components/buttons/FilledButton';
 import type { Artifact } from '@/definitions';
@@ -30,6 +31,32 @@ export function DownloadDialog({
     });
   }, [userId]);
 
+  const handleDownload = async () => {
+    const result = await downloadArtifacts({
+      userId,
+      artifactIds: selectedIds,
+      format,
+    });
+
+    if (!result.success) {
+      return;
+    }
+
+    const mimeType = format === 'json' ? 'application/json' : 'application/pdf';
+    const content =
+      format === 'pdf'
+        ? Uint8Array.from(atob(result.data), (c) => c.charCodeAt(0))
+        : result.data;
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const datetime = new Date().toISOString().replace(/[:.]/g, '-');
+    a.download = `artifacts-${datetime}.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const toggleId = (artifactId: string) => {
     setSelectedIds((prev) =>
       prev.includes(artifactId)
@@ -50,6 +77,7 @@ export function DownloadDialog({
             size="xsmall"
             className="min-w-20"
             disabled={selectedIds.length === 0}
+            onClick={handleDownload}
           >
             Download
           </FilledButton>
