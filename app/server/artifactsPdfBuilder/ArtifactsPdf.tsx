@@ -37,6 +37,7 @@ export function ArtifactsPdf({
               <Text style={styles.meta}>
                 {artifactTypeToLabel(type)} · Released {releaseDate}
               </Text>
+              <Text style={styles.title}>{title}</Text>
               {tags.length > 0 && (
                 <View style={styles.tagsRow}>
                   {tags.map((tag) => (
@@ -46,40 +47,33 @@ export function ArtifactsPdf({
                   ))}
                 </View>
               )}
-              <Text style={styles.title}>{title}</Text>
 
               <View style={styles.sections}>
-                <View>
-                  <Text style={styles.sectionLabel}>Summary</Text>
-                  {summary ? (
+                {summary && (
+                  <View>
+                    <Text style={styles.sectionLabel}>SUMMARY</Text>
                     <Text style={styles.sectionText}>{summary}</Text>
-                  ) : (
-                    <Text style={styles.sectionEmpty}>Summary is empty</Text>
-                  )}
-                </View>
+                  </View>
+                )}
 
-                <View>
-                  <Text style={styles.sectionLabel}>Judgment</Text>
-                  {judgment ? (
+                {judgment && (
+                  <View>
+                    <Text style={styles.sectionLabel}>JUDGMENT</Text>
                     <Text style={styles.sectionText}>{judgment}</Text>
-                  ) : (
-                    <Text style={styles.sectionEmpty}>Judgment is empty</Text>
-                  )}
-                </View>
+                  </View>
+                )}
 
-                <View>
-                  <Text style={styles.sectionLabel}>Links</Text>
-                  {links.length > 0 ? (
-                    links.map(({ text, url }) => (
+                {links.length > 0 && (
+                  <View>
+                    <Text style={styles.sectionLabel}>LINKS</Text>
+                    {links.map(({ text, url }) => (
                       <View key={url} style={styles.link}>
                         {text && <Text style={styles.linkText}>{text}</Text>}
                         <Text style={styles.linkUrl}>{url}</Text>
                       </View>
-                    ))
-                  ) : (
-                    <Text style={styles.sectionEmpty}>Links is empty</Text>
-                  )}
-                </View>
+                    ))}
+                  </View>
+                )}
               </View>
             </View>
           );
