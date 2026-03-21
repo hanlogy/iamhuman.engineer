@@ -42,9 +42,13 @@ export function ArtifactCard({
         </div>
       </div>
 
-      <div className="mb-2 flex text-sm font-medium">{tags.join(', ')}</div>
-      <div className="mb-6 text-lg leading-tight font-medium">{title}</div>
-      <div>
+      <div className="text-lg leading-tight font-medium">{title}</div>
+      {tags.length && (
+        <div className="text-foreground-secondary mt-2 flex text-sm font-medium">
+          {tags.join(', ')}
+        </div>
+      )}
+      <div className="mt-6">
         <ArtifactDetailsSection artifact={artifact} />
       </div>
 
