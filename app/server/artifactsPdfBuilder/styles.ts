@@ -2,15 +2,17 @@ import { StyleSheet } from '@react-pdf/renderer';
 
 export const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 72,
     fontFamily: 'Helvetica',
     fontSize: 11,
     color: '#1a1a1a',
   },
   pageTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Helvetica-Bold',
     marginBottom: 24,
+    marginTop: 0,
+    paddingTop: 0,
   },
   artifact: {
     marginBottom: 24,
@@ -25,12 +27,6 @@ export const styles = StyleSheet.create({
     fontSize: 10,
     marginBottom: 10,
   },
-  tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
-    marginBottom: 12,
-  },
   tagChip: {
     backgroundColor: '#f0f0f0',
     paddingHorizontal: 6,
@@ -42,31 +38,33 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 16,
     lineHeight: 1.3,
   },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginTop: 8,
+  },
   sections: {
-    gap: 16,
+    marginTop: 24,
+    gap: 18,
   },
   sectionLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 8,
+    marginBottom: 12,
+    color: '#666',
   },
   sectionText: {
     fontSize: 10,
-    color: '#444',
-    lineHeight: 1.5,
-  },
-  sectionEmpty: {
-    fontSize: 10,
-    color: '#999',
-    fontStyle: 'italic',
+    lineHeight: 1.67,
   },
   link: {
-    marginBottom: 8,
+    marginBottom: 12,
   },
   linkText: {
+    color: '#666',
     fontSize: 10,
     marginBottom: 2,
   },
