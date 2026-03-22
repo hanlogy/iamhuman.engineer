@@ -21,11 +21,11 @@ import type { Artifact, ArtifactLink, ArtifactType } from '@/definitions/types';
 import { useAppContext } from '@/state/hooks';
 import { ImageSection } from './ImageSection';
 import { LinksSection } from './LinksSection';
+import { TagsField } from './TagsField';
 
 interface FormData {
   title: string;
   type: ArtifactType;
-  tags: string;
   releaseDate: string;
   summary: string;
   judgment: string;
@@ -48,11 +48,13 @@ const typeOptions = ARTIFACT_TYPES.map((value) => {
 
 export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
   const router = useRouter();
-  const { register, validate, getValues, setFieldError } = useForm<FormData>();
+  const { register, validate, getValues } = useForm<FormData>();
   const [tabName, setTabName] = useState<ArtifactDetailsTabName>('summary');
   const [error, setError] = useState<string>('');
+  const [tagsError, setTagsError] = useState<string>('');
   const [isPending, setIsPending] = useState<boolean>(false);
   const { resolveImage } = useImageUploadContext();
+  const [tags, setTags] = useState<string[]>(artifact?.tags.slice() ?? []);
   const [links, setLinks] = useState<(ArtifactLink & { id: string })[]>(
     (() => {
       const items = (artifact?.links ?? []).map((e) => ({
@@ -79,30 +81,20 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
 
   const handleSave = async () => {
     setError('');
+    setTagsError('');
+
+    if (tags.length > 5) {
+      setTagsError('You can add up to 5 tags');
+      return;
+    }
+
     if (!validate()) {
       return false;
     }
 
-    const {
-      title,
-      type,
-      tags: rawTags = '',
-      releaseDate,
-      summary,
-      judgment,
-    } = getValues();
+    const { title, type, releaseDate, summary, judgment } = getValues();
 
     if (!title || !type || !releaseDate) {
-      return;
-    }
-
-    const tagLabels = rawTags
-      .split(',')
-      .map((e) => e.trim())
-      .filter((e) => Boolean(e));
-
-    if (tagLabels.length > 5) {
-      setFieldError('tags', 'You can add up to 5 tags');
       return;
     }
 
@@ -115,7 +107,7 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
     const { error } = await saveArtifact(artifact?.artifactId, {
       title,
       type,
-      tagLabels,
+      tagLabels: tags,
       links: links
         .map(({ text, url }) => ({ text: text?.trim(), url: url.trim() }))
         .filter(({ url }) => Boolean(url)),
@@ -161,11 +153,11 @@ export function ArtifactEditor({ artifact }: { artifact?: Artifact }) {
           })}
           options={typeOptions}
         />
-        <TextField
-          defaultValue={artifact?.tags.join(', ')}
+        <TagsField
           label="Tags"
-          helper="Separate multiple tags by commas (,)"
-          controller={register('tags')}
+          value={tags}
+          onChange={setTags}
+          error={tagsError}
         />
         <TextField
           defaultValue={artifact?.releaseDate}
