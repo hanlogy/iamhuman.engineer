@@ -13,7 +13,7 @@ export function EngineersCounter() {
       <div className="text-foreground-muted text-xl leading-none">
         Engineers Onboard
       </div>
-      <div className="mt-8 text-5xl leading-none font-semibold">0</div>
+      <div className="mt-8 text-5xl leading-none font-semibold">1</div>
     </div>
   );
 }
